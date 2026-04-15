@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="fa"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&amp;family=Inter:wght@100..900&amp;family=Public+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-primary": "#ffb3b4",
+                    "on-background": "#1a1c1c",
+                    "background": "#f9f9f9",
+                    "surface-dim": "#dadada",
+                    "surface-container-low": "#f3f3f4",
+                    "outline": "#8f6f70",
+                    "secondary": "#5e5e5e",
+                    "on-secondary-container": "#646464",
+                    "on-primary-fixed-variant": "#920024",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#0078c8",
+                    "on-surface-variant": "#5b4040",
+                    "surface": "#f9f9f9",
+                    "secondary-container": "#e2e2e2",
+                    "on-tertiary-container": "#fdfcff",
+                    "surface-variant": "#e2e2e2",
+                    "on-secondary-fixed": "#1b1b1b",
+                    "surface-container-highest": "#e2e2e2",
+                    "surface-container": "#eeeeee",
+                    "tertiary-fixed": "#d1e4ff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-on-surface": "#f0f1f1",
+                    "on-primary-fixed": "#40000b",
+                    "outline-variant": "#e3bebe",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#2f3131",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed-variant": "#474747",
+                    "secondary-fixed": "#e2e2e2",
+                    "primary-fixed-dim": "#ffb3b4",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#bb1335",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#00497d",
+                    "surface-container-high": "#e8e8e8",
+                    "tertiary-fixed-dim": "#9ecaff",
+                    "primary": "#b70f33",
+                    "tertiary": "#005fa0",
+                    "primary-fixed": "#ffdada",
+                    "on-tertiary-fixed": "#001d36",
+                    "surface-bright": "#f9f9f9",
+                    "primary-container": "#db3049",
+                    "error": "#ba1a1a",
+                    "on-surface": "#1a1c1c",
+                    "on-primary-container": "#fffbff",
+                    "secondary-fixed-dim": "#c6c6c6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Vazirmatn", "Public Sans"],
+                    "body": ["Inter", "Vazirmatn"],
+                    "label": ["Inter", "Vazirmatn"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Vazirmatn', sans-serif; }
+        .glass-nav {
+            background: rgba(249, 249, 249, 0.7);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- Top Navigation Anchor -->
+<nav class="bg-surface dark:bg-gray-900 sticky top-0 z-50 flex justify-between items-center w-full px-6 h-16 transition-colors border-none">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="arrow_forward">arrow_forward</span>
+<h1 class="text-lg font-bold text-on-surface dark:text-gray-100 font-headline">Check out</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-primary font-bold text-sm">مرحله 2 از 3</span>
+</div>
+</nav>
+<main class="max-w-xl mx-auto px-6 pt-8">
+<!-- Progress Stepper -->
+<div class="flex items-center justify-between mb-10 px-4">
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary-container text-white flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-xl" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="text-xs font-medium text-on-surface-variant">آدرس</span>
+</div>
+<div class="flex-1 h-0.5 bg-primary-container/30 mx-2 mb-6"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center ring-4 ring-primary/20">
+<span class="text-sm font-bold">2</span>
+</div>
+<span class="text-xs font-bold text-primary">ارسال</span>
+</div>
+<div class="flex-1 h-0.5 bg-surface-container-high mx-2 mb-6"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center">
+<span class="text-sm font-bold">3</span>
+</div>
+<span class="text-xs font-medium text-on-surface-variant">پرداخت</span>
+</div>
+</div>
+<header class="mb-8">
+<h2 class="text-2xl font-black text-on-surface mb-2 font-headline">انتخاب شیوه ارسال</h2>
+<p class="text-on-surface-variant text-sm">لطفاً زمان و هزینه مورد نظر خود را انتخاب کنید.</p>
+</header>
+<!-- Shipping Methods List -->
+<div class="space-y-4">
+<!-- Method: Express (Selected) -->
+<label class="block relative cursor-pointer group">
+<input checked="" class="peer hidden" name="shipping" type="radio"/>
+<div class="p-5 rounded-2xl bg-surface-container-lowest border-2 border-transparent peer-checked:border-primary transition-all shadow-sm flex items-start gap-4">
+<div class="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
+<img class="w-10 h-10 object-contain" data-alt="professional modern logistics company logo with abstract blue and red speed lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAN5c7br3fL97g6jNhJ2apo07WN1w3Ihm2Hg5m89u_EOmMRoTlURB4zGrEdz3zR_SnL9eowG9WCOqlJG0n_4wkeRngARlOw3th6vRAlJA5xv1ki2hfB24NUjCUHhmpCsgRoRxqGOvhdiECtxPdLWKeoM-o4XAQyYKXiAnlCrOSI6dk3cLZqMJubYvTTPah4aCDJAcFvK2gs_Y5N8tB17LQiciTDvatkvXQbU-PoFyrEw0Vb6C6wryX0SzbyBM9Qs0jZyZhsR-ODdY"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-on-surface text-lg">ارسال سریع (Express)</h3>
+<span class="text-primary font-bold font-body">45,000 تومان</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-3">تحویل در بازه زمانی کوتاه با اولویت بالا</p>
+<div class="flex items-center gap-4 text-xs font-medium text-on-surface/70">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="calendar_today">calendar_today</span>
+<span>فردا، 10 اردیبهشت</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="schedule">schedule</span>
+<span>ساعت 9 تا 14</span>
+</div>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center mt-1">
+<div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
+</div>
+</div>
+</label>
+<!-- Method: Priority -->
+<label class="block relative cursor-pointer group">
+<input class="peer hidden" name="shipping" type="radio"/>
+<div class="p-5 rounded-2xl bg-surface-container-lowest border-2 border-transparent peer-checked:border-primary transition-all shadow-sm flex items-start gap-4 hover:bg-surface-container-low/50">
+<div class="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
+<img class="w-10 h-10 object-contain" data-alt="premium logistics logo with gold and black minimalist geometric eagle icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8bYdobOL69Zih6Pv1Y5Zikn-q570UpekiIaA3giDsQe-wB3K3vJ-JwQfC3PNvLut4udQlb0KY_MmT7rnn19gJmawmflFJ809NibkV8w31Pw5Sp7q2FXuxPI59FuexcCtvkdI-v3zwJIsG7Z_uZ9gM36jEygZ8toKBQD3o2DoE6vNDxR00TnMzJCoUt3W9FfweaoS3uKpAIU1tflbngaurkr379HYToxn6tJxUY-L8hd_zEhML_FXjENTHW6oYmlX1uHZkGsm0nwg"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-on-surface text-lg">ارسال اختصاصی (Priority)</h3>
+<span class="text-on-surface font-bold font-body">89,000 تومان</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-3">تحویل توسط سفیر اختصاصی در زمان دلخواه شما</p>
+<div class="flex items-center gap-4 text-xs font-medium text-on-surface/70">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="bolt" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="text-primary">امروز، تا ساعت 21</span>
+</div>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center mt-1">
+<div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
+</div>
+</div>
+</label>
+<!-- Method: Standard -->
+<label class="block relative cursor-pointer group">
+<input class="peer hidden" name="shipping" type="radio"/>
+<div class="p-5 rounded-2xl bg-surface-container-lowest border-2 border-transparent peer-checked:border-primary transition-all shadow-sm flex items-start gap-4 hover:bg-surface-container-low/50">
+<div class="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
+<img class="w-10 h-10 object-contain" data-alt="classic national post service logo with yellow and blue circular emblem" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_SmJpn-fTG4jXk_zVLPrmP2A76iKx4OfWPgyc37noVYExgYxdd5QEU_mBgvPHaEDL4IA4oH9vCKBkmiJb4_OQdH9hle3s0R8XJGcZJtkP9QWa8365f8tUwTVvyZCXXh5YY2QadxxQ69Jgh6diMy4RGeXJrTB0SF3wkt9sl_62ql7SH-U3eNcWtbCQnEsXmtmqp3rjTcpYZqqdzjIFwgh5PVhKxASju1WSis_T-2LxAWQThLcBdYP4lO1fgvJP-mtG5PEuxrWGiB4"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-on-surface text-lg">ارسال معمولی (Standard)</h3>
+<span class="text-on-surface font-bold font-body">رایگان</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-3">ارسال اقتصادی توسط پست پیشتاز</p>
+<div class="flex items-center gap-4 text-xs font-medium text-on-surface/70">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="local_shipping">local_shipping</span>
+<span>3 تا 5 روز کاری</span>
+</div>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center mt-1">
+<div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
+</div>
+</div>
+</label>
+</div>
+<!-- Summary Preview Card -->
+<section class="mt-10 p-6 rounded-3xl bg-surface-container-low">
+<h4 class="text-sm font-bold text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="receipt_long">receipt_long</span>
+                خلاصه سفارش
+            </h4>
+<div class="space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">قیمت کالاها (2 مورد)</span>
+<span class="font-body text-on-surface">1,240,000 تومان</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">هزینه ارسال</span>
+<span class="font-body text-primary">45,000 تومان</span>
+</div>
+<div class="pt-3 border-t border-outline-variant/20 flex justify-between">
+<span class="font-bold text-on-surface">مبلغ قابل پرداخت</span>
+<span class="font-bold text-on-surface font-body text-lg">1,285,000 تومان</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Action Shell -->
+<div class="fixed bottom-0 w-full z-50 glass-nav px-8 py-4 pb-safe flex flex-col gap-4 shadow-[0_-12px_32px_rgba(26,28,28,0.06)] rounded-t-3xl">
+<div class="flex justify-around items-center w-full">
+<div class="flex-1 flex flex-col">
+<span class="text-[10px] text-on-surface-variant">جمع نهایی</span>
+<span class="text-lg font-black text-on-surface font-body">1,285,000 تومان</span>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-base shadow-lg active:scale-95 transition-transform flex items-center gap-2">
+<span>تایید و ادامه خرید</span>
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+</div>
+</div>
+<!-- Hidden Bottom Nav for Desktop Logic (Suppressed per task context) -->
+<footer class="hidden md:flex fixed bottom-0 left-0 right-0 h-1 px-8"></footer>
+</body></html>

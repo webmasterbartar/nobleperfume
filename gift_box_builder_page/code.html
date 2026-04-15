@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="fa"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Vazirmatn:wght@100..900&amp;family=Manrope:wght@200..800&amp;family=Noto+Serif:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed": "#dee1ff",
+                    "inverse-primary": "#bcc2ff",
+                    "on-error-container": "#93000a",
+                    "secondary": "#4256b7",
+                    "on-secondary-fixed": "#001159",
+                    "inverse-surface": "#2a313b",
+                    "on-primary": "#ffffff",
+                    "on-background": "#151c26",
+                    "error-container": "#ffdad6",
+                    "background": "#f8f9ff",
+                    "outline-variant": "#c6c5d2",
+                    "primary": "#00011e",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#584400",
+                    "on-surface": "#151c26",
+                    "on-tertiary-container": "#4f3d00",
+                    "on-primary-container": "#767fcf",
+                    "tertiary-fixed": "#ffe08c",
+                    "secondary-fixed-dim": "#b9c3ff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#767682",
+                    "surface-container-highest": "#dce3f0",
+                    "tertiary": "#745b00",
+                    "surface-tint": "#4e58a4",
+                    "error": "#ba1a1a",
+                    "on-secondary-container": "#132b8e",
+                    "on-error": "#ffffff",
+                    "surface-bright": "#f8f9ff",
+                    "on-primary-fixed": "#020d5f",
+                    "surface-container-low": "#eff3ff",
+                    "inverse-on-surface": "#ebf1ff",
+                    "tertiary-container": "#c8a84b",
+                    "primary-fixed-dim": "#bcc2ff",
+                    "tertiary-fixed-dim": "#e5c363",
+                    "primary-container": "#051061",
+                    "on-surface-variant": "#454651",
+                    "surface-container": "#e8eefc",
+                    "on-secondary-fixed-variant": "#283d9e",
+                    "surface": "#f8f9ff",
+                    "on-primary-fixed-variant": "#363f8b",
+                    "surface-dim": "#d4dae8",
+                    "primary-fixed": "#dfe0ff",
+                    "secondary-container": "#869aff",
+                    "on-tertiary-fixed": "#241a00",
+                    "surface-variant": "#dce3f0",
+                    "surface-container-high": "#e2e8f6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif", "Playfair Display", "Vazirmatn"],
+                    "body": ["Vazirmatn", "Manrope"],
+                    "label": ["Vazirmatn", "Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Vazirmatn', sans-serif; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-[#f8f9ff]/80 backdrop-blur-md shadow-sm">
+<nav class="flex justify-between items-center px-12 py-6 w-full max-w-[1920px] mx-auto font-['Vazirmatn','Noto_Serif'] text-sm tracking-wide text-[#051061]">
+<div class="flex items-center gap-8">
+<a class="font-['Playfair_Display','Vazirmatn'] font-bold text-2xl tracking-tighter text-[#051061]" href="#">نوبل پرفیوم</a>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-[#151c26]/60 hover:text-[#051061] transition-all duration-300" href="#">الکسیرها</a>
+<a class="text-[#051061] border-b-2 border-[#745b00] pb-1" href="#">مجموعه‌ها</a>
+<a class="text-[#151c26]/60 hover:text-[#051061] transition-all duration-300" href="#">درباره ما</a>
+<a class="text-[#151c26]/60 hover:text-[#051061] transition-all duration-300" href="#">تماس با ما</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined cursor-pointer hover:opacity-80 transition-all text-2xl" data-icon="person">person</span>
+</div>
+<div class="relative group">
+<span class="material-symbols-outlined cursor-pointer hover:opacity-80 transition-all text-2xl" data-icon="shopping_bag">shopping_bag</span>
+<span class="absolute -top-1 -right-1 bg-tertiary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">۲</span>
+</div>
+</div>
+</nav>
+</header>
+<main class="pt-32 pb-20 px-4 md:px-12 max-w-[1920px] mx-auto">
+<!-- Page Header -->
+<div class="mb-12 text-center">
+<h1 class="font-playfair text-4xl md:text-5xl lg:text-6xl text-primary font-bold mb-4">باکس هدیه لوکس نوبل پرفیوم</h1>
+<p class="text-on-surface-variant text-lg md:text-xl font-light">یک تجربه فراموش‌نشدنی برای عزیزانتان</p>
+</div>
+<!-- Split Layout Content -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+<!-- LEFT SIDE — Live Box Preview -->
+<div class="lg:col-span-5 sticky top-32">
+<div class="bg-inverse-on-surface rounded-3xl p-8 lg:p-12 min-h-[500px] flex flex-col justify-between items-center relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle, #051061 1px, transparent 1px); background-size: 30px 30px;"></div>
+<div class="relative z-10 w-full flex flex-col items-center">
+<div class="relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96">
+<img alt="Box Preview" class="w-full h-full object-contain" data-alt="luxury white gift box with a thick gold ribbon bow on top center angled view elegant soft studio lighting minimal aesthetic white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeGV-8gV9LC69Qf9Hk-cWL7j_y05l_JsZoYDnsnk3doViKdAoyoBO7swPA6jAbJwyUFPbkRcio38kkBNbu01lblYwreq7ielpeHN54mqkhp-3ZIuySwwE_9Rv4V3eGoByUv_0ne3CsaWf91055esndBTnsXq9WzRwmbJ3eETENpDdcwQDlHHVETETgWe0OqhhY8U9X_sdgpBIpn70hqV4y0JOoFaW8sxko-LzYmYBfCW7BxcZuborOWY5gSWMpFhoWiFYV4Pqq4so"/>
+<!-- Dynamic Perfume Thumbnails -->
+<div class="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3">
+<div class="w-16 h-16 bg-white rounded-xl shadow-lg p-1 border border-outline-variant/20">
+<img alt="p1" class="w-full h-full object-cover rounded-lg" data-alt="small minimalist perfume vial with gold cap luxury design on white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe9Ws5Dg8xK9GUUHsK3sNQ9CHdHxrhMSdXBvl1fKHgNwEVCsuNObWy8uVcM2ymooEscTgzr4ry-bMff6yvuzJGwzh7sNE7GSo-_LDJhRIdtwwuRbLKMUtodfusoMhsDPsjHLj0ebd0BedsmQaqZhSdhxx44B7PYPmkYr0bNQ7hzGow8qpIzsPuL-PX1P5m_iNclFzyUJNZDkPLVSDnsDU8Ip1UhlFuromfKkH230GrLJp0NvU-RJFpX8_F7vGxgVLxk805UP_WoZY"/>
+</div>
+<div class="w-16 h-16 bg-white rounded-xl shadow-lg p-1 border border-outline-variant/20">
+<img alt="p2" class="w-full h-full object-cover rounded-lg" data-alt="small luxury glass perfume bottle with amber liquid white label" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfg2DopJ72_aQnHu081Z_KUcaVA8vQ2curPNYNuKoTm487tajwWRM2Pe0S740WKIOcOKR9XJxgvv60HJKQaW8VOBk7iGVmjMTtOKPweKVrADLSpSXVtS5TwIpnRbJ3EP7moNLab-7JwBm8QY8ALp4pQ12Pz0_-_6naWIFdQmROtK6os2wN3s5-RshDaIBi00Hv_gZALi2vyF8vVkYeirnNvap5tSDl163rZXw6gos-onsQanMW4Rz2xCKczSJaA009-v-6jf_TniE"/>
+</div>
+<div class="w-16 h-16 border-2 border-dashed border-tertiary-container/40 rounded-xl flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined">add</span>
+</div>
+</div>
+</div>
+<div class="mt-16 text-center">
+<h3 class="font-playfair italic text-3xl text-tertiary mb-2">باکس هدیه نوبل پرفیوم</h3>
+<p class="text-on-surface-variant text-sm tracking-widest">NOBLE GIFT COLLECTION</p>
+</div>
+</div>
+<div class="w-full mt-12 bg-white/40 backdrop-blur-sm rounded-2xl p-6 flex justify-between items-center border border-white/60">
+<span class="text-on-surface-variant font-medium">مجموع برآورد شده:</span>
+<div class="text-left">
+<span class="text-primary text-2xl font-bold">۲,۴۵۰,۰۰۰</span>
+<span class="text-sm text-on-surface-variant mr-1">تومان</span>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT SIDE — Step Builder -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-xl shadow-sm p-6 md:p-8 lg:p-10">
+<div class="space-y-12">
+<!-- STEP 1: Selection of count -->
+<section>
+<div class="flex items-center gap-3 mb-6">
+<span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">۱</span>
+<h2 class="text-xl font-bold text-primary">تعداد عطرهای داخل باکس</h2>
+</div>
+<div class="flex flex-wrap gap-4">
+<button class="px-8 py-3 rounded-full border-2 border-primary bg-primary text-white font-bold transition-all">۳ عطر</button>
+<button class="px-8 py-3 rounded-full border-2 border-outline-variant text-on-surface-variant hover:border-primary transition-all">۵ عطر</button>
+<button class="px-8 py-3 rounded-full border-2 border-outline-variant text-on-surface-variant hover:border-primary transition-all">۱۰ عطر</button>
+</div>
+</section>
+<!-- STEP 2: Category -->
+<section>
+<div class="flex items-center gap-3 mb-6">
+<span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">۲</span>
+<h2 class="text-xl font-bold text-primary">انتخاب دسته‌بندی رایحه</h2>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="px-6 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-secondary-fixed transition-all">مردانه</button>
+<button class="px-6 py-2 rounded-full bg-primary text-white transition-all shadow-md">زنانه</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-secondary-fixed transition-all">یونیسکس</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-secondary-fixed transition-all">میکس</button>
+</div>
+</section>
+<!-- STEP 3: Fragrance Selection -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">۳</span>
+<h2 class="text-xl font-bold text-primary">انتخاب عطرها</h2>
+</div>
+<span class="px-4 py-1 bg-primary-container text-white rounded-full text-xs font-bold">۲ از ۳ انتخاب شده</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-4 h-[400px] overflow-y-auto pr-2 no-scrollbar border-b border-outline-variant/10">
+<!-- Product 1 (Selected) -->
+<div class="relative group cursor-pointer border-2 border-primary rounded-xl overflow-hidden bg-white p-3">
+<div class="absolute top-2 right-2 z-10">
+<span class="material-symbols-outlined text-primary bg-white rounded-full" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="aspect-square mb-3 bg-surface-container rounded-lg overflow-hidden">
+<img alt="Perfume" class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="luxury gold perfume bottle vial black background soft light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9DTnTTZW9jikDHr8zrW4lvTKpZTSvfQs11IMNQtCYPqtfu_ELpSTixO5NPBH9N7kc5cOhUKLAblKEbt3hxVk_NwT8tTnZszqCdQRd2ERr8nY1a4SSyLi0XmYKmw0lYCQcjp2royYdy3UEXz7Nupu78a3v3mgdTx_0a9P6Gmm5_hdHnt-GY2S_DlL0g27VUdpsvCrquHhQZG5EAqu9TmXmj-I4x7ei633TInSmIrj1I_ZA-xEvDlsOocuNozRatPNg3ljRKpzu9xY"/>
+</div>
+<h4 class="text-sm font-bold text-primary truncate">عود سلطنتی</h4>
+<p class="text-[10px] text-tertiary">رایحه گرم و تلخ</p>
+</div>
+<!-- Product 2 (Selected) -->
+<div class="relative group cursor-pointer border-2 border-primary rounded-xl overflow-hidden bg-white p-3">
+<div class="absolute top-2 right-2 z-10">
+<span class="material-symbols-outlined text-primary bg-white rounded-full" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="aspect-square mb-3 bg-surface-container rounded-lg overflow-hidden">
+<img alt="Perfume" class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="elegant rose pink perfume glass vial macro shot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb4_m5zSORMXr0a5murrzhiPF73vPMIwKLzvdwsZofybEB-Ai_cbzYQEDJp-BTLzHX29TldCb71gyM7_2MmI4AJ8BQNuI0-GRDo-bfCszmvLoMI6flwsxaV379KxaKeb5xYgiyIHsPZayJ4yYt-HLL1rawJA7CrplOMxmLJ-vrnw4VMJ7O53XfHBix03HYR65KBHyxSdXaxTK6bzp0manaBuxXgi4WRch5T9cqRSJ5uU71tpnw6ATeYOB6916zDWdIRo60vsk8i38"/>
+</div>
+<h4 class="text-sm font-bold text-primary truncate">رز مخملی</h4>
+<p class="text-[10px] text-tertiary">رایحه گلی و شیرین</p>
+</div>
+<!-- Product 3 -->
+<div class="relative group cursor-pointer border-2 border-transparent hover:border-outline-variant rounded-xl overflow-hidden bg-surface-container-low p-3 transition-all">
+<div class="aspect-square mb-3 bg-white rounded-lg overflow-hidden">
+<img alt="Perfume" class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="minimalist blue glass perfume bottle clean aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBd4ogeDzxHCNeuVxa_KWGgLH34xpuUcj_uYv07L1G2NzgU_Zydp_Zx8oGqG2WTNfsLP6AiARgByyaNVyCz9rZPXbN23Y8chWIYWWfqcqqmZ0kltQAOyeeLweRiMhI5SZzt8KZc085hg53MyWNboeAuLpv5z1uMtdyKujDJYTU3pbo7aQ2S2tyTBJQb7QmoIA-MkSuziyWjMo9w3aL4I-rSQov-yQKM7vWeDV_UXAzRY3DMb73bZqwsUXfvDCNxUx2w-SKKBmcEKXw"/>
+</div>
+<h4 class="text-sm font-bold text-primary truncate">اقیانوس آرام</h4>
+<p class="text-[10px] text-tertiary">رایحه خنک و دریایی</p>
+</div>
+<!-- Product 4 -->
+<div class="relative group cursor-pointer border-2 border-transparent hover:border-outline-variant rounded-xl overflow-hidden bg-surface-container-low p-3 transition-all">
+<div class="aspect-square mb-3 bg-white rounded-lg overflow-hidden">
+<img alt="Perfume" class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="luxury black perfume bottle with silver details" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMWGGlbTwjkWCjmBy1yIhHQCv1K5XhyHNaByQ0z8keWEw0Lyt-Nk11s1ruFXpbT7wwIhyNgFhnh8yBrguxnMO3MorTccSZ_uS_rnkbPxHWpC7HELQnZdEIj9v_yOO7rB9K_efvm0L19Y43iJgu8kNcklHRNKffYKWT_7YWAPfiTyjNlIEJ9-Q7ac8dnXvkkgET3ZIhaGwN_8DJxIV0b1Sg2NM06Mpj2f9SW9I4sctiTfqqjbfXbmR_YP9qJhqNpHYJsfWhNTZvdYE"/>
+</div>
+<h4 class="text-sm font-bold text-primary truncate">چرم نوبل</h4>
+<p class="text-[10px] text-tertiary">رایحه چرمی و سنگین</p>
+</div>
+</div>
+</section>
+<!-- STEP 4: Personal Message -->
+<section>
+<div class="flex items-center gap-3 mb-6">
+<span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">۴</span>
+<h2 class="text-xl font-bold text-primary">پیام شخصی روی کارت هدیه</h2>
+</div>
+<div class="relative">
+<textarea class="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-tertiary-container focus:ring-0 transition-all p-4 rounded-t-lg resize-none placeholder:text-on-surface-variant/40" placeholder="متن مورد نظر خود را برای روی کارت هدیه بنویسید..." rows="4"></textarea>
+<div class="absolute bottom-3 left-4 text-xs text-on-surface-variant/60 font-label">۰ / ۱۵۰ کاراکتر</div>
+</div>
+</section>
+<!-- STEP 5: Packaging -->
+<section>
+<div class="flex items-center gap-3 mb-6">
+<span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">۵</span>
+<h2 class="text-xl font-bold text-primary">انتخاب نوع بسته‌بندی</h2>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="border-2 border-outline-variant p-4 rounded-xl cursor-pointer hover:bg-surface-container-low transition-all">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold text-primary">استاندارد نوبل</h4>
+<span class="text-xs text-tertiary font-bold">رایگان</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">جعبه سفید کلاسیک با روبان سرمه‌ای و کارت تبریک ساده.</p>
+</div>
+<div class="border-2 border-tertiary-container bg-tertiary-container/5 p-4 rounded-xl cursor-pointer shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold text-primary">پریمیوم طلایی</h4>
+<span class="text-xs text-tertiary font-bold">+۵۰,۰۰۰ تومان</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">جعبه لوکس با روکش مخمل، روبان ابریشمی و کارت تبریک دست‌نویس با موم‌لاک.</p>
+</div>
+</div>
+</section>
+<!-- STEP 6: Summary & Payment -->
+<section class="bg-primary p-6 rounded-2xl text-white">
+<div class="flex items-center gap-3 mb-6">
+<span class="w-8 h-8 rounded-full bg-white text-primary flex items-center justify-center font-bold text-sm">۶</span>
+<h2 class="text-xl font-bold">خلاصه سفارش</h2>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between text-sm opacity-80">
+<span>باکس ۳ تایی اختصاصی</span>
+<span>۲,۴۰۰,۰۰۰ تومان</span>
+</div>
+<div class="flex justify-between text-sm opacity-80">
+<span>بسته‌بندی پریمیوم</span>
+<span>۵۰,۰۰۰ تومان</span>
+</div>
+<div class="border-t border-white/20 pt-4 flex justify-between items-center">
+<span class="text-lg font-bold">مبلغ قابل پرداخت</span>
+<span class="text-2xl font-bold">۲,۴۵۰,۰۰۰ تومان</span>
+</div>
+</div>
+<button class="w-full py-4 bg-tertiary text-white rounded-xl font-bold text-lg hover:bg-tertiary-fixed-dim transition-all active:scale-[0.98]">
+                            ادامه به پرداخت و ثبت نهایی
+                        </button>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-12 mt-auto bg-[#eff3ff] text-[#051061]">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8 w-full border-t border-[#c6c5d2]/20 pt-12">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="font-['Playfair_Display'] italic text-xl text-[#051061]">Noble Perfume</span>
+<p class="font-['Vazirmatn'] text-xs uppercase tracking-widest opacity-60">© ۲۰۲۴ نوبل پرفیوم. تمامی حقوق محفوظ است.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8 font-['Vazirmatn'] text-xs uppercase tracking-widest">
+<a class="text-[#151c26]/40 hover:text-[#051061] transition-colors" href="#">حریم خصوصی</a>
+<a class="text-[#151c26]/40 hover:text-[#051061] transition-colors" href="#">شرایط استفاده</a>
+<a class="text-[#151c26]/40 hover:text-[#051061] transition-colors" href="#">ارسال و بازگشت</a>
+<a class="text-[#151c26]/40 hover:text-[#051061] transition-colors" href="#">سوالات متداول</a>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-2xl opacity-60 cursor-pointer hover:opacity-100" data-icon="share">share</span>
+<span class="material-symbols-outlined text-2xl opacity-60 cursor-pointer hover:opacity-100" data-icon="mail">mail</span>
+</div>
+</div>
+</footer>
+</body></html>

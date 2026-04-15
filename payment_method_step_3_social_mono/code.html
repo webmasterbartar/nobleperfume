@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="fa"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700;800&amp;family=Inter:wght@400;500;600&amp;family=Vazirmatn:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#ffb3b4",
+                        "on-background": "#1a1c1c",
+                        "background": "#f9f9f9",
+                        "surface-dim": "#dadada",
+                        "surface-container-low": "#f3f3f4",
+                        "outline": "#8f6f70",
+                        "secondary": "#5e5e5e",
+                        "on-secondary-container": "#646464",
+                        "on-primary-fixed-variant": "#920024",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#0078c8",
+                        "on-surface-variant": "#5b4040",
+                        "surface": "#f9f9f9",
+                        "secondary-container": "#e2e2e2",
+                        "on-tertiary-container": "#fdfcff",
+                        "surface-variant": "#e2e2e2",
+                        "on-secondary-fixed": "#1b1b1b",
+                        "surface-container-highest": "#e2e2e2",
+                        "surface-container": "#eeeeee",
+                        "tertiary-fixed": "#d1e4ff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#f0f1f1",
+                        "on-primary-fixed": "#40000b",
+                        "outline-variant": "#e3bebe",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2f3131",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#474747",
+                        "secondary-fixed": "#e2e2e2",
+                        "primary-fixed-dim": "#ffb3b4",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#bb1335",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#00497d",
+                        "surface-container-high": "#e8e8e8",
+                        "tertiary-fixed-dim": "#9ecaff",
+                        "primary": "#b70f33",
+                        "tertiary": "#005fa0",
+                        "primary-fixed": "#ffdada",
+                        "on-tertiary-fixed": "#001d36",
+                        "surface-bright": "#f9f9f9",
+                        "primary-container": "#db3049",
+                        "error": "#ba1a1a",
+                        "on-surface": "#1a1c1c",
+                        "on-primary-container": "#fffbff",
+                        "secondary-fixed-dim": "#c6c6c6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Vazirmatn", "Public Sans"],
+                        "body": ["Inter", "Vazirmatn"],
+                        "label": ["Inter", "Vazirmatn"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'Vazirmatn', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .vazir-bold { font-family: 'Vazirmatn', sans-serif; font-weight: 700; }
+        .glass-panel {
+            background: rgba(249, 249, 249, 0.7);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface h-16 flex justify-between items-center px-6">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-red-700">arrow_forward</span>
+<h1 class="text-lg font-bold text-on-surface vazir-bold">Check out</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">lock</span>
+</div>
+</header>
+<main class="pt-20 px-4 max-w-4xl mx-auto">
+<!-- Progress Stepper -->
+<section class="mb-10 mt-4">
+<div class="flex items-center justify-between px-4 relative">
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-surface-container-high -z-10 transform -translate-y-1/2"></div>
+<!-- Step 1: Done -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="text-[10px] text-on-surface-variant vazir-bold">اطلاعات ارسال</span>
+</div>
+<!-- Step 2: Done -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="text-[10px] text-on-surface-variant vazir-bold">روش ارسال</span>
+</div>
+<!-- Step 3: Active -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container border-4 border-background flex items-center justify-center">
+<span class="text-sm font-bold">3</span>
+</div>
+<span class="text-[10px] text-primary font-bold vazir-bold">پرداخت</span>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Payment Methods -->
+<div class="lg:col-span-7 space-y-6">
+<div class="space-y-4">
+<h2 class="text-xl font-bold vazir-bold px-1">روش پرداخت</h2>
+<!-- Credit Card Option (Selected) -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border-2 border-primary">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">credit_card</span>
+<span class="font-bold vazir-bold">کارت اعتباری</span>
+</div>
+<div class="flex gap-2">
+<img alt="Visa" class="h-4 grayscale opacity-50" data-alt="minimalist visa card network logo in grey grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXeIBbVnm-AD9cDrvIbn2aew65EUX-CW1KlwSDGxWvDfSNZpShO90XnFK3Zd7CP79Tf5H3ffOXx56tFzjAEtwANGtvk8IzHWXJIQ7ZxzPAeAcfGAWKKroDOe4g3lPwJKpRGO_8d3W01irV8k3YpWNuHN40Rar-3fDp-PLbjE_Awnbrmkxu3h9tH_cm3-H7jcI7qMs4hOHmruMD73AXn2O2tHo_Nt0HOw9C5rEzbsnbQZ-Nsyy8wN5IzzDJKbkXSUZTT2kyTsvnPYA"/>
+<img alt="Mastercard" class="h-4 grayscale opacity-50" data-alt="minimalist mastercard logo in grey grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmR7EihXT2ORylIxCIh9pXs1DAo6s1i6TT6YQYUKgfvFNlccfotCLoiWnkiiS085IJvoCKF4o08MK4gfnBRVb1mBTYrvFxR9o4a46zFv_jRP958xfAChtPBpOVd27Rwrw_Gr1B1sYYOKwb80zjgFyBFgBh74dl_tKZLlLDyKlZDSEGTEpuK9OP4EIIuNWchgMm5h6EPSGbO-f92uHduJc4ILAG6fF4RVvhpfZirrJZfKwku8SZtNDFbJA-XoHJq0BdQyv9x8OP6B8"/>
+</div>
+</div>
+<div class="space-y-4">
+<div class="space-y-1.5">
+<label class="text-xs text-on-surface-variant font-medium vazir-bold">نام روی کارت</label>
+<input class="w-full bg-surface-container-high border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="John Doe" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs text-on-surface-variant font-medium vazir-bold">شماره کارت</label>
+<div class="relative">
+<input class="w-full bg-surface-container-high border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20 tracking-widest" placeholder="**** **** **** 4421" type="text"/>
+<div class="absolute left-3 top-1/2 -translate-y-1/2 flex gap-1">
+<span class="material-symbols-outlined text-primary text-lg">credit_card</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1.5">
+<label class="text-xs text-on-surface-variant font-medium vazir-bold">تاریخ انقضا</label>
+<input class="w-full bg-surface-container-high border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="MM/YY" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs text-on-surface-variant font-medium vazir-bold">کد امنیتی (CVV)</label>
+<input class="w-full bg-surface-container-high border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="123" type="text"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Alternate Methods -->
+<div class="space-y-3">
+<div class="bg-surface-container-low rounded-xl p-4 flex justify-between items-center hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">payments</span>
+<span class="vazir-bold text-sm">PayPal</span>
+</div>
+<img alt="PayPal" class="h-5 opacity-70" data-alt="official blue paypal logo emblem" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBux27WCwHtWi1FB4Dd8LJ1d0IY2hn5aSX4IrCTLJjAEcYIBS5sptQsi6e7dWU4Uj98tYR2Y1iw-ChGikXUZbSLDJrhQX8MZuTj9iyZS9n1J8mfkOihPN4Xcgnw13gs76igvrwBvNrNRx9hsKcVy78yf-JKgCzeOB7hTOavjwjgk2MTR0iEGgvGfePUv-m6AWP27FYBe3cK7iRd4pxsfuET1q_W7GQb07yTf6hz0oX8Palmueb1-Bm8jNc8RnltqvagRimpIvNDQ9M"/>
+</div>
+<div class="bg-surface-container-low rounded-xl p-4 flex justify-between items-center hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">ios</span>
+<span class="vazir-bold text-sm">Apple Pay</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+</div>
+</div>
+</div>
+<!-- Trust Badges -->
+<div class="bg-surface-container-low/50 rounded-xl p-4 flex flex-wrap justify-around items-center gap-6">
+<div class="flex items-center gap-2 opacity-60">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+<span class="text-[10px] font-bold vazir-bold">SSL SECURE</span>
+</div>
+<div class="flex items-center gap-2 opacity-60">
+<span class="material-symbols-outlined text-sm">shield</span>
+<span class="text-[10px] font-bold vazir-bold">PCI COMPLIANT</span>
+</div>
+<div class="flex items-center gap-2 opacity-60">
+<span class="material-symbols-outlined text-sm">lock</span>
+<span class="text-[10px] font-bold vazir-bold">AES 256-BIT</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Order Summary -->
+<div class="lg:col-span-5">
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm sticky top-24">
+<h2 class="text-lg font-bold vazir-bold mb-6">خلاصه سفارش</h2>
+<div class="space-y-4 mb-8">
+<!-- Product Item -->
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high overflow-hidden flex-shrink-0">
+<img alt="Product" class="w-full h-full object-cover" data-alt="minimalist aesthetic silk dress in cream color on a soft studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOvtuU-_y72IxYJvMTgkbvPk49PQlzzVrUWzvOUb3dMbnhBuwILXZXTWFV7MGxg1_iQNceL9b-nzLSutLBLwOQlj15nUkMc7VBhxzpR1Pj5pWlLn5aNh4TeOYMSmzahURPb-x6ACvG8PeoofSHT53yXkXxSqmMuyw28AQoAN0wtCtLlbI5UjgH13wVi4TtXN4oDqR2ZiAiCr-wVHI5BfABF9DKCsSZgf8DukXaMbtfvfenWvyNZ2RbKVhDj5D2C6Q9B57FefmL_FE"/>
+</div>
+<div class="flex flex-col justify-between py-1">
+<span class="text-sm font-bold vazir-bold">پیراهن ابریشمی کلاسیک</span>
+<span class="text-xs text-on-surface-variant">تعداد: 1</span>
+</div>
+<div class="mr-auto py-1">
+<span class="text-sm font-bold">2,450,000</span>
+</div>
+</div>
+</div>
+<div class="space-y-3 pt-6 border-t border-outline-variant/15">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant vazir-bold">جمع جزء</span>
+<span class="font-medium">2,450,000</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant vazir-bold">هزینه ارسال</span>
+<span class="font-medium">45,000</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant vazir-bold">مالیات بر ارزش افزوده</span>
+<span class="font-medium">220,500</span>
+</div>
+<div class="flex justify-between items-center pt-4 mt-2 border-t border-primary/10">
+<span class="text-lg font-bold vazir-bold">جمع کل</span>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-black text-primary">2,715,500</span>
+<span class="text-xs text-primary font-bold vazir-bold">تومان</span>
+</div>
+</div>
+</div>
+<div class="mt-8">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-4 rounded-full font-bold vazir-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                            تکمیل خرید و پرداخت
+                        </button>
+<p class="text-[10px] text-on-surface-variant text-center mt-4 vazir-bold px-4">
+                            با کلیک بر روی تکمیل خرید، شما با <a class="underline" href="#">شرایط و ضوابط</a> ما موافقت می‌کنید.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-8 py-4 pb-safe bg-surface/70 backdrop-blur-md shadow-[0_-12px_32px_rgba(26,28,28,0.06)] rounded-t-3xl md:hidden">
+<a class="flex flex-col items-center justify-center text-gray-500 px-6 py-2 hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="text-xs vazir-bold mt-1">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-red-50 text-red-700 rounded-2xl px-6 py-2 hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="text-xs vazir-bold mt-1 font-medium">Pay</span>
+</a>
+</nav>
+</body></html>

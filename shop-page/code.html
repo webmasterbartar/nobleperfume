@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="fa"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Noble Perfume | محصولات</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=Vazirmatn:wght@100;300;400;700&amp;family=Manrope:wght@300;400;600&amp;family=Noto+Serif:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#283d9e",
+                        "primary": "#00011e",
+                        "outline-variant": "#c6c5d2",
+                        "on-primary-fixed": "#020d5f",
+                        "secondary-fixed": "#dee1ff",
+                        "background": "#ebf1ff",
+                        "inverse-surface": "#2a313b",
+                        "surface-dim": "#d4dae8",
+                        "on-secondary-container": "#132b8e",
+                        "surface-variant": "#dce3f0",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#ebf1ff",
+                        "primary-container": "#00011e",
+                        "inverse-primary": "#bcc2ff",
+                        "tertiary-fixed": "#ffe08c",
+                        "surface-container": "#e8eefc",
+                        "on-tertiary-fixed": "#241a00",
+                        "tertiary-fixed-dim": "#e5c363",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary-container": "#4f3d00",
+                        "secondary-fixed-dim": "#b9c3ff",
+                        "surface-container-highest": "#dce3f0",
+                        "primary-fixed": "#dfe0ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#c8a84b",
+                        "on-primary-container": "#767fcf",
+                        "on-background": "#151c26",
+                        "outline": "#767682",
+                        "error": "#ba1a1a",
+                        "tertiary": "#c8a84b",
+                        "surface-container-low": "#eff3ff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#584400",
+                        "on-surface-variant": "#454651",
+                        "on-secondary-fixed": "#001159",
+                        "surface-tint": "#4e58a4",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#ebf1ff",
+                        "secondary-container": "#869aff",
+                        "secondary": "#4256b7",
+                        "on-surface": "#151c26",
+                        "surface-container-high": "#e2e8f6",
+                        "primary-fixed-dim": "#bcc2ff",
+                        "on-primary-fixed-variant": "#363f8b",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "body": ["Vazirmatn", "Manrope"],
+                        "label": ["Vazirmatn", "Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Vazirmatn', sans-serif; background-color: #ebf1ff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-vazir { font-family: 'Vazirmatn', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .product-card-overlay {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .product-card:hover .product-card-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        details summary::-webkit-details-marker { display: none; }
+        details[open] summary .expand-icon { transform: rotate(180deg); }
+        .expand-icon { transition: transform 0.3s ease; }
+
+        .scent-finder-floating {
+            animation: bounce 3s infinite ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="text-on-background bg-background selection:bg-primary-container selection:text-white">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl border-b border-primary/5">
+<div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<a class="text-2xl font-bold tracking-tighter text-primary font-['Playfair_Display']" href="#">Noble Perfume</a>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-primary border-b-2 border-primary pb-1 font-['Vazirmatn'] text-sm font-bold" href="#">فروشگاه</a>
+<a class="text-on-surface-variant font-['Vazirmatn'] hover:text-primary transition-colors duration-300 text-sm" href="#">جدیدترین‌ها</a>
+<a class="text-on-surface-variant font-['Vazirmatn'] hover:text-primary transition-colors duration-300 text-sm" href="#">برندها</a>
+<a class="text-on-surface-variant font-['Vazirmatn'] hover:text-primary transition-colors duration-300 text-sm" href="#">درباره ما</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<input class="bg-surface-container-low border-none rounded-full px-5 py-2 w-72 focus:ring-1 focus:ring-primary-container text-xs font-vazir" placeholder="جستجوی عطر، برند یا رایحه..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+</div>
+<div class="flex gap-5">
+<button class="hover:text-tertiary transition-colors">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+<button class="hover:text-tertiary transition-colors relative">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="absolute -top-1.5 -right-1.5 bg-primary text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">۲</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-24 min-h-screen">
+<!-- Top Category Tabs -->
+<section class="bg-white/40 py-4 border-b border-outline-variant/10">
+<div class="max-w-screen-2xl mx-auto px-8">
+<div class="flex gap-4 overflow-x-auto pb-1 no-scrollbar items-center">
+<a class="whitespace-nowrap px-8 py-2 rounded-full bg-primary text-white text-xs font-bold transition-all shadow-md shadow-primary/20" href="#">همه محصولات</a>
+<a class="whitespace-nowrap px-6 py-2 rounded-full bg-white text-on-surface-variant text-xs hover:bg-primary/5 transition-all border border-outline-variant/20" href="#">مردانه</a>
+<a class="whitespace-nowrap px-6 py-2 rounded-full bg-white text-on-surface-variant text-xs hover:bg-primary/5 transition-all border border-outline-variant/20" href="#">زنانه</a>
+<a class="whitespace-nowrap px-6 py-2 rounded-full bg-white text-on-surface-variant text-xs hover:bg-primary/5 transition-all border border-outline-variant/20" href="#">یونیسکس</a>
+<a class="whitespace-nowrap px-6 py-2 rounded-full bg-white text-on-surface-variant text-xs hover:bg-primary/5 transition-all border border-outline-variant/20" href="#">دکانت (دست‌ریز)</a>
+<a class="whitespace-nowrap px-6 py-2 rounded-full bg-white text-on-surface-variant text-xs hover:bg-primary/5 transition-all border border-outline-variant/20" href="#">آنباکس</a>
+<a class="whitespace-nowrap px-6 py-2 rounded-full bg-white text-on-surface-variant text-xs hover:bg-primary/5 transition-all border border-outline-variant/20" href="#">اورجینال</a>
+</div>
+</div>
+</section>
+<div class="max-w-screen-2xl mx-auto px-8 py-10 flex flex-col md:flex-row gap-12">
+<!-- Sidebar: Animated Filter Sidebar -->
+<aside class="md:w-80 shrink-0">
+<div class="sticky top-28 space-y-4">
+<div class="bg-white rounded-2xl p-6 shadow-sm border border-primary/5">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="font-bold text-xl text-primary font-headline">فیلترها</h3>
+<p class="text-[10px] text-on-surface-variant tracking-wider uppercase mt-1">Refine Your Choice</p>
+</div>
+<button class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-primary/20 hover:border-primary">پاک کردن</button>
+</div>
+<div class="space-y-6">
+<!-- Accordion: Brand Filter with Logos -->
+<details class="group" open="">
+<summary class="flex items-center justify-between cursor-pointer list-none">
+<span class="text-sm font-bold text-primary">برندهای برتر</span>
+<span class="material-symbols-outlined text-sm expand-icon">expand_more</span>
+</summary>
+<div class="grid grid-cols-2 gap-3 pt-4">
+<button class="flex items-center gap-2 p-2 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group/brand">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center grayscale group-hover/brand:grayscale-0">
+<span class="text-[10px] font-bold font-playfair">DIOR</span>
+</div>
+<span class="text-[11px] font-medium">Dior</span>
+</button>
+<button class="flex items-center gap-2 p-2 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group/brand">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center grayscale group-hover/brand:grayscale-0">
+<span class="text-[10px] font-bold font-playfair">CHNL</span>
+</div>
+<span class="text-[11px] font-medium">Chanel</span>
+</button>
+<button class="flex items-center gap-2 p-2 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group/brand">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center grayscale group-hover/brand:grayscale-0">
+<span class="text-[10px] font-bold font-playfair">TF</span>
+</div>
+<span class="text-[11px] font-medium">Tom Ford</span>
+</button>
+<button class="flex items-center gap-2 p-2 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group/brand">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center grayscale group-hover/brand:grayscale-0">
+<span class="text-[10px] font-bold font-playfair">AMU</span>
+</div>
+<span class="text-[11px] font-medium">Amouage</span>
+</button>
+</div>
+</details>
+<div class="h-px bg-outline-variant/10"></div>
+<!-- Accordion: Scent Family with Icons -->
+<details class="group" open="">
+<summary class="flex items-center justify-between cursor-pointer list-none">
+<span class="text-sm font-bold text-primary">خانواده بویایی</span>
+<span class="material-symbols-outlined text-sm expand-icon">expand_more</span>
+</summary>
+<div class="space-y-3 pt-4">
+<label class="flex items-center justify-between cursor-pointer group/item">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg group-hover/item:text-tertiary transition-colors" data-icon="forest">forest</span>
+<span class="text-xs text-on-surface-variant group-hover/item:text-primary">چوبی و معطر</span>
+</div>
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between cursor-pointer group/item">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg group-hover/item:text-tertiary transition-colors" data-icon="local_florist">local_florist</span>
+<span class="text-xs text-on-surface-variant group-hover/item:text-primary">گلی و پودری</span>
+</div>
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between cursor-pointer group/item">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg group-hover/item:text-tertiary transition-colors" data-icon="water_drop">water_drop</span>
+<span class="text-xs text-on-surface-variant group-hover/item:text-primary">خنک و دریایی</span>
+</div>
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between cursor-pointer group/item">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg group-hover/item:text-tertiary transition-colors" data-icon="auto_awesome">auto_awesome</span>
+<span class="text-xs text-on-surface-variant group-hover/item:text-primary">شرقی و ادویه‌ای</span>
+</div>
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</label>
+</div>
+</details>
+<div class="h-px bg-outline-variant/10"></div>
+<!-- Price Range -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-sm font-bold text-primary">محدوده قیمت</span>
+<span class="text-[10px] text-tertiary font-bold">تومان</span>
+</div>
+<div class="px-2">
+<input class="w-full accent-primary h-1 bg-surface-container-high rounded-full appearance-none cursor-pointer" type="range"/>
+<div class="flex justify-between mt-3 text-[10px] font-bold text-on-surface-variant font-mono">
+<span>۰</span>
+<span>۵۰,۰۰۰,۰۰۰+</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-4 rounded-xl text-xs font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-4">
+                            اعمال فیلترهای هوشمند
+                        </button>
+</div>
+</div>
+<!-- Scent Finder Card -->
+<div class="bg-primary p-6 rounded-2xl relative overflow-hidden group cursor-pointer shadow-lg shadow-primary/10">
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+<div class="relative z-10">
+<span class="material-symbols-outlined text-tertiary mb-3 text-3xl" data-icon="auto_fix_high">auto_fix_high</span>
+<h4 class="text-white font-bold text-lg mb-2">عطر مورد علاقه‌ت رو پیدا کن</h4>
+<p class="text-white/60 text-[11px] leading-relaxed mb-4">با چند سوال ساده، بهترین عطر متناسب با شخصیتت رو بهت پیشنهاد می‌دیم.</p>
+<button class="bg-white/10 hover:bg-white text-white hover:text-primary px-4 py-2 rounded-lg text-[10px] font-bold transition-all w-full backdrop-blur-sm">شروع تست رایحه</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<section class="flex-1">
+<!-- Sort & Info -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 bg-white/50 backdrop-blur-sm p-5 rounded-2xl border border-white/50">
+<div class="flex items-center gap-3 text-xs text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">خانه</a>
+<span class="material-symbols-outlined text-[12px] opacity-30" data-icon="chevron_left">chevron_left</span>
+<span class="text-primary font-bold">عطرهای لوکس</span>
+</div>
+<div class="flex items-center gap-8">
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant/70 font-bold">Showing 12 of 420 items</span>
+<div class="flex items-center gap-3 border-r border-outline-variant/30 pr-6">
+<span class="text-[11px] font-bold text-on-surface-variant">مرتب‌سازی:</span>
+<select class="border-none bg-transparent text-xs font-bold text-primary focus:ring-0 cursor-pointer p-0">
+<option>محبوب‌ترین‌ها</option>
+<option>جدیدترین‌ها</option>
+<option>گران‌ترین</option>
+<option>ارزان‌ترین</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
+<!-- Card 1 -->
+<div class="product-card flex flex-col group">
+<div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white shadow-sm border border-primary/5 mb-5 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-primary/10">
+<img alt="Perfume" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBc8tMWUgu2PoQFc_z5IHvUgh4CgMD987SbFFyvqq_1M3E5MApXSMkR_vBRmja88O68MsdePt0Y4sOqkEW5qa9xztGyKQAvCL-9_9hhCrkkevqsWO-YFHNQANthi4cxNT_JQss4I3Io2Vbkms4DZHsBPR6aiKwer4yE_TvHVovVqpXq32ADD-nakmblPOy2y-gfEm6ku8B7wV84zG4TAKysnBo44CmED8DwH218UTj7rXIgY41pZh8FmHeK8xqnRl94rM1J4uD9348"/>
+<!-- Badges -->
+<div class="absolute top-4 right-4 flex flex-col gap-2">
+<span class="bg-primary text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">آنباکس</span>
+<span class="bg-tertiary text-primary text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Exclusive</span>
+</div>
+<!-- Hover Overlay: Quick View & Sizes -->
+<div class="product-card-overlay absolute inset-0 bg-primary/40 backdrop-blur-[2px] flex flex-col justify-end p-6">
+<div class="bg-white rounded-xl p-4 space-y-3">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-[10px] text-on-surface-variant">رایحه:</span>
+<span class="text-[10px] font-bold text-primary">اسطوخودوس، ترنج، فلفل</span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 rounded-lg bg-surface-container-low text-[10px] font-bold hover:bg-primary hover:text-white transition-all">دکانت ۱۰میل</button>
+<button class="py-2 rounded-lg bg-surface-container-low text-[10px] font-bold hover:bg-primary hover:text-white transition-all">فول سایز</button>
+</div>
+<button class="w-full bg-primary text-white py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">shopping_cart</span>
+                                    مشاهده محصول
+                                </button>
+</div>
+</div>
+<button class="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center shadow-lg hover:text-red-500">
+<span class="material-symbols-outlined text-xl" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div>
+<p class="text-[10px] text-tertiary font-bold tracking-widest uppercase mb-1">Dior</p>
+<h3 class="font-bold text-base text-primary mb-2 line-clamp-1">دیور ساواج ادوپرفیوم</h3>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-xs text-on-surface-variant line-through opacity-40">۸,۲۰۰,۰۰۰</span>
+<span class="text-primary font-bold text-lg">۷,۹۰۰,۰۰۰ <span class="text-[11px] font-normal">تومان</span></span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-tertiary text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-[10px] font-bold text-primary">۴.۸</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="product-card flex flex-col group">
+<div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white shadow-sm border border-primary/5 mb-5 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-primary/10">
+<img alt="Perfume" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6pf9rPOwpRBTpy13lQsEQd8_Tcm8BSrypgfO2i5thLGDTNTvBnhJzn7zwJ1woWIXXgSazV4iY92zowUvXOiy723N_LtOyXFqeeDiR2_gmMOcLtKsEW6qdn1xsOWOwHXKuyrnVY1pONg4ds4v9VPD8cHeW825mhKoC4t_E1CTR6HOzHQ2SHz2LRcELHc9Sj7ppBBl2caG-khMa39KYz0H3on5JN5ruAsdDAWy2XKdF6m7QrnWAa45kHd6qtkgBs_ORxtl_RnoNiRs"/>
+<div class="absolute top-4 right-4 flex flex-col gap-2">
+<span class="bg-primary text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">اورجینال</span>
+</div>
+<div class="product-card-overlay absolute inset-0 bg-primary/40 backdrop-blur-[2px] flex flex-col justify-end p-6">
+<div class="bg-white rounded-xl p-4 space-y-3">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-[10px] text-on-surface-variant">رایحه:</span>
+<span class="text-[10px] font-bold text-primary">رز، یاسمن، وانیل</span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 rounded-lg bg-surface-container-low text-[10px] font-bold hover:bg-primary hover:text-white transition-all">دکانت ۵میل</button>
+<button class="py-2 rounded-lg bg-surface-container-low text-[10px] font-bold hover:bg-primary hover:text-white transition-all">۱۰۰ میل</button>
+</div>
+<button class="w-full bg-primary text-white py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2">مشاهده محصول</button>
+</div>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-tertiary font-bold tracking-widest uppercase mb-1">Chanel</p>
+<h3 class="font-bold text-base text-primary mb-2 line-clamp-1">شنل نامبر ۵</h3>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-primary font-bold text-lg">۹,۴۰۰,۰۰۰ <span class="text-[11px] font-normal">تومان</span></span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-tertiary text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-[10px] font-bold text-primary">۴.۹</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="product-card flex flex-col group">
+<div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white shadow-sm border border-primary/5 mb-5 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-primary/10">
+<img alt="Perfume" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHln_BdGoHV4-heGrp_MZKHDHWH2A-1XbSqs-UGEOHCzw6VJjV0ns8kJNUsx2FsyOWHFuaRXu6trIndDxLub_si7hyNR5ryXHkIuFk-8dRtEwDUZ6aUbj6wkK6FhXu5_9iCXHyDRQ9Fj0k5nbfSy9RSFSmy_B0ew3i4eNYsyLGOlWhTi-n8s20HxVOSzPwrdacZllgowy1akrHUKzVdWy7rAT0d1azb7ElwACXr_6ah0MD17lBGbmhHA5aicwpVFQQXM3nMEJvEUQ"/>
+<div class="absolute top-4 right-4 flex flex-col gap-2">
+<span class="bg-primary text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">دکانت</span>
+<span class="bg-tertiary text-primary text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">جدید</span>
+</div>
+<div class="product-card-overlay absolute inset-0 bg-primary/40 backdrop-blur-[2px] flex flex-col justify-end p-6">
+<div class="bg-white rounded-xl p-4 space-y-3">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-[10px] text-on-surface-variant">رایحه:</span>
+<span class="text-[10px] font-bold text-primary">آناناس، غان، مشک</span>
+</div>
+<button class="w-full bg-primary text-white py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2">افزودن به سبد</button>
+</div>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-tertiary font-bold tracking-widest uppercase mb-1">Creed</p>
+<h3 class="font-bold text-base text-primary mb-2 line-clamp-1">کرید اونتوس</h3>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-primary font-bold text-lg">۱,۲۰۰,۰۰۰ <span class="text-[11px] font-normal">تومان</span></span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-tertiary text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-[10px] font-bold text-primary">۵.۰</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Scent of the Day: Full-width Interruption -->
+<div class="col-span-full py-8">
+<div class="bg-[#0c1322] rounded-[2rem] overflow-hidden relative min-h-[400px] flex items-center shadow-2xl shadow-primary/30 group">
+<div class="absolute inset-0 opacity-40 mix-blend-overlay">
+<img class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-[3s]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlYq2Yps5FK9ZewlJkBtiFU3gOVBXyMWAw1ItA181s9AKr7dnfNjSuuyb0ahTppifptdRRusxx8jycptXhdeWCaPvY4BTOiZqpsIJxzg2Dv3RLuFZjXY_VRf3kFeIZn8hOFsNFdxZ23M-Wjp37Aspdt1RmLFn5iQKY3Djy49S8K5kvs9ulp7kmGcFKND_JFC0nbEbDVq3e21r62sI8SEl08Aw7JMfIKtMnnfa2jbIDJzLyEmRGAc3Vf6F7IxA7rJ0frcp5juTpotU"/>
+</div>
+<div class="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-[#0c1322] to-transparent z-10"></div>
+<div class="relative z-20 px-16 max-w-2xl">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 border border-tertiary/30 text-tertiary text-[10px] font-bold tracking-[0.2em] uppercase mb-6">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+                                Scent of the Day
+                            </div>
+<h2 class="text-4xl font-headline text-white mb-4">Interlude by Amouage</h2>
+<p class="text-white/60 text-sm leading-relaxed mb-8 max-w-md">تجربه‌ای بی‌نظیر از نت‌های دودی و صمغی که با رایحه‌ی پونه کوهی و ترنج در هم آمیخته است. انتخابی جسورانه برای کسانی که می‌خواهند متمایز باشند.</p>
+<div class="flex items-center gap-6">
+<button class="bg-tertiary text-primary px-10 py-4 rounded-xl font-bold text-sm hover:scale-105 transition-all shadow-lg shadow-tertiary/20">خرید ویژه</button>
+<div class="text-white">
+<p class="text-[10px] opacity-50 mb-0.5">قیمت ویژه:</p>
+<p class="text-xl font-bold font-mono">۶,۳۰۰,۰۰۰ تومان</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Row 3 Items -->
+<!-- Card 4 -->
+<div class="product-card flex flex-col group">
+<div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white shadow-sm border border-primary/5 mb-5 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-primary/10">
+<img alt="Perfume" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTstEl5TxAxEF5C7_uks6q7Ap2BPorHphee3nUwXzPBoclLdcHvxaDdZufw9Muvq1jQfEn__WVi4OLIVgM6h6ta3W5TiwUnqGb7Y0GTMNncxvIiW2FK0vv1oehR5M6LsDV0B0CSaJPKB8qp-9-IN949s423JXeATwXhZb6Jpicchwxg1STVVWV-OPrWU6T2VcZKgJ9tk7wbDK45sYcU9F8EKuRlDq_586ADMLqU_fYXDX7V2G7LyHZRKOX0cwbNte9DOvUARQn85E"/>
+<div class="product-card-overlay absolute inset-0 bg-primary/40 backdrop-blur-[2px] flex flex-col justify-end p-6">
+<div class="bg-white rounded-xl p-4">
+<button class="w-full bg-primary text-white py-2.5 rounded-lg text-xs font-bold">انتخاب گزینه</button>
+</div>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-tertiary font-bold tracking-widest uppercase mb-1">Nasomatto</p>
+<h3 class="font-bold text-base text-primary mb-2">بلک افغان دکانت</h3>
+<span class="text-primary font-bold text-lg">۸۵۰,۰۰۰ <span class="text-[11px] font-normal">تومان</span></span>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="product-card flex flex-col group">
+<div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white shadow-sm border border-primary/5 mb-5 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-primary/10">
+<img alt="Perfume" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCtPpU9zD2Zv6WCBlJqF1bhYURf1EbR17aEUSyzlcEpCCbJKTvOa6PqW-8LJrf-9ZR5Ycmn81NhLavtjy_ogrxaH1l3r7pPg1tpkTKxdiAwzFeOPTrumI-e3hM50RgVh6HxP2EjK_gGi7rP_BI7Lr3z_aXsdqNiw9qCM8lFuRZT1AQep8FcGUaIofLUzn9W8y5GEkbogWtycIkS5_j37EbVxibigrAKXL2GqfDotzCFRiIlKzYskyHLpL9DOLSiFFiICtiyggEVGo"/>
+<div class="product-card-overlay absolute inset-0 bg-primary/40 backdrop-blur-[2px] flex flex-col justify-end p-6">
+<div class="bg-white rounded-xl p-4">
+<button class="w-full bg-primary text-white py-2.5 rounded-lg text-xs font-bold">خرید اورجینال</button>
+</div>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-tertiary font-bold tracking-widest uppercase mb-1">Tom Ford</p>
+<h3 class="font-bold text-base text-primary mb-2">آمبر لدر اورجینال</h3>
+<span class="text-primary font-bold text-lg">۱۲,۵۰۰,۰۰۰ <span class="text-[11px] font-normal">تومان</span></span>
+</div>
+</div>
+<!-- Card 6: The "Scent Finder" dedicated grid item -->
+<div class="bg-white rounded-2xl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center p-8 text-center group hover:bg-white hover:border-primary transition-all cursor-pointer">
+<div class="w-16 h-16 rounded-full bg-primary/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="search_insights">search_insights</span>
+</div>
+<h3 class="text-primary font-bold text-lg mb-3">هنوز مطمئن نیستی؟</h3>
+<p class="text-[11px] text-on-surface-variant leading-relaxed mb-6">ما بر اساس سلیقه و خاطراتت، عطر ایده‌آلت رو پیدا می‌کنیم.</p>
+<button class="bg-primary text-white px-6 py-3 rounded-xl text-xs font-bold hover:px-8 transition-all">امتحان کنید</button>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex justify-center mt-20 mb-10 gap-3">
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-outline-variant/20 text-primary hover:bg-primary hover:text-white transition-all shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20">۱</button>
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container-low transition-all">۲</button>
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container-low transition-all">۳</button>
+<span class="w-12 h-12 flex items-center justify-center text-on-surface-variant opacity-40">...</span>
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container-low transition-all">۱۵</button>
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-outline-variant/20 text-primary hover:bg-primary hover:text-white transition-all shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+</button>
+</div>
+</section>
+</div>
+<!-- Floating Scent Finder CTA -->
+<button class="scent-finder-floating fixed bottom-8 left-8 z-[60] bg-tertiary text-primary p-4 rounded-full shadow-2xl flex items-center gap-3 hover:scale-110 transition-transform md:hidden">
+<span class="material-symbols-outlined font-bold">magic_button</span>
+</button>
+</main>
+<!-- Footer -->
+<footer class="bg-white border-t border-primary/5 mt-20">
+<div class="max-w-screen-2xl mx-auto px-12 py-16">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+<div class="col-span-1 md:col-span-1">
+<a class="text-3xl font-bold tracking-tighter text-primary font-['Playfair_Display'] block mb-6" href="#">Noble Perfume</a>
+<p class="text-on-surface-variant text-xs leading-relaxed font-vazir mb-8 opacity-70">تجربه‌ای متفاوت از دنیای عطر و ادکلن‌های لوکس و اورجینال. نوبل پرفیوم، جایی که رایحه‌ها داستان می‌سازند.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full border border-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="share">share</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="language">language</span>
+</a>
+</div>
+</div>
+<div class="space-y-4">
+<h4 class="text-sm font-bold text-primary mb-6">دسترسی سریع</h4>
+<a class="block text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">فروشگاه</a>
+<a class="block text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">جدیدترین‌ها</a>
+<a class="block text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">برندهای برتر</a>
+<a class="block text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">درباره ما</a>
+</div>
+<div class="space-y-4">
+<h4 class="text-sm font-bold text-primary mb-6">خدمات مشتریان</h4>
+<a class="block text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">تماس با ما</a>
+<a class="block text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">سوالات متداول</a>
+<a class="block text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">شرایط بازگشت کالا</a>
+<a class="block text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">پیگیری سفارش</a>
+</div>
+<div class="space-y-4">
+<h4 class="text-sm font-bold text-primary mb-6">خبرنامه</h4>
+<p class="text-[10px] text-on-surface-variant mb-4">از جدیدترین تخفیف‌ها و محصولات باخبر شوید.</p>
+<div class="flex gap-2">
+<input class="flex-1 bg-surface-container-low border-none rounded-lg text-xs px-4 py-2 focus:ring-1 focus:ring-primary-container" placeholder="ایمیل شما" type="email"/>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-[10px] font-bold">عضویت</button>
+</div>
+</div>
+</div>
+<div class="pt-10 border-t border-primary/5 flex flex-col md:flex-row justify-between items-center gap-6">
+<p class="text-[10px] text-on-surface-variant/60 font-vazir tracking-widest uppercase">© 2024 NOBLE PERFUME. CRAFTED FOR THE CONNOISSEUR.</p>
+<div class="flex gap-8">
+<a class="text-[10px] font-bold text-on-surface-variant/60 hover:text-primary transition-colors uppercase tracking-widest" href="#">Privacy Policy</a>
+<a class="text-[10px] font-bold text-on-surface-variant/60 hover:text-primary transition-colors uppercase tracking-widest" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
