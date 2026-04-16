@@ -24,13 +24,21 @@ $step_zero_url = wc_get_checkout_url();
 $step_one_url  = add_query_arg( 'noble_step', 1, wc_get_checkout_url() );
 $step_two_url  = add_query_arg( 'noble_step', 2, wc_get_checkout_url() );
 $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
+$header_back_url = wc_get_cart_url();
+if ( $is_step_one ) {
+	$header_back_url = $step_zero_url;
+} elseif ( $is_step_two ) {
+	$header_back_url = $step_one_url;
+} elseif ( $is_step_three ) {
+	$header_back_url = $step_two_url;
+}
 ?>
 <section class="noble-checkout-wrap <?php echo $is_step_three ? 'noble-checkout-step-3' : ( $is_step_two ? 'noble-checkout-step-2' : ( $is_step_one ? 'noble-checkout-step-1' : 'noble-checkout-step-0' ) ); ?> bg-background min-h-screen pb-32">
 	<header class="fixed top-0 w-full z-50 bg-surface flex justify-between items-center h-16 border-b border-primary/10">
-		<div class="w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 flex items-center justify-between">
+		<div class="noble-checkout-header-inner w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 flex items-center justify-between">
 			<div class="flex items-center gap-4">
-				<a href="<?php echo esc_url( $is_step_one ? $step_zero_url : wc_get_cart_url() ); ?>" class="hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-150">
-					<span class="material-symbols-outlined text-red-700">arrow_forward</span>
+				<a href="<?php echo esc_url( $header_back_url ); ?>" class="hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-150">
+					<span class="material-symbols-outlined text-primary">arrow_forward</span>
 				</a>
 				<h1 class="text-[1.25rem] md:text-[1.5rem] font-bold text-on-surface">Check out</h1>
 			</div>
@@ -95,7 +103,7 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 										</div>
 									</div>
 								</div>
-								<a href="<?php echo esc_url( $remove_url ); ?>" class="noble-checkout-remove text-outline-variant hover:text-error transition-colors p-1 rounded-lg hover:bg-red-50" aria-label="<?php esc_attr_e( 'حذف محصول', 'noble-theme' ); ?>"><span class="material-symbols-outlined">delete</span></a>
+								<a href="<?php echo esc_url( $remove_url ); ?>" class="noble-checkout-remove text-outline-variant hover:text-primary transition-colors p-1 rounded-lg hover:bg-primary/5" aria-label="<?php esc_attr_e( 'حذف محصول', 'noble-theme' ); ?>"><span class="material-symbols-outlined">delete</span></a>
 							</div>
 						<?php endforeach; ?>
 						<?php if ( 0 === $rendered_items ) : ?>
@@ -125,7 +133,7 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 			</div>
 		</main>
 
-		<nav class="fixed bottom-0 inset-x-0 w-full z-50 bg-surface/70 backdrop-blur-md rounded-t-3xl shadow-[0_-12px_32px_rgba(26,28,28,0.06)] py-6 pb-safe lg:static lg:mt-8 lg:mx-auto lg:max-w-[1300px] lg:w-full lg:rounded-none lg:bg-transparent lg:backdrop-blur-0 lg:shadow-none">
+		<nav class="fixed bottom-0 inset-x-0 w-full z-50 bg-surface rounded-t-3xl shadow-[0_-12px_32px_rgba(26,28,28,0.06)] py-6 pb-safe lg:static lg:mt-8 lg:mx-auto lg:max-w-[1300px] lg:w-full lg:rounded-none lg:bg-transparent lg:shadow-none">
 			<div class="w-full px-5 sm:px-6 lg:px-0 flex flex-col md:flex-row gap-5 items-center justify-between lg:rounded-2xl lg:border lg:border-primary/10 lg:bg-white lg:p-5">
 				<div class="hidden md:flex flex-col">
 					<span class="text-xs text-on-surface-variant">مبلغ نهایی</span>
@@ -323,6 +331,8 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 			}
 		}
 		$selected_shipping_cost_html = ( '' !== $selected_shipping_label && (float) $selected_shipping_cost > 0 ) ? wc_price( (float) $selected_shipping_cost ) : 'رایگان';
+		$order_total_raw_for_step2   = function_exists( 'WC' ) && WC()->cart ? (float) WC()->cart->get_total( 'edit' ) : 0.0;
+		$step2_base_total            = max( 0, $order_total_raw_for_step2 - (float) $selected_shipping_cost );
 		?>
 		<main class="w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 pt-20">
 			<div class="noble-step2-inner mx-auto px-0 pt-6 md:pt-8">
@@ -370,22 +380,32 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 									$pkg_idx  = (int) $row['package'];
 									$selected = isset( $chosen[ $pkg_idx ] ) ? ( (string) $chosen[ $pkg_idx ] === (string) $rate_id ) : ( 0 === $idx );
 									$label    = $rate ? $rate->get_label() : '';
-									$cost     = $rate ? wc_price( (float) $rate->get_cost() ) : '';
+									$cost_num = $rate ? (float) $rate->get_cost() : 0.0;
+									$cost     = $rate ? wc_price( $cost_num ) : '';
+									$method_id = $rate ? (string) $rate->get_method_id() : '';
+									$desc = 'ارسال مطابق روش انتخابی شما';
+									if ( false !== strpos( $method_id, 'free_shipping' ) ) {
+										$desc = 'ارسال اقتصادی با بازه زمانی معمول';
+									} elseif ( false !== strpos( $method_id, 'flat_rate' ) ) {
+										$desc = 'ارسال استاندارد با رهگیری سفارش';
+									} elseif ( false !== strpos( $method_id, 'local_pickup' ) ) {
+										$desc = 'تحویل حضوری از فروشگاه';
+									}
 									?>
-									<label class="block relative cursor-pointer group">
-										<input class="peer hidden" name="noble_chosen_shipping[<?php echo esc_attr( $pkg_idx ); ?>]" type="radio" value="<?php echo esc_attr( $rate_id ); ?>" <?php checked( $selected ); ?> />
-										<div class="p-5 rounded-2xl bg-surface-container-lowest border-2 border-transparent peer-checked:border-primary transition-all shadow-sm flex items-start gap-4 hover:bg-surface-container-low/50">
-											<div class="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
+									<label class="noble-step2-option block relative cursor-pointer group">
+										<input class="peer hidden" name="noble_chosen_shipping[<?php echo esc_attr( $pkg_idx ); ?>]" type="radio" value="<?php echo esc_attr( $rate_id ); ?>" data-shipping-label="<?php echo esc_attr( $label ); ?>" data-shipping-cost="<?php echo esc_attr( (string) $cost_num ); ?>" <?php checked( $selected ); ?> />
+										<div class="noble-step2-option-card p-5 rounded-2xl bg-surface-container-lowest border-2 border-transparent peer-checked:border-primary transition-all shadow-sm flex items-start gap-4">
+											<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
 												<span class="material-symbols-outlined text-primary">local_shipping</span>
 											</div>
 											<div class="flex-1">
 												<div class="flex justify-between items-start mb-1">
 													<h3 class="font-bold text-on-surface text-lg"><?php echo esc_html( $label ); ?></h3>
-													<span class="text-primary font-bold"><?php echo wp_kses_post( $cost && 0.0 !== (float) $rate->get_cost() ? $cost : 'رایگان' ); ?></span>
+													<span class="text-primary font-bold"><?php echo wp_kses_post( $cost && 0.0 !== $cost_num ? $cost : 'رایگان' ); ?></span>
 												</div>
-												<p class="text-on-surface-variant text-sm mb-3">ارسال مطابق روش انتخابی شما</p>
+												<p class="text-on-surface-variant text-sm"><?php echo esc_html( $desc ); ?></p>
 											</div>
-											<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center mt-1">
+											<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center mt-1 shrink-0">
 												<div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
 											</div>
 										</div>
@@ -394,27 +414,29 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 							<?php endif; ?>
 						</div>
 
-						<aside class="noble-step2-aside mt-10 lg:mt-0 lg:sticky lg:top-24">
-							<section class="p-6 rounded-3xl bg-surface-container-low">
-								<h4 class="text-sm font-bold text-on-surface-variant mb-4 flex items-center gap-2">
+						<aside class="noble-step2-aside mt-0 lg:mt-0 lg:sticky lg:top-24">
+							<section class="p-6 rounded-3xl bg-white border border-primary/10 shadow-[0_12px_30px_rgba(21,28,38,0.06)]" data-step2-base-total="<?php echo esc_attr( (string) $step2_base_total ); ?>">
+								<h4 class="text-sm font-extrabold text-primary mb-5 flex items-center gap-2">
 									<span class="material-symbols-outlined text-lg">receipt_long</span>
 									خلاصه سفارش
 								</h4>
-								<div class="space-y-3">
-									<div class="flex justify-between text-sm">
+								<div class="space-y-3.5">
+									<div class="flex justify-between items-center text-sm">
 										<span class="text-on-surface-variant">قیمت کالاها (<?php echo esc_html( number_format_i18n( $cart_count ) ); ?> مورد)</span>
-										<span class="text-on-surface"><?php wc_cart_totals_subtotal_html(); ?></span>
+										<span class="text-on-surface font-semibold"><?php wc_cart_totals_subtotal_html(); ?></span>
 									</div>
-									<div class="flex justify-between text-sm">
+									<div class="flex justify-between items-center text-sm">
 										<span class="text-on-surface-variant">هزینه ارسال</span>
-										<span class="text-primary"><?php echo wp_kses_post( $selected_shipping_cost_html ); ?></span>
+										<span id="noble-step2-shipping-value" class="text-primary font-semibold"><?php echo wp_kses_post( $selected_shipping_cost_html ); ?></span>
 									</div>
 									<?php if ( '' !== $selected_shipping_label ) : ?>
-										<div class="text-[11px] text-on-surface-variant"><?php echo esc_html( $selected_shipping_label ); ?></div>
+										<div id="noble-step2-shipping-label" class="text-[11px] leading-6 text-on-surface-variant"><?php echo esc_html( $selected_shipping_label ); ?></div>
+									<?php else : ?>
+										<div id="noble-step2-shipping-label" class="text-[11px] leading-6 text-on-surface-variant"></div>
 									<?php endif; ?>
-									<div class="pt-3 border-t border-outline-variant/20 flex justify-between">
-										<span class="font-bold text-on-surface">مبلغ قابل پرداخت</span>
-										<span class="font-bold text-on-surface text-lg"><?php wc_cart_totals_order_total_html(); ?></span>
+									<div class="pt-4 border-t border-primary/10 flex justify-between items-center">
+										<span class="font-extrabold text-on-surface">مبلغ قابل پرداخت</span>
+										<span id="noble-step2-order-total-desktop" class="font-black text-primary text-xl"><?php wc_cart_totals_order_total_html(); ?></span>
 									</div>
 								</div>
 								<button type="submit" class="noble-step1-cta hidden lg:inline-flex mt-6 w-full px-8 py-4 rounded-2xl font-bold text-base items-center justify-center gap-2 border-0">
@@ -425,16 +447,18 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 						</aside>
 					</div>
 
-					<div class="fixed bottom-0 w-full z-50 bg-surface/70 backdrop-blur-md px-8 py-4 pb-safe flex flex-col gap-4 shadow-[0_-12px_32px_rgba(26,28,28,0.06)] rounded-t-3xl lg:hidden">
-						<div class="flex justify-around items-center w-full">
+					<div class="noble-step2-mobile-bar fixed bottom-0 inset-x-0 w-full z-50 bg-surface py-4 pb-safe border-t border-primary/10 shadow-[0_-8px_24px_rgba(26,28,28,0.08)] rounded-t-3xl lg:hidden">
+						<div class="noble-step2-mobile-bar-inner px-5 sm:px-6 lg:px-8">
+							<div class="flex justify-around items-center w-full gap-4">
 							<div class="flex-1 flex flex-col">
 								<span class="text-[10px] text-on-surface-variant">جمع نهایی</span>
-								<span class="text-lg font-black text-on-surface"><?php wc_cart_totals_order_total_html(); ?></span>
+								<span id="noble-step2-order-total-mobile" class="text-lg font-black text-on-surface"><?php wc_cart_totals_order_total_html(); ?></span>
 							</div>
 							<button type="submit" class="noble-step1-cta px-8 py-4 rounded-2xl font-bold text-base active:scale-95 transition-transform flex items-center gap-2 border-0">
 								<span>تایید و ادامه خرید</span>
 								<span class="material-symbols-outlined">chevron_left</span>
 							</button>
+						</div>
 						</div>
 					</div>
 				</form>
@@ -442,35 +466,83 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 		</main>
 	<?php else : ?>
 		<main class="w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 pt-20">
-			<div class="max-w-[1300px] mx-auto md:grid md:grid-cols-[minmax(0,1fr)_420px] gap-10 items-start">
-				<div class="min-w-0">
-					<div class="mb-6">
-						<h2 class="text-xl md:text-2xl font-extrabold text-on-surface">پرداخت و ثبت سفارش</h2>
-						<p class="text-sm text-on-surface-variant mt-1">روش پرداخت را انتخاب کن و سفارش را نهایی کن.</p>
+			<div class="max-w-[1300px] mx-auto">
+				<section class="mb-8">
+					<div class="flex items-center justify-between px-2 sm:px-4 relative">
+						<div class="absolute top-4 left-0 w-full h-[2px] bg-primary/10 -z-10"></div>
+						<div class="flex flex-col items-center gap-2">
+							<div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+								<span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">check</span>
+							</div>
+							<span class="text-[10px] text-on-surface-variant font-bold">اطلاعات ارسال</span>
+						</div>
+						<div class="flex flex-col items-center gap-2">
+							<div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+								<span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">check</span>
+							</div>
+							<span class="text-[10px] text-on-surface-variant font-bold">روش ارسال</span>
+						</div>
+						<div class="flex flex-col items-center gap-2">
+							<div class="w-10 h-10 rounded-full bg-primary text-white border-4 border-background flex items-center justify-center">
+								<span class="text-sm font-bold">3</span>
+							</div>
+							<span class="text-[10px] text-primary font-bold">پرداخت</span>
+						</div>
+					</div>
+				</section>
+
+				<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+					<div class="lg:col-span-7 space-y-5 min-w-0">
+						<div class="space-y-1 px-1">
+							<h2 class="text-xl font-extrabold text-on-surface">روش پرداخت</h2>
+							<p class="text-sm text-on-surface-variant">روش پرداخت را انتخاب کن و سفارش را نهایی کن.</p>
+						</div>
+						<form name="checkout" method="post" class="checkout woocommerce-checkout noble-step3-checkout-form mt-4 rounded-2xl border border-primary/10 bg-white p-5 md:p-6" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
+							<div id="order_review" class="woocommerce-checkout-review-order">
+								<?php do_action( 'woocommerce_checkout_order_review' ); ?>
+							</div>
+						</form>
 					</div>
 
-					<form name="checkout" method="post" class="checkout woocommerce-checkout" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
-						<div id="order_review" class="woocommerce-checkout-review-order rounded-2xl border border-primary/10 bg-white p-5 md:p-6">
-							<?php do_action( 'woocommerce_checkout_order_review' ); ?>
+					<aside class="lg:col-span-5 lg:sticky lg:top-24">
+						<div class="rounded-2xl border border-primary/10 bg-white p-6 space-y-5 shadow-[0_12px_32px_rgba(26,28,28,0.06)]">
+							<h3 class="text-lg font-extrabold text-on-surface">خلاصه سفارش</h3>
+							<div class="space-y-3 pb-2">
+								<?php foreach ( WC()->cart->get_cart() as $item ) : ?>
+									<?php
+									if ( empty( $item['data'] ) || ! is_object( $item['data'] ) ) {
+										continue;
+									}
+									$summary_product = $item['data'];
+									?>
+									<div class="flex items-center gap-3">
+										<div class="w-14 h-14 rounded-lg overflow-hidden bg-surface-container-high border border-primary/10 flex-shrink-0">
+											<?php echo wp_kses_post( $summary_product->get_image( 'woocommerce_thumbnail', array( 'class' => 'w-full h-full object-cover' ) ) ); ?>
+										</div>
+										<div class="min-w-0 flex-1">
+											<div class="text-sm font-bold text-on-surface line-clamp-1"><?php echo esc_html( $summary_product->get_name() ); ?></div>
+											<div class="text-xs text-on-surface-variant mt-0.5">تعداد: <?php echo esc_html( number_format_i18n( (int) $item['quantity'] ) ); ?></div>
+										</div>
+										<div class="text-sm font-bold text-on-surface whitespace-nowrap"><?php echo wp_kses_post( WC()->cart->get_product_subtotal( $summary_product, (int) $item['quantity'] ) ); ?></div>
+									</div>
+								<?php endforeach; ?>
+							</div>
+							<div class="space-y-3 pt-4 border-t border-primary/10">
+								<div class="flex justify-between text-sm">
+									<span class="text-on-surface-variant">جمع جزء</span>
+									<span class="font-medium text-on-surface"><?php wc_cart_totals_subtotal_html(); ?></span>
+								</div>
+								<div class="flex justify-between items-center pt-3 border-t border-primary/10">
+									<span class="text-lg font-extrabold text-on-surface">جمع کل</span>
+									<span class="text-2xl font-black text-primary"><?php wc_cart_totals_order_total_html(); ?></span>
+								</div>
+							</div>
+							<button type="button" id="noble-place-order-trigger" class="noble-step1-cta w-full py-4 rounded-2xl font-extrabold text-base inline-flex items-center justify-center border-0">
+								تکمیل خرید و پرداخت
+							</button>
 						</div>
-					</form>
+					</aside>
 				</div>
-
-				<aside class="md:sticky md:top-24">
-					<div class="rounded-2xl border border-primary/10 bg-white p-6 space-y-6 shadow-[0_12px_32px_rgba(26,28,28,0.06)]">
-						<div class="pb-3 border-b border-primary/10">
-							<h3 class="text-base font-extrabold text-primary">خلاصه سفارش</h3>
-							<p class="text-sm text-on-surface-variant mt-1 leading-6">مرحله نهایی پرداخت</p>
-						</div>
-						<div class="flex justify-between items-center text-base gap-6">
-							<span class="text-on-surface-variant font-medium">جمع کل سفارش</span>
-							<span class="text-xl font-extrabold text-on-surface whitespace-nowrap text-left [direction:ltr] [font-variant-numeric:tabular-nums]"><?php echo wp_kses_post( $order_total ); ?></span>
-						</div>
-						<button type="button" id="noble-place-order-trigger" class="noble-step1-cta w-full text-white py-4 rounded-2xl font-extrabold text-base inline-flex items-center justify-center border-0">
-							ثبت سفارش و پرداخت
-						</button>
-					</div>
-				</aside>
 			</div>
 		</main>
 	<?php endif; ?>
@@ -478,6 +550,22 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 
 <style>
 	/* Force checkout frame width to match homepage container */
+	.noble-checkout-wrap > header.fixed > .noble-checkout-header-inner {
+		width: min(1300px, calc(100% - 40px)) !important;
+		max-width: 1300px !important;
+		margin-left: auto !important;
+		margin-right: auto !important;
+	}
+	@media (min-width: 640px) {
+		.noble-checkout-wrap > header.fixed > .noble-checkout-header-inner {
+			width: min(1300px, calc(100% - 48px)) !important;
+		}
+	}
+	@media (min-width: 1024px) {
+		.noble-checkout-wrap > header.fixed > .noble-checkout-header-inner {
+			width: min(1300px, calc(100% - 64px)) !important;
+		}
+	}
 	.noble-checkout-wrap.noble-checkout-step-0 > main,
 	.noble-checkout-wrap.noble-checkout-step-1 > main,
 	.noble-checkout-wrap.noble-checkout-step-2 > main,
@@ -503,28 +591,6 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 			width: min(1300px, calc(100% - 64px)) !important;
 		}
 	}
-	/* Keep step 0 fixed header/footer inside the same 1300 frame */
-	.noble-checkout-wrap.noble-checkout-step-0 > header.fixed,
-	.noble-checkout-wrap.noble-checkout-step-0 > nav.fixed {
-		left: 50% !important;
-		right: auto !important;
-		transform: translateX(-50%) !important;
-		width: min(1300px, calc(100% - 40px)) !important;
-		max-width: 1300px !important;
-	}
-	@media (min-width: 640px) {
-		.noble-checkout-wrap.noble-checkout-step-0 > header.fixed,
-		.noble-checkout-wrap.noble-checkout-step-0 > nav.fixed {
-			width: min(1300px, calc(100% - 48px)) !important;
-		}
-	}
-	@media (min-width: 1024px) {
-		.noble-checkout-wrap.noble-checkout-step-0 > header.fixed,
-		.noble-checkout-wrap.noble-checkout-step-0 > nav.fixed {
-			width: min(1300px, calc(100% - 64px)) !important;
-		}
-	}
-
 	.noble-checkout-wrap .woocommerce-message,
 	.noble-checkout-wrap .woocommerce-error,
 	.noble-checkout-wrap .woocommerce-info {
@@ -558,11 +624,86 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 		display: none !important;
 	}
 	.noble-checkout-wrap .primary-gradient {
-		background: linear-gradient(135deg, #b70f33 0%, #db3049 100%);
+		background: #051061;
 	}
 	.noble-checkout-wrap .noble-step1-cta {
-		background: linear-gradient(135deg, #b70f33 0%, #db3049 100%);
+		background: #051061;
+		color: #ffffff !important;
 		box-shadow: none;
+	}
+	.noble-checkout-wrap .noble-step1-cta .material-symbols-outlined {
+		color: #ffffff !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 #order_review_heading {
+		display: none !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .woocommerce-checkout-review-order-table {
+		display: none !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .wc_payment_methods {
+		border: 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		display: grid;
+		gap: 12px;
+		background: transparent !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .woocommerce-checkout-payment,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment .payment_methods,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment ul.payment_methods,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment ul.payment_methods > li {
+		background: transparent !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment div.payment_box,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment .payment_method_bacs .payment_box,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment .payment_method_cod .payment_box,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment .payment_method_cheque .payment_box,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment .payment_method_bacs > div,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment .payment_method_cod > div,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #payment .payment_method_cheque > div {
+		background: #ffffff !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .wc_payment_method {
+		background: #ffffff !important;
+		border: 1px solid rgba(5,16,97,0.16);
+		border-radius: 14px;
+		padding: 14px 16px;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .wc_payment_method.payment_method_bacs,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .wc_payment_method.payment_method_cod,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .wc_payment_method.payment_method_cheque {
+		background: #ffffff !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .wc_payment_method > div,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .wc_payment_method > p {
+		background: transparent !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .wc_payment_method > label {
+		font-weight: 700;
+		color: #151c26;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .payment_box {
+		display: block !important;
+		background: #ffffff !important;
+		border: 1px solid rgba(5,16,97,0.1) !important;
+		border-radius: 10px;
+		margin-top: 10px !important;
+		color: #4b5563 !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .payment_box::before {
+		border-bottom-color: #ffffff !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form #place_order {
+		display: none !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .place-order {
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-checkout-form .woocommerce-terms-and-conditions-wrapper {
+		display: block !important;
+		margin-top: 12px;
 	}
 	.noble-checkout-wrap .noble-step1-aside-card {
 		backdrop-filter: saturate(120%);
@@ -614,7 +755,7 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 	}
 	.noble-checkout-wrap .noble-step1-input:focus {
 		outline: none;
-		box-shadow: 0 0 0 2px rgba(183, 15, 51, 0.2);
+		box-shadow: 0 0 0 2px rgba(5, 16, 97, 0.2);
 	}
 	.noble-checkout-wrap .noble-step1-product-card {
 		backdrop-filter: saturate(120%);
@@ -625,7 +766,7 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 		padding-inline: 18px;
 	}
 	.noble-checkout-wrap .noble-step1-product-row:hover {
-		border-color: rgba(183, 15, 51, 0.22);
+		border-color: rgba(5, 16, 97, 0.22);
 		background-color: #fff;
 	}
 	.noble-checkout-wrap .noble-step1-product-row .woocommerce-Price-amount {
@@ -637,6 +778,29 @@ $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 	}
 	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-layout {
 		display: block;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-option-card {
+		background: #fff;
+		border-color: rgba(5, 16, 97, 0.14);
+		transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-option:hover .noble-step2-option-card {
+		border-color: rgba(5, 16, 97, 0.28);
+		background: #fff;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-option .peer:checked + .noble-step2-option-card {
+		border-color: #051061 !important;
+		box-shadow: 0 10px 26px rgba(5, 16, 97, 0.12);
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-mobile-bar {
+		background: #ffffff;
+		backdrop-filter: none !important;
+		-webkit-backdrop-filter: none !important;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-mobile-bar-inner {
+		width: min(1300px, 100%);
+		margin-left: auto;
+		margin-right: auto;
 	}
 	.noble-checkout-wrap.noble-checkout-step-1 header.fixed {
 		box-shadow: none;
@@ -693,6 +857,51 @@ document.addEventListener('input', function(e) {
 	var input = e.target;
 	if (!input || input.name !== 'billing_phone') return;
 	input.value = (input.value || '').replace(/\D+/g, '').slice(0, 11);
+});
+document.addEventListener('DOMContentLoaded', function() {
+	var shippingInputs = document.querySelectorAll('.noble-step2-form input[name^="noble_chosen_shipping"]');
+	if (!shippingInputs.length) return;
+
+	var shippingValueEl = document.getElementById('noble-step2-shipping-value');
+	var shippingLabelEl = document.getElementById('noble-step2-shipping-label');
+	var totalDesktopEl = document.getElementById('noble-step2-order-total-desktop');
+	var totalMobileEl = document.getElementById('noble-step2-order-total-mobile');
+	var baseTotalHolder = document.querySelector('.noble-step2-aside section[data-step2-base-total]');
+	var baseTotal = baseTotalHolder ? parseFloat(baseTotalHolder.getAttribute('data-step2-base-total') || '0') : 0;
+	if (!isFinite(baseTotal)) baseTotal = 0;
+
+	function formatToman(amount) {
+		var val = Math.max(0, Math.round(Number(amount) || 0));
+		try {
+			return new Intl.NumberFormat('fa-IR').format(val) + ' تومان';
+		} catch (err) {
+			return String(val) + ' تومان';
+		}
+	}
+
+	function refreshSummaryByInput(input) {
+		if (!input) return;
+		var shippingCost = parseFloat(input.getAttribute('data-shipping-cost') || '0');
+		var shippingLabel = input.getAttribute('data-shipping-label') || '';
+		if (!isFinite(shippingCost)) shippingCost = 0;
+		var nextTotal = baseTotal + shippingCost;
+		var shippingText = shippingCost > 0 ? formatToman(shippingCost) : 'رایگان';
+		var totalText = formatToman(nextTotal);
+
+		if (shippingValueEl) shippingValueEl.textContent = shippingText;
+		if (shippingLabelEl) shippingLabelEl.textContent = shippingLabel;
+		if (totalDesktopEl) totalDesktopEl.textContent = totalText;
+		if (totalMobileEl) totalMobileEl.textContent = totalText;
+	}
+
+	shippingInputs.forEach(function(input) {
+		input.addEventListener('change', function() {
+			refreshSummaryByInput(input);
+		});
+	});
+
+	var checked = document.querySelector('.noble-step2-form input[name^="noble_chosen_shipping"]:checked');
+	if (checked) refreshSummaryByInput(checked);
 });
 </script>
 <?php do_action( 'woocommerce_after_checkout_form', $checkout ); ?>
