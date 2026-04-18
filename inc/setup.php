@@ -21,8 +21,9 @@ function noble_theme_setup() {
 
 	register_nav_menus(
 		array(
-			'primary' => esc_html__( 'منوی اصلی', 'noble-theme' ),
-			'footer'  => esc_html__( 'منوی فوتر', 'noble-theme' ),
+			'primary'      => esc_html__( 'منوی اصلی (Legacy)', 'noble-theme' ),
+			'noble_primary' => esc_html__( 'منوی اصلی نوبل', 'noble-theme' ),
+			'footer'       => esc_html__( 'منوی فوتر', 'noble-theme' ),
 		)
 	);
 }

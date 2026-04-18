@@ -1,4 +1,6 @@
 import "../css/app.css";
+import "../css/header.css";
+import "./header";
 
 document.documentElement.classList.add("js");
 

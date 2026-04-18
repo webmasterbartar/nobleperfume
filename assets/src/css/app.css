@@ -613,7 +613,7 @@ body {
   font-family: "YekanBakhFaNum";
   font-style: normal;
   font-weight: 100;
-  src: url("../../font/YekanBakhFaNum-Thin.woff2") format("woff2");
+  src: url("../../../font/YekanBakhFaNum-Thin.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -621,7 +621,7 @@ body {
   font-family: "YekanBakhFaNum";
   font-style: normal;
   font-weight: 300;
-  src: url("../../font/YekanBakhFaNum-Light.woff2") format("woff2");
+  src: url("../../../font/YekanBakhFaNum-Light.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -629,7 +629,7 @@ body {
   font-family: "YekanBakhFaNum";
   font-style: normal;
   font-weight: 400;
-  src: url("../../font/YekanBakhFaNum-Regular.woff2") format("woff2");
+  src: url("../../../font/YekanBakhFaNum-Regular.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -637,7 +637,7 @@ body {
   font-family: "YekanBakhFaNum";
   font-style: normal;
   font-weight: 600;
-  src: url("../../font/YekanBakhFaNum-SemiBold.woff2") format("woff2");
+  src: url("../../../font/YekanBakhFaNum-SemiBold.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -645,7 +645,7 @@ body {
   font-family: "YekanBakhFaNum";
   font-style: normal;
   font-weight: 700;
-  src: url("../../font/YekanBakhFaNum-Bold.woff2") format("woff2");
+  src: url("../../../font/YekanBakhFaNum-Bold.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -653,7 +653,7 @@ body {
   font-family: "YekanBakhFaNum";
   font-style: normal;
   font-weight: 800;
-  src: url("../../font/YekanBakhFaNum-ExtraBold.woff2") format("woff2");
+  src: url("../../../font/YekanBakhFaNum-ExtraBold.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -661,7 +661,7 @@ body {
   font-family: "YekanBakhFaNum";
   font-style: normal;
   font-weight: 900;
-  src: url("../../font/YekanBakhFaNum-Black.woff2") format("woff2");
+  src: url("../../../font/YekanBakhFaNum-Black.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -669,7 +669,7 @@ body {
   font-family: "YekanBakhFaNum";
   font-style: normal;
   font-weight: 950;
-  src: url("../../font/YekanBakhFaNum-ExtraBlack.woff2") format("woff2");
+  src: url("../../../font/YekanBakhFaNum-ExtraBlack.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -733,11 +733,10 @@ body *:not(.material-symbols-outlined) {
   font-weight: 400;
   src:
     local("Material Symbols Outlined"),
-    url("../../font/material-symbols-v39-latin-regular.woff2") format("woff2");
+    url("../../../font/material-symbols-v39-latin-regular.woff2") format("woff2");
   font-display: swap;
 }
 
-/* Local Google Material Symbols (no CDN). */
 .material-symbols-outlined {
   font-family: "Material Symbols Outlined" !important;
   font-weight: normal;

@@ -13,4 +13,5 @@
 </head>
 <body <?php body_class( 'overflow-x-hidden bg-background text-on-surface' ); ?>>
 <?php wp_body_open(); ?>
+<?php get_template_part( 'template-parts/header/header-main' ); ?>
 <main>
