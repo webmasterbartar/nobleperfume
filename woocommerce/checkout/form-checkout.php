@@ -24,7 +24,8 @@ $step_zero_url = wc_get_checkout_url();
 $step_one_url  = add_query_arg( 'noble_step', 1, wc_get_checkout_url() );
 $step_two_url  = add_query_arg( 'noble_step', 2, wc_get_checkout_url() );
 $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
-$header_back_url = wc_get_cart_url();
+$fallback_back_url = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'shop' ) : home_url( '/' );
+$header_back_url   = wp_get_referer( $fallback_back_url );
 if ( $is_step_one ) {
 	$header_back_url = $step_zero_url;
 } elseif ( $is_step_two ) {
@@ -38,9 +39,9 @@ if ( $is_step_one ) {
 		<div class="noble-checkout-header-inner w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 flex items-center justify-between">
 			<div class="flex items-center gap-4">
 				<a href="<?php echo esc_url( $header_back_url ); ?>" class="hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-150">
-					<span class="material-symbols-outlined text-primary">arrow_forward</span>
+					<span class="material-symbols-outlined text-primary">arrow_back</span>
 				</a>
-				<h1 class="text-[1.25rem] md:text-[1.5rem] font-bold text-on-surface">Check out</h1>
+				<h1 class="text-[1.25rem] md:text-[1.5rem] font-bold text-on-surface">تسویه حساب</h1>
 			</div>
 			<div class="flex items-center gap-2">
 				<?php if ( $is_step_one ) : ?>
@@ -491,13 +492,14 @@ if ( $is_step_one ) {
 					</div>
 				</section>
 
+				<div class="mb-5 px-1">
+					<h2 class="text-xl font-extrabold text-on-surface">روش پرداخت</h2>
+					<p class="text-sm text-on-surface-variant mt-1">روش پرداخت را انتخاب کن و سفارش را نهایی کن.</p>
+				</div>
+
 				<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-					<div class="lg:col-span-7 space-y-5 min-w-0">
-						<div class="space-y-1 px-1">
-							<h2 class="text-xl font-extrabold text-on-surface">روش پرداخت</h2>
-							<p class="text-sm text-on-surface-variant">روش پرداخت را انتخاب کن و سفارش را نهایی کن.</p>
-						</div>
-						<form name="checkout" method="post" class="checkout woocommerce-checkout noble-step3-checkout-form mt-4 rounded-2xl border border-primary/10 bg-white p-5 md:p-6" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
+					<div class="lg:col-span-7 min-w-0">
+						<form name="checkout" method="post" class="checkout woocommerce-checkout noble-step3-checkout-form rounded-2xl border border-primary/10 bg-white p-5 md:p-6" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
 							<div id="order_review" class="woocommerce-checkout-review-order">
 								<?php do_action( 'woocommerce_checkout_order_review' ); ?>
 							</div>
