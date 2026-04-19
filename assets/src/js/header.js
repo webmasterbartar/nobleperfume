@@ -10,6 +10,35 @@ if (header) {
   const megaTriggers = Array.from(header.querySelectorAll("[data-mega-target]"));
   const megaMenus = Array.from(header.querySelectorAll("[data-mega-menu]"));
   let lastFocused = null;
+  let searchPanelEndHandler = null;
+
+  const searchTransitionCleanup = () => {
+    if (searchPanelEndHandler) {
+      searchWrap.removeEventListener("transitionend", searchPanelEndHandler);
+      searchPanelEndHandler = null;
+    }
+  };
+
+  const openSearchPanel = () => {
+    searchTransitionCleanup();
+    searchWrap.hidden = false;
+    searchToggle?.setAttribute("aria-expanded", "true");
+    requestAnimationFrame(() => searchWrap.classList.add("is-open"));
+    searchInput?.focus();
+  };
+
+  const closeSearchPanel = () => {
+    if (!searchWrap.classList.contains("is-open")) return;
+    searchWrap.classList.remove("is-open");
+    searchToggle?.setAttribute("aria-expanded", "false");
+    searchTransitionCleanup();
+    searchPanelEndHandler = (e) => {
+      if (e.target !== searchWrap || e.propertyName !== "max-height") return;
+      searchWrap.hidden = true;
+      searchTransitionCleanup();
+    };
+    searchWrap.addEventListener("transitionend", searchPanelEndHandler);
+  };
 
   const toggleDrawer = (open) => {
     if (!drawer || !backdrop) return;
@@ -44,17 +73,10 @@ if (header) {
   backdrop?.addEventListener("click", () => toggleDrawer(false));
 
   searchToggle?.addEventListener("click", () => {
-    const opened = searchWrap.classList.contains("is-open");
-    searchWrap.classList.toggle("is-open", !opened);
-    searchWrap.hidden = false;
-    if (!opened) {
-      searchInput?.focus();
+    if (searchWrap.classList.contains("is-open")) {
+      closeSearchPanel();
     } else {
-      const done = () => {
-        searchWrap.hidden = true;
-        searchWrap.removeEventListener("transitionend", done);
-      };
-      searchWrap.addEventListener("transitionend", done);
+      openSearchPanel();
     }
   });
 
@@ -96,6 +118,9 @@ if (header) {
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      if (searchWrap.classList.contains("is-open")) {
+        closeSearchPanel();
+      }
       closeMega();
       toggleDrawer(false);
     }

@@ -6,7 +6,8 @@ body {
 }
 
 :root {
-  --noble-primary: #051061;
+  /* Align with homepage hero / UI navy (#0b2a57 in .hero-navy and sections). */
+  --noble-primary: #0b2a57;
   --noble-background: #ebf1ff;
   --noble-surface: #ffffff;
   --noble-accent: #c8a84b;

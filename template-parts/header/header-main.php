@@ -162,7 +162,7 @@ $mega_products   = array(
 			</nav>
 
 			<div class="noble-header__actions">
-				<button type="button" class="noble-header__icon-btn" data-search-toggle aria-label="<?php echo esc_attr( 'جستجو' ); ?>">
+				<button type="button" class="noble-header__icon-btn" data-search-toggle aria-label="<?php echo esc_attr( 'جستجو' ); ?>" aria-controls="noble-header-search-panel" aria-expanded="false">
 					<span class="material-symbols-outlined" aria-hidden="true">search</span>
 				</button>
 				<a class="noble-header__icon-btn noble-desktop-only" href="<?php echo esc_url( home_url( '/my-account/' ) ); ?>" aria-label="<?php echo esc_attr( 'حساب کاربری' ); ?>">
@@ -182,8 +182,8 @@ $mega_products   = array(
 
 	<div class="noble-header__accent" aria-hidden="true"></div>
 
-	<div class="noble-header__search" hidden>
-		<div class="noble-header__container">
+	<div id="noble-header-search-panel" class="noble-header__search" hidden>
+		<div class="noble-header__container noble-header__search-inner">
 			<form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
 				<label class="screen-reader-text" for="noble-header-search"><?php echo esc_html( 'جستجو' ); ?></label>
 				<input id="noble-header-search" type="search" name="s" placeholder="<?php echo esc_attr( 'جستجوی عطر، برند یا نت بویایی...' ); ?>">

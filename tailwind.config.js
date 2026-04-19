@@ -12,7 +12,7 @@ module.exports = {
         serif: ["Playfair Display", "serif"],
       },
       colors: {
-        primary: "#051061",
+        primary: "#0b2a57",
         accent: "#c8a84b",
       },
     },
