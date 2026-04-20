@@ -1,6 +1,8 @@
 import "../css/app.css";
 import "../css/header.css";
+import "../css/footer.css";
 import "./header";
+import "./footer";
 
 document.documentElement.classList.add("js");
 

@@ -80,18 +80,36 @@ if (header) {
     }
   });
 
+  let megaLeaveTimer = null;
+  const clearMegaLeaveTimer = () => {
+    if (megaLeaveTimer !== null) {
+      window.clearTimeout(megaLeaveTimer);
+      megaLeaveTimer = null;
+    }
+  };
+
+  const syncMegaAriaHidden = () => {
+    megaMenus.forEach((menu) => {
+      menu.setAttribute("aria-hidden", menu.classList.contains("is-open") ? "false" : "true");
+    });
+  };
+
   const closeMega = () => {
+    clearMegaLeaveTimer();
     megaMenus.forEach((menu) => menu.classList.remove("is-open"));
     megaTriggers.forEach((btn) => btn.setAttribute("aria-expanded", "false"));
+    syncMegaAriaHidden();
   };
+
   const openMega = (key) => {
-    closeMega();
-    const trigger = header.querySelector(`[data-mega-target="${key}"]`);
-    const panel = header.querySelector(`[data-mega-menu="${key}"]`);
-    if (trigger && panel) {
-      trigger.setAttribute("aria-expanded", "true");
-      panel.classList.add("is-open");
-    }
+    clearMegaLeaveTimer();
+    megaMenus.forEach((menu) => {
+      menu.classList.toggle("is-open", menu.getAttribute("data-mega-menu") === key);
+    });
+    megaTriggers.forEach((btn) => {
+      btn.setAttribute("aria-expanded", btn.getAttribute("data-mega-target") === key ? "true" : "false");
+    });
+    syncMegaAriaHidden();
   };
 
   megaTriggers.forEach((trigger) => {
@@ -109,12 +127,22 @@ if (header) {
       if (key) openMega(key);
     });
   });
-  header.querySelector(".noble-header__nav")?.addEventListener("mouseleave", closeMega);
+  const navEl = header.querySelector(".noble-header__nav");
+  navEl?.addEventListener("mouseenter", clearMegaLeaveTimer);
+  navEl?.addEventListener("mouseleave", () => {
+    clearMegaLeaveTimer();
+    megaLeaveTimer = window.setTimeout(() => {
+      megaLeaveTimer = null;
+      closeMega();
+    }, 140);
+  });
   header.querySelector(".noble-header__nav")?.addEventListener("focusout", (e) => {
     if (!header.querySelector(".noble-header__nav")?.contains(e.relatedTarget)) {
       closeMega();
     }
   });
+
+  syncMegaAriaHidden();
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {

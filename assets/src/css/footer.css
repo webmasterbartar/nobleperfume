@@ -1,0 +1,405 @@
+/* Noble footer — RTL, design tokens only (no raw hex). */
+
+/* Short pages: footer stays at bottom of viewport. */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body > main {
+  flex: 1 0 auto;
+}
+
+.noble-footer {
+  margin-top: auto;
+  background: color-mix(in srgb, var(--noble-background) 88%, var(--noble-surface));
+  color: var(--noble-on-surface);
+  font-family: "YekanBakhFaNum", sans-serif;
+}
+
+.noble-footer__accent {
+  height: 2px;
+  background: linear-gradient(90deg, var(--noble-accent), var(--noble-primary));
+}
+
+.noble-footer__container {
+  width: min(1300px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.noble-footer__main {
+  padding-block: 2.25rem 1.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--noble-border) 55%, transparent);
+  /* کمی تیره‌تر از بدنهٔ فوتر: همان پالت نوبل، حس پایانی لوکس */
+  background: linear-gradient(
+    175deg,
+    color-mix(in srgb, var(--noble-primary) 9%, var(--noble-surface)) 0%,
+    color-mix(in srgb, var(--noble-primary) 5%, var(--noble-background)) 48%,
+    color-mix(in srgb, var(--noble-background) 88%, var(--noble-surface)) 100%
+  );
+}
+
+.noble-footer__grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.noble-footer__brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  color: var(--noble-primary);
+}
+
+.noble-footer__brand-mark {
+  color: var(--noble-accent);
+  font-size: 0.75rem;
+}
+
+.noble-footer__brand-name {
+  font: 400 1.35rem/1 "Playfair Display", serif;
+}
+
+.noble-footer__tagline {
+  margin: 0.2rem 0 0;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--noble-accent);
+}
+
+.noble-footer__lead {
+  margin: 0.65rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.85;
+  color: color-mix(in srgb, var(--noble-on-surface) 78%, white);
+  max-width: 36ch;
+}
+
+.noble-footer__social {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.noble-footer__social a {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--noble-border);
+  background: var(--noble-surface);
+  color: var(--noble-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.noble-footer__social a:hover {
+  background: var(--noble-primary);
+  border-color: var(--noble-primary);
+  color: var(--noble-surface);
+}
+
+.noble-footer__social .material-symbols-outlined {
+  font-size: 1.1rem;
+}
+
+.noble-footer__block-toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--noble-border);
+  border-radius: 0.65rem;
+  background: var(--noble-surface);
+  color: var(--noble-primary);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.noble-footer__chev {
+  font-size: 1.25rem;
+  transition: transform 0.25s ease;
+}
+
+.noble-footer__block.is-open .noble-footer__chev {
+  transform: rotate(180deg);
+}
+
+.noble-footer__block-panel {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.32s ease;
+}
+
+.noble-footer__block.is-open .noble-footer__block-panel {
+  max-height: 480px;
+}
+
+.noble-footer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0.25rem 0.75rem;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.noble-footer__list a {
+  display: block;
+  padding: 0.45rem 0.5rem;
+  border-radius: 0.45rem;
+  font-size: 0.8125rem;
+  color: color-mix(in srgb, var(--noble-on-surface) 88%, white);
+  text-decoration: none;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.noble-footer__list a:hover {
+  background: color-mix(in srgb, var(--noble-background) 65%, white);
+  color: var(--noble-primary);
+}
+
+.noble-footer__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.noble-footer__contact,
+.noble-footer__news {
+  border: 1px solid var(--noble-border);
+  border-radius: 0.85rem;
+  padding: 1rem;
+  background: var(--noble-surface);
+}
+
+.noble-footer__contact-title,
+.noble-footer__news-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--noble-accent);
+}
+
+.noble-footer__contact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.noble-footer__contact-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.noble-footer__contact-list .material-symbols-outlined {
+  font-size: 1.1rem;
+  color: var(--noble-primary);
+  margin-top: 0.1rem;
+}
+
+.noble-footer__contact-list a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.noble-footer__contact-list a:hover {
+  color: var(--noble-primary);
+}
+
+.noble-footer__news-text {
+  margin: 0 0 0.65rem;
+  font-size: 0.78rem;
+  line-height: 1.75;
+  color: color-mix(in srgb, var(--noble-on-surface) 72%, white);
+}
+
+.noble-footer__news-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.noble-footer__news-form input {
+  height: 2.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--noble-border);
+  padding: 0 0.85rem;
+  font-size: 0.8125rem;
+  color: var(--noble-on-surface);
+  background: color-mix(in srgb, var(--noble-background) 35%, var(--noble-surface));
+}
+
+.noble-footer__news-btn {
+  height: 2.65rem;
+  border-radius: 999px;
+  border: 0;
+  background: var(--noble-primary);
+  color: var(--noble-surface);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.noble-footer__news-btn:hover {
+  filter: brightness(1.06);
+}
+
+.noble-footer__news-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.65rem;
+  color: color-mix(in srgb, var(--noble-on-surface) 55%, white);
+}
+
+.noble-footer__trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: center;
+  list-style: none;
+  margin: 1.75rem 0 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--noble-border) 65%, transparent);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--noble-on-surface) 70%, white);
+}
+
+.noble-footer__bottom {
+  background: var(--noble-primary);
+  color: var(--noble-background);
+  padding-block: 0.9rem;
+}
+
+.noble-footer__bottom-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: center;
+}
+
+.noble-footer__copy {
+  margin: 0;
+  font-size: 0.6875rem;
+  opacity: 0.92;
+}
+
+.noble-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+}
+
+.noble-footer__legal a {
+  color: var(--noble-background);
+  text-decoration: none;
+  opacity: 0.95;
+}
+
+.noble-footer__legal a:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
+
+.noble-footer__dot {
+  opacity: 0.55;
+}
+
+@media (min-width: 992px) {
+  .noble-footer__main {
+    padding-block: 3rem 2rem;
+  }
+
+  .noble-footer__grid {
+    grid-template-columns: minmax(0, 1.15fr) repeat(3, minmax(0, 1fr)) minmax(0, 1.25fr);
+    gap: 1.75rem 2rem;
+    align-items: start;
+  }
+
+  .noble-footer__block-toggle {
+    display: none;
+  }
+
+  .noble-footer__block-panel {
+    max-height: none !important;
+    overflow: visible;
+  }
+
+  .noble-footer__block .noble-footer__list {
+    padding: 0;
+  }
+
+  .noble-footer__chev {
+    display: none;
+  }
+
+  .noble-footer__block[data-desktop-title]::before {
+    content: attr(data-desktop-title);
+    display: block;
+    margin-bottom: 0.65rem;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--noble-accent);
+  }
+
+  .noble-footer__aside {
+    gap: 1rem;
+  }
+
+  .noble-footer__news-form {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .noble-footer__news-form input {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+
+  .noble-footer__news-btn {
+    flex: 0 0 auto;
+    padding-inline: 1.25rem;
+  }
+
+  .noble-footer__bottom-inner {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: right;
+  }
+
+  .noble-footer__trust {
+    justify-content: space-between;
+    font-size: 0.72rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .noble-footer__block-panel,
+  .noble-footer__chev {
+    transition: none !important;
+  }
+}

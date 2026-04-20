@@ -52,5 +52,41 @@ function noble_customize_register( $wp_customize ) {
 			'type'        => 'text',
 		)
 	);
+
+	$wp_customize->add_setting(
+		'noble_social_instagram',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+		)
+	);
+
+	$wp_customize->add_control(
+		'noble_social_instagram',
+		array(
+			'label'       => __( 'لینک اینستاگرام (فوتر)', 'noble-theme' ),
+			'description' => __( 'خالی بگذارید تا آیکون به صفحه تماس برود.', 'noble-theme' ),
+			'section'     => 'noble_theme_options',
+			'type'        => 'url',
+		)
+	);
+
+	$wp_customize->add_setting(
+		'noble_social_telegram',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+		)
+	);
+
+	$wp_customize->add_control(
+		'noble_social_telegram',
+		array(
+			'label'       => __( 'لینک تلگرام (فوتر)', 'noble-theme' ),
+			'description' => __( 'خالی بگذارید تا آیکون به صفحه تماس برود.', 'noble-theme' ),
+			'section'     => 'noble_theme_options',
+			'type'        => 'url',
+		)
+	);
 }
 add_action( 'customize_register', 'noble_customize_register' );

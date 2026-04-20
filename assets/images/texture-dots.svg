@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <defs>
+    <pattern id="nobleDots" width="10" height="10" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1" fill="#0b2a57" opacity="0.12"/>
+    </pattern>
+  </defs>
+  <rect width="120" height="120" fill="url(#nobleDots)"/>
+</svg>

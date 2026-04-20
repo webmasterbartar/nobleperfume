@@ -56,7 +56,11 @@ $noble_theme_uri = get_template_directory_uri();
 		$image_ids      = array_values( array_unique( array_filter( array_merge( array( $main_image_id ), $gallery_ids ) ) ) );
 		$primary_image  = ! empty( $image_ids ) ? wp_get_attachment_image_url( $image_ids[0], 'large' ) : wc_placeholder_img_src( 'large' );
 		$review_count   = (int) $product->get_review_count();
-		$average_rating = $product->get_average_rating() ? (float) $product->get_average_rating() : 5;
+		$average_rating = (float) $product->get_average_rating();
+		$has_reviews    = $review_count > 0 && $average_rating > 0;
+		$rounded_rating = $has_reviews ? (int) round( $average_rating ) : 0;
+		$short_desc     = $product->get_short_description();
+		$sku            = $product->get_sku();
 		?>
 
 		<div class="mb-10">
@@ -90,23 +94,57 @@ $noble_theme_uri = get_template_directory_uri();
 				<?php endif; ?>
 			</div>
 
-			<div class="lg:col-span-7 space-y-8">
-				<div class="space-y-2">
-					<p class="text-tertiary font-serif italic text-lg"><?php echo esc_html( $brand_label ); ?></p>
-					<h1 class="text-4xl lg:text-6xl font-serif font-bold text-primary tracking-tight"><?php echo esc_html( $product->get_name() ); ?></h1>
-					<div class="flex items-center gap-4 mt-4">
-						<div class="flex text-tertiary text-sm">
-							<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
-								<span class="material-symbols-outlined <?php echo $i <= round( $average_rating ) ? 'fill-icon' : ''; ?>">star</span>
-							<?php endfor; ?>
-						</div>
-						<span class="text-xs font-bold text-outline tracking-wide border-r border-outline-variant pr-4"><?php echo esc_html( $review_count . ' دیدگاه' ); ?></span>
-						<span class="text-xs font-bold text-outline tracking-wide"><?php echo $product->is_in_stock() ? 'موجود در انبار' : 'ناموجود'; ?></span>
-					</div>
-				</div>
+			<div class="lg:col-span-7 space-y-8 noble-product-summary-column">
+				<article class="noble-product-summary space-y-6">
+					<header class="space-y-3">
+						<p class="text-tertiary font-serif italic text-lg mb-0"><?php echo esc_html( $brand_label ); ?></p>
+						<h1 class="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-primary tracking-tight leading-[1.12]"><?php echo esc_html( $product->get_name() ); ?></h1>
+						<?php if ( $short_desc ) : ?>
+							<div class="noble-product-summary-lead text-on-surface-variant text-sm sm:text-[15px] leading-relaxed max-w-2xl">
+								<?php echo wp_kses_post( wpautop( do_shortcode( $short_desc ) ) ); ?>
+							</div>
+						<?php endif; ?>
 
-				<div class="flex items-baseline gap-3 py-4 border-y border-primary/5">
-					<div class="text-2xl lg:text-4xl font-serif font-bold text-primary"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
+						<div class="noble-product-summary-meta flex flex-wrap items-center gap-x-4 gap-y-2 pt-1" role="group" aria-label="<?php echo esc_attr__( 'وضعیت محصول', 'noble-theme' ); ?>">
+							<?php if ( $has_reviews ) : ?>
+								<div class="flex items-center gap-1 text-accent-gold" aria-hidden="true">
+									<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
+										<span class="material-symbols-outlined noble-rating-star text-[1.35rem] <?php echo $i <= $rounded_rating ? 'fill-icon' : 'noble-rating-star--empty'; ?>">star</span>
+									<?php endfor; ?>
+								</div>
+								<span class="sr-only">
+									<?php
+									echo esc_html(
+										sprintf(
+											/* translators: 1: rating out of 5, 2: review count */
+											__( 'میانگین امتیاز %1$s از ۵ بر پایهٔ %2$s دیدگاه', 'noble-theme' ),
+											wc_format_decimal( $average_rating, 1 ),
+											number_format_i18n( $review_count )
+										)
+									);
+									?>
+								</span>
+							<?php else : ?>
+								<span class="text-xs sm:text-sm text-on-surface-variant font-medium"><?php esc_html_e( 'هنوز امتیازی ثبت نشده است.', 'noble-theme' ); ?></span>
+							<?php endif; ?>
+
+							<a class="noble-summary-reviews-link noble-open-reviews-tab text-xs sm:text-sm font-bold text-primary border-e border-primary/15 pe-4 hover:text-accent-gold transition-colors" href="#noble-single-details" data-tab-target="reviews"><?php echo $review_count > 0 ? esc_html( sprintf( _n( '%s دیدگاه', '%s دیدگاه', $review_count, 'noble-theme' ), number_format_i18n( $review_count ) ) ) : esc_html__( 'ثبت نظر', 'noble-theme' ); ?></a>
+
+							<?php if ( $product->is_in_stock() ) : ?>
+								<span class="noble-stock-badge noble-stock-badge--in"><?php esc_html_e( 'موجود در انبار', 'noble-theme' ); ?></span>
+							<?php else : ?>
+								<span class="noble-stock-badge noble-stock-badge--out"><?php esc_html_e( 'ناموجود', 'noble-theme' ); ?></span>
+							<?php endif; ?>
+
+							<?php if ( $sku ) : ?>
+								<span class="text-[11px] sm:text-xs text-on-surface-variant font-semibold tracking-wide"><?php echo esc_html( sprintf( __( 'کد: %s', 'noble-theme' ), $sku ) ); ?></span>
+							<?php endif; ?>
+						</div>
+					</header>
+
+				<div class="noble-product-summary-price flex flex-col gap-1 py-5 border-y border-primary/10">
+					<span class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary/50"><?php esc_html_e( 'قیمت', 'noble-theme' ); ?></span>
+					<div class="text-2xl lg:text-4xl font-serif font-bold text-primary [&_.woocommerce-Price-amount]:font-serif"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
 				</div>
 
 				<div class="space-y-6">
@@ -147,8 +185,14 @@ $noble_theme_uri = get_template_directory_uri();
 							</div>
 						</form>
 					<?php else : ?>
-						<div class="pt-2 noble-variable-wrap space-y-3">
-							<div class="text-xs font-bold text-primary tracking-wide">انتخاب نوع و حجم محصول</div>
+						<div class="pt-1 noble-variable-wrap space-y-5">
+							<div class="noble-variable-intro flex gap-3 items-start rounded-2xl border border-primary/10 bg-gradient-to-bl from-white via-white to-background/90 px-4 py-3.5 shadow-sm">
+								<span class="material-symbols-outlined text-2xl text-accent-gold shrink-0 mt-0.5" aria-hidden="true">tune</span>
+								<div class="min-w-0">
+									<p class="text-sm font-extrabold text-primary mb-1"><?php esc_html_e( 'انتخاب واریانت', 'noble-theme' ); ?></p>
+									<p class="text-xs text-on-surface-variant leading-relaxed m-0"><?php esc_html_e( 'گزینه‌ها را انتخاب کنید؛ قیمت و موجودی پس از تکمیل، نمایش داده می‌شود.', 'noble-theme' ); ?></p>
+								</div>
+							</div>
 							<?php woocommerce_template_single_add_to_cart(); ?>
 						</div>
 					<?php endif; ?>
@@ -168,10 +212,11 @@ $noble_theme_uri = get_template_directory_uri();
 						<span class="text-xs font-bold text-primary tracking-normal">گارانتی بازگشت</span>
 					</div>
 				</div>
+				</article>
 			</div>
 		</div>
 
-		<section class="mt-24 noble-single-details">
+		<section id="noble-single-details" class="mt-24 noble-single-details scroll-mt-28">
 			<div class="flex border-b border-primary/10 gap-10 mb-10 overflow-x-auto no-scrollbar">
 				<button class="noble-tab-btn pb-4 text-primary border-b-2 border-primary font-bold whitespace-nowrap" type="button" data-tab-target="specs">مشخصات محصول</button>
 				<button class="noble-tab-btn pb-4 text-outline hover:text-primary font-medium transition-colors whitespace-nowrap" type="button" data-tab-target="overview">بررسی تخصصی</button>
@@ -202,7 +247,7 @@ $noble_theme_uri = get_template_directory_uri();
 				</div>
 			</div>
 
-			<div class="noble-tab-panel hidden" data-tab-panel="reviews">
+			<div id="noble-product-reviews" class="noble-tab-panel hidden" data-tab-panel="reviews">
 				<div class="bg-white rounded-2xl border border-primary/10 p-6 md:p-8">
 					<?php
 					if ( 'no' !== get_option( 'woocommerce_enable_reviews', 'yes' ) ) {
@@ -373,6 +418,18 @@ document.addEventListener('click', function(event) {
 	input.dispatchEvent(new Event('change', { bubbles: true }));
 });
 
+document.querySelectorAll('.noble-open-reviews-tab').forEach(function(link) {
+	link.addEventListener('click', function(e) {
+		e.preventDefault();
+		var target = link.getAttribute('data-tab-target');
+		if (!target) return;
+		var tabBtn = document.querySelector('.noble-tab-btn[data-tab-target="' + target + '"]');
+		if (tabBtn) tabBtn.click();
+		var section = document.getElementById('noble-single-details');
+		if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	});
+});
+
 document.querySelectorAll('.noble-tab-btn').forEach(function(btn) {
 	btn.addEventListener('click', function() {
 		var target = btn.getAttribute('data-tab-target');
@@ -416,6 +473,85 @@ document.querySelectorAll('.noble-tab-btn').forEach(function(btn) {
 			track.scrollBy({ left: step(), behavior: 'smooth' });
 		});
 	}
+})();
+
+(function() {
+	var successText = <?php echo wp_json_encode( __( 'به سبد خرید اضافه شد', 'noble-theme' ) ); ?>;
+	var origKey = 'data-noble-atc-html';
+
+	function nobleAtcButton() {
+		return document.querySelector('.single-product form.cart .single_add_to_cart_button');
+	}
+
+	function nobleClearAtcSuccess(btn) {
+		if (!btn || !btn.classList.contains('noble-atc-success')) {
+			return;
+		}
+		btn.classList.remove('noble-atc-success');
+		var prev = btn.getAttribute(origKey);
+		if (prev) {
+			btn.innerHTML = prev;
+			btn.removeAttribute(origKey);
+		}
+		btn.removeAttribute('aria-label');
+	}
+
+	function nobleSetAtcSuccess(btn) {
+		if (!btn || btn.classList.contains('noble-atc-success')) {
+			return;
+		}
+		if (!btn.getAttribute(origKey)) {
+			btn.setAttribute(origKey, btn.innerHTML);
+		}
+		btn.classList.add('noble-atc-success');
+		btn.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">check_circle</span> ' + successText;
+		btn.setAttribute('aria-label', successText);
+	}
+
+	function nobleNoticeLooksLikeAdded() {
+		if (new URLSearchParams(window.location.search).get('added-to-cart')) {
+			return true;
+		}
+		var nodes = document.querySelectorAll('.woocommerce-notices-wrapper .woocommerce-message, .woocommerce-message');
+		for (var i = 0; i < nodes.length; i++) {
+			var t = (nodes[i].textContent || '').toLowerCase();
+			if (nodes[i].classList.contains('woocommerce-message--success')) {
+				return true;
+			}
+			if (t.indexOf('has been added') !== -1 || t.indexOf('added to your cart') !== -1) {
+				return true;
+			}
+			if (t.indexOf('سبد') !== -1 && (t.indexOf('اضاف') !== -1 || t.indexOf('افزود') !== -1)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	if (typeof jQuery !== 'undefined') {
+		jQuery(document.body).on('added_to_cart', function(event, fragments, cartHash, button) {
+			var el = button && button[0] ? button[0] : nobleAtcButton();
+			if (el && el.closest && el.closest('.single-product')) {
+				nobleSetAtcSuccess(el);
+			}
+		});
+		jQuery('.single-product form.cart').on('change', 'select', function() {
+			nobleClearAtcSuccess(nobleAtcButton());
+		});
+		jQuery('.single-product form.cart').on('click', '.reset_variations', function() {
+			nobleClearAtcSuccess(nobleAtcButton());
+		});
+	}
+
+	document.addEventListener('DOMContentLoaded', function() {
+		if (!nobleNoticeLooksLikeAdded()) {
+			return;
+		}
+		var btn = nobleAtcButton();
+		if (btn) {
+			nobleSetAtcSuccess(btn);
+		}
+	});
 })();
 </script>
 
