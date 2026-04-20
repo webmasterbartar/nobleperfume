@@ -35,7 +35,7 @@ $featured_name   = 'عطر نوبل امپریال';
 $featured_price  = '۳,۹۸۰,۰۰۰ تومان';
 $featured_badge  = 'پیشنهاد هفته';
 $featured_img    = function_exists( 'wc_placeholder_img_src' ) ? wc_placeholder_img_src( 'woocommerce_single' ) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22320%22 viewBox=%220 0 400 320%22%3E%3Crect width=%22400%22 height=%22320%22 fill=%22%23ebf1ff%22/%3E%3Ctext x=%22200%22 y=%22170%22 font-size=%2224%22 text-anchor=%22middle%22 fill=%22%23051061%22%3ENoble%20Parfum%3C/text%3E%3C/svg%3E';
-$cart_url        = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/cart/' );
+$cart_url        = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : ( function_exists( 'wc_get_checkout_url' ) ? add_query_arg( 'noble_step', 1, wc_get_checkout_url() ) : home_url( '/' ) );
 $mega_products   = array(
 	array(
 		'key'          => 'products',

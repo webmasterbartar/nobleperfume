@@ -1,6 +1,6 @@
 <?php
 /**
- * Custom checkout flow: Step 0 (cart review) + Step 1 (information/shipping).
+ * Custom checkout flow: Step 1 (information) → Step 2 (shipping) → Step 3 (payment).
  *
  * @package noble-theme
  */
@@ -16,25 +16,23 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 
 $cart_count    = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
 $order_total   = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_total() : '';
-$current_step  = isset( $_GET['noble_step'] ) ? max( 0, absint( $_GET['noble_step'] ) ) : 0;
+$raw_step      = isset( $_GET['noble_step'] ) ? absint( wp_unslash( $_GET['noble_step'] ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$current_step  = ( $raw_step >= 1 && $raw_step <= 3 ) ? $raw_step : 1;
 $is_step_one   = 1 === $current_step;
 $is_step_two   = 2 === $current_step;
 $is_step_three = 3 === $current_step;
-$step_zero_url = wc_get_checkout_url();
 $step_one_url  = add_query_arg( 'noble_step', 1, wc_get_checkout_url() );
 $step_two_url  = add_query_arg( 'noble_step', 2, wc_get_checkout_url() );
 $step_three_url = add_query_arg( 'noble_step', 3, wc_get_checkout_url() );
 $fallback_back_url = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'shop' ) : home_url( '/' );
 $header_back_url   = wp_get_referer( $fallback_back_url );
-if ( $is_step_one ) {
-	$header_back_url = $step_zero_url;
-} elseif ( $is_step_two ) {
+if ( $is_step_two ) {
 	$header_back_url = $step_one_url;
 } elseif ( $is_step_three ) {
 	$header_back_url = $step_two_url;
 }
 ?>
-<section class="noble-checkout-wrap <?php echo $is_step_three ? 'noble-checkout-step-3' : ( $is_step_two ? 'noble-checkout-step-2' : ( $is_step_one ? 'noble-checkout-step-1' : 'noble-checkout-step-0' ) ); ?> bg-background min-h-screen pb-32">
+<section class="noble-checkout-wrap <?php echo $is_step_three ? 'noble-checkout-step-3' : ( $is_step_two ? 'noble-checkout-step-2' : 'noble-checkout-step-1' ); ?> bg-background min-h-screen pb-32">
 	<header class="fixed top-0 w-full z-50 bg-surface flex justify-between items-center h-16 border-b border-primary/10">
 		<div class="noble-checkout-header-inner w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 flex items-center justify-between">
 			<div class="flex items-center gap-4">
@@ -50,103 +48,12 @@ if ( $is_step_one ) {
 					<span class="text-sm font-medium text-primary bg-surface-container-low px-3 py-1 rounded-full">مرحله ۲ از ۳</span>
 				<?php elseif ( $is_step_three ) : ?>
 					<span class="text-sm font-medium text-primary bg-surface-container-low px-3 py-1 rounded-full">مرحله ۳ از ۳</span>
-				<?php else : ?>
-					<span class="text-[0.875rem] font-medium text-secondary"><?php echo esc_html( number_format_i18n( (int) $cart_count ) ); ?> کالا</span>
 				<?php endif; ?>
 			</div>
 		</div>
 	</header>
 
-	<?php if ( ! $is_step_one && ! $is_step_two && ! $is_step_three ) : ?>
-		<main class="w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 pt-20 pb-56 lg:pb-0">
-			<div class="noble-step0-layout flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-10">
-				<div class="w-full lg:flex-1 space-y-8">
-					<section class="space-y-5 noble-step0-items">
-						<?php $rendered_items = 0; ?>
-						<?php foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) : ?>
-							<?php
-							$product = $cart_item['data'];
-							$product_name = isset( $cart_item['data'] ) && is_object( $cart_item['data'] ) && method_exists( $cart_item['data'], 'get_name' )
-								? $cart_item['data']->get_name()
-								: ( isset( $cart_item['data'] ) && is_object( $cart_item['data'] ) ? $cart_item['data']->get_title() : __( 'محصول', 'noble-theme' ) );
-							$thumbnail = '';
-							if ( $product && is_object( $product ) && method_exists( $product, 'get_image' ) ) {
-								$thumbnail = $product->get_image( 'woocommerce_thumbnail', array( 'class' => 'w-full h-full object-cover' ) );
-							}
-							if ( '' === $thumbnail ) {
-								$thumbnail = sprintf( '<img src="%1$s" alt="%2$s" class="w-full h-full object-cover" />', esc_url( wc_placeholder_img_src( 'woocommerce_thumbnail' ) ), esc_attr( $product_name ) );
-							}
-							$qty            = (int) $cart_item['quantity'];
-							$line_total     = WC()->cart->get_product_subtotal( $product, $qty );
-							$remove_url     = wc_get_cart_remove_url( $cart_item_key );
-							$qty_plus_url   = $step_zero_url . '?noble_qty_action=plus&cart_item=' . rawurlencode( $cart_item_key );
-							$qty_minus_url  = $step_zero_url . '?noble_qty_action=minus&cart_item=' . rawurlencode( $cart_item_key );
-							$item_meta_html = wc_get_formatted_cart_item_data( $cart_item );
-							$rendered_items++;
-							?>
-							<div class="noble-checkout-item-card bg-white rounded-2xl p-4 md:p-5 flex items-center gap-4 md:gap-5 relative overflow-hidden border border-primary/10">
-								<div class="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 bg-background/60 border border-primary/10">
-									<?php echo $thumbnail ? wp_kses_post( $thumbnail ) : ''; ?>
-								</div>
-								<div class="flex-grow min-w-0 flex flex-col justify-between pe-1 md:pe-2">
-									<div class="space-y-1.5">
-										<h3 class="text-primary font-extrabold text-sm md:text-base leading-7 line-clamp-2 ps-10"><?php echo esc_html( $product_name ); ?></h3>
-										<?php if ( ! empty( $item_meta_html ) ) : ?>
-											<div class="text-on-surface-variant text-xs md:text-sm"><?php echo wp_kses_post( $item_meta_html ); ?></div>
-										<?php endif; ?>
-									</div>
-									<div class="flex flex-wrap justify-between items-center gap-3 mt-3">
-										<span class="noble-checkout-item-price text-primary font-semibold text-base md:text-lg"><?php echo wp_kses_post( $line_total ); ?></span>
-										<div class="noble-checkout-qty-control flex items-center bg-background rounded-full px-2 py-1 gap-3 border border-primary/10">
-											<a href="<?php echo esc_url( $qty_plus_url ); ?>" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white transition-colors"><span class="material-symbols-outlined text-sm">add</span></a>
-											<span class="font-semibold text-sm min-w-[18px] text-center"><?php echo esc_html( number_format_i18n( $qty ) ); ?></span>
-											<a href="<?php echo esc_url( $qty_minus_url ); ?>" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white transition-colors"><span class="material-symbols-outlined text-sm">remove</span></a>
-										</div>
-									</div>
-								</div>
-								<a href="<?php echo esc_url( $remove_url ); ?>" class="noble-checkout-remove text-outline-variant hover:text-primary transition-colors p-1 rounded-lg hover:bg-primary/5" aria-label="<?php esc_attr_e( 'حذف محصول', 'noble-theme' ); ?>"><span class="material-symbols-outlined">delete</span></a>
-							</div>
-						<?php endforeach; ?>
-						<?php if ( 0 === $rendered_items ) : ?>
-							<div class="rounded-xl border border-primary/10 bg-white p-6 text-sm text-on-surface-variant">محصولی برای نمایش در سبد خرید وجود ندارد.</div>
-						<?php endif; ?>
-					</section>
-				</div>
-
-				<div class="noble-step0-aside w-full lg:w-[360px] lg:shrink-0 space-y-8 lg:sticky lg:top-24">
-					<section class="noble-checkout-summary-card bg-white rounded-2xl p-5 md:p-6 space-y-4 border border-primary/10">
-						<h2 class="text-xl font-bold mb-4">خلاصه سفارش</h2>
-						<div class="flex justify-between items-center text-on-surface-variant"><span>جمع جزء</span><span class="font-medium text-on-surface"><?php wc_cart_totals_subtotal_html(); ?></span></div>
-						<?php foreach ( WC()->cart->get_fees() as $fee ) : ?>
-							<div class="flex justify-between items-center text-on-surface-variant"><span><?php echo esc_html( $fee->name ); ?></span><span class="font-medium text-on-surface"><?php wc_cart_totals_fee_html( $fee ); ?></span></div>
-						<?php endforeach; ?>
-						<div class="pt-4 border-t border-outline-variant/15 flex justify-between items-center"><span class="text-lg font-bold">مجموع کل</span><span class="text-2xl font-black text-primary"><?php wc_cart_totals_order_total_html(); ?></span></div>
-					</section>
-
-					<?php if ( wc_coupons_enabled() ) : ?>
-						<form class="w-full flex flex-row items-center gap-2 mt-1" method="post" action="<?php echo esc_url( $step_zero_url ); ?>">
-							<input class="min-w-0 flex-1 bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 text-sm" placeholder="کد تخفیف" type="text" name="coupon_code" />
-							<button class="shrink-0 px-6 py-3 font-bold text-primary hover:bg-primary/5 rounded-xl transition-colors" type="submit" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>">اعمال</button>
-							<?php wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce' ); ?>
-						</form>
-					<?php endif; ?>
-				</div>
-			</div>
-		</main>
-
-		<nav class="fixed bottom-0 inset-x-0 w-full z-50 bg-surface rounded-t-3xl shadow-[0_-12px_32px_rgba(26,28,28,0.06)] py-6 pb-safe lg:static lg:mt-8 lg:mx-auto lg:max-w-[1300px] lg:w-full lg:rounded-none lg:bg-transparent lg:shadow-none">
-			<div class="w-full px-5 sm:px-6 lg:px-0 flex flex-col md:flex-row gap-5 items-center justify-between lg:rounded-2xl lg:border lg:border-primary/10 lg:bg-white lg:p-5">
-				<div class="hidden md:flex flex-col">
-					<span class="text-xs text-on-surface-variant">مبلغ نهایی</span>
-					<span class="text-xl font-bold text-primary"><?php echo wp_kses_post( $order_total ); ?></span>
-				</div>
-				<a href="<?php echo esc_url( $step_one_url ); ?>" class="w-full md:w-auto md:min-w-[320px] primary-gradient text-white rounded-full py-4 px-8 font-bold text-lg inline-flex items-center justify-center gap-3 active:scale-98 transition-transform duration-200">
-					<span>ادامه و ورود اطلاعات ارسال</span>
-					<span class="material-symbols-outlined">arrow_back</span>
-				</a>
-			</div>
-		</nav>
-	<?php elseif ( $is_step_one ) : ?>
+	<?php if ( $is_step_one ) : ?>
 		<main class="w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 pt-20">
 			<div class="noble-step1-inner max-w-md mx-auto md:max-w-[1300px]">
 			<div class="noble-step1-main">
@@ -166,6 +73,14 @@ if ( $is_step_one ) {
 					<span class="text-xs font-medium">پرداخت</span>
 				</div>
 			</nav>
+
+			<?php if ( wc_coupons_enabled() ) : ?>
+				<form class="md:hidden w-full flex flex-row items-center gap-2 mb-6" method="post" action="<?php echo esc_url( $step_one_url ); ?>">
+					<input class="min-w-0 flex-1 bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 text-sm" placeholder="کد تخفیف" type="text" name="coupon_code" />
+					<button class="shrink-0 px-5 py-3 font-bold text-primary hover:bg-primary/5 rounded-xl transition-colors text-sm" type="submit" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>">اعمال</button>
+					<?php wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce' ); ?>
+				</form>
+			<?php endif; ?>
 
 			<form id="noble-step1-checkout-form" method="post" class="noble-step1-form space-y-8" action="<?php echo esc_url( $step_two_url ); ?>" enctype="multipart/form-data" aria-label="<?php echo esc_attr__( 'Checkout', 'woocommerce' ); ?>">
 				<input type="hidden" name="noble_step1_submit" value="1" />
@@ -272,6 +187,13 @@ if ( $is_step_one ) {
 						<h3 class="text-base font-extrabold text-primary">خلاصه سفارش</h3>
 						<p class="text-sm text-on-surface-variant mt-1 leading-6">بررسی نهایی قبل از مرحله ارسال</p>
 					</div>
+					<?php if ( wc_coupons_enabled() ) : ?>
+						<form class="w-full flex flex-row items-center gap-2" method="post" action="<?php echo esc_url( $step_one_url ); ?>">
+							<input class="min-w-0 flex-1 bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 text-sm" placeholder="کد تخفیف" type="text" name="coupon_code" />
+							<button class="shrink-0 px-5 py-3 font-bold text-primary hover:bg-primary/5 rounded-xl transition-colors text-sm" type="submit" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>">اعمال</button>
+							<?php wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce' ); ?>
+						</form>
+					<?php endif; ?>
 					<div class="space-y-4">
 						<div class="flex justify-between items-center text-base gap-6">
 							<span class="text-on-surface-variant font-medium">تعداد کالا</span>

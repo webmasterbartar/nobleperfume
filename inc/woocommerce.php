@@ -282,7 +282,154 @@ function noble_force_classic_checkout_content( $content ) {
 add_filter( 'the_content', 'noble_force_classic_checkout_content', 20 );
 
 /**
- * Handle quantity +/- actions from custom checkout step 0.
+ * Whether the cart page request carries query args that must run on the real cart endpoint.
+ *
+ * @return bool
+ */
+function noble_cart_page_has_operational_query() {
+	$keys = array(
+		'remove_item',
+		'undo_item',
+		'add-to-cart',
+		'removed_item',
+		'remove_coupon',
+		'order_again',
+		'empty-cart',
+		'download_file',
+		'wc-ajax',
+	);
+	foreach ( $keys as $key ) {
+		if ( isset( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Send shoppers from the cart page to checkout step 1 (no standalone cart UX).
+ *
+ * @return void
+ */
+function noble_redirect_cart_page_to_checkout_step_one() {
+	if ( is_admin() || wp_doing_ajax() ) {
+		return;
+	}
+	if ( ! function_exists( 'is_cart' ) || ! is_cart() ) {
+		return;
+	}
+	if ( noble_cart_page_has_operational_query() ) {
+		return;
+	}
+	if ( ! function_exists( 'wc_get_checkout_url' ) ) {
+		return;
+	}
+
+	wp_safe_redirect( add_query_arg( 'noble_step', 1, wc_get_checkout_url() ) );
+	exit;
+}
+add_action( 'template_redirect', 'noble_redirect_cart_page_to_checkout_step_one', 18 );
+
+/**
+ * Drop legacy checkout "step 0" URLs: bare `/checkout/` or `noble_step=0` → step 1.
+ *
+ * Does not run on POST (e.g. final place order posts to `/checkout/` without query args).
+ *
+ * @return void
+ */
+function noble_redirect_checkout_to_step_one_entry() {
+	if ( is_admin() || wp_doing_ajax() ) {
+		return;
+	}
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+		return;
+	}
+	if ( is_wc_endpoint_url( 'order-received' ) || is_wc_endpoint_url( 'order-pay' ) ) {
+		return;
+	}
+	if ( isset( $_GET['wc-ajax'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return;
+	}
+	// Let legacy qty URLs hit `noble_handle_checkout_qty_actions` first.
+	if ( isset( $_GET['noble_qty_action'], $_GET['cart_item'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return;
+	}
+
+	$method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( (string) wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : 'GET';
+	if ( 'GET' !== $method && 'HEAD' !== $method ) {
+		return;
+	}
+
+	$step = isset( $_GET['noble_step'] ) ? absint( wp_unslash( $_GET['noble_step'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( $step >= 1 && $step <= 3 ) {
+		return;
+	}
+
+	if ( ! function_exists( 'wc_get_checkout_url' ) ) {
+		return;
+	}
+
+	wp_safe_redirect( add_query_arg( 'noble_step', 1, wc_get_checkout_url() ) );
+	exit;
+}
+add_action( 'template_redirect', 'noble_redirect_checkout_to_step_one_entry', 19 );
+
+/**
+ * Point "cart" navigation to checkout step 1 (no dedicated cart page in the funnel).
+ *
+ * @param string $url Cart URL.
+ * @return string
+ */
+function noble_filter_cart_url_to_checkout_step_one( $url ) {
+	if ( ! function_exists( 'wc_get_checkout_url' ) ) {
+		return $url;
+	}
+	return add_query_arg( 'noble_step', 1, wc_get_checkout_url() );
+}
+add_filter( 'woocommerce_get_cart_url', 'noble_filter_cart_url_to_checkout_step_one', 99 );
+
+/**
+ * Remove/undo URLs must hit the real cart page so WooCommerce can process them.
+ *
+ * @param string $url Remove URL built by WooCommerce (may use filtered cart URL).
+ * @return string
+ */
+function noble_filter_remove_cart_item_url_real_cart( $url ) {
+	$cart_page = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'cart' ) : '';
+	if ( '' === $cart_page || '' === (string) $url ) {
+		return $url;
+	}
+	$parts = wp_parse_url( $url );
+	if ( empty( $parts['query'] ) ) {
+		return $url;
+	}
+	parse_str( (string) $parts['query'], $query );
+	if ( empty( $query['remove_item'] ) ) {
+		return $url;
+	}
+	$key = wc_clean( (string) $query['remove_item'] );
+	return wp_nonce_url( add_query_arg( 'remove_item', $key, $cart_page ), 'woocommerce-cart' );
+}
+add_filter( 'woocommerce_get_remove_url', 'noble_filter_remove_cart_item_url_real_cart', 99 );
+
+/**
+ * Undo remove URLs must hit the real cart page.
+ *
+ * @param string $url           Undo URL.
+ * @param string $cart_item_key Cart item key.
+ * @return string
+ */
+function noble_filter_undo_cart_item_url_real_cart( $url, $cart_item_key ) {
+	$cart_page = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'cart' ) : '';
+	if ( '' === $cart_page || '' === (string) $cart_item_key ) {
+		return $url;
+	}
+	return wp_nonce_url( add_query_arg( 'undo_item', wc_clean( (string) $cart_item_key ), $cart_page ), 'woocommerce-cart' );
+}
+add_filter( 'woocommerce_get_undo_url', 'noble_filter_undo_cart_item_url_real_cart', 99, 2 );
+
+/**
+ * Handle quantity +/- actions from legacy checkout URLs (`noble_qty_action`).
  *
  * @return void
  */
@@ -311,7 +458,7 @@ function noble_handle_checkout_qty_actions() {
 
 	WC()->cart->set_quantity( $cart_key, $new_qty, true );
 
-	wp_safe_redirect( wc_get_checkout_url() );
+	wp_safe_redirect( add_query_arg( 'noble_step', 1, wc_get_checkout_url() ) );
 	exit;
 }
 add_action( 'template_redirect', 'noble_handle_checkout_qty_actions', 20 );
@@ -421,6 +568,32 @@ function noble_normalize_checkout_phone( $data ) {
 	return $data;
 }
 add_filter( 'woocommerce_checkout_posted_data', 'noble_normalize_checkout_phone', 30 );
+
+/**
+ * Ensure WooCommerce add-to-cart AJAX nonce exists on the front page.
+ *
+ * Needed for custom homepage buttons that call `wc-ajax=add_to_cart`.
+ *
+ * @return void
+ */
+function noble_enqueue_home_add_to_cart_nonce() {
+	if ( is_admin() || ! function_exists( 'is_front_page' ) || ! is_front_page() ) {
+		return;
+	}
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+
+	wp_register_script( 'noble-home-atc', false, array( 'jquery' ), null, true );
+	wp_enqueue_script( 'noble-home-atc' );
+
+	wp_add_inline_script(
+		'noble-home-atc',
+		'window.nobleHomeAtcNonce = ' . wp_json_encode( wp_create_nonce( 'add-to-cart' ) ) . ';',
+		'before'
+	);
+}
+add_action( 'wp_enqueue_scripts', 'noble_enqueue_home_add_to_cart_nonce', 30 );
 
 /**
  * Persist Step 1 checkout fields into session when moving to Step 2.
