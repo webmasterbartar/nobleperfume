@@ -104,29 +104,33 @@ body {
   gap: .7rem;
 }
 .single-product .noble-variation-row.noble-variation-card {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(5.8rem, auto) minmax(0, 1fr);
+  align-items: center;
+  column-gap: .95rem;
   width: 100%;
   margin: 0;
-  padding: .85rem 1rem .95rem;
-  border-radius: .9rem;
-  border: 1px solid rgba(11, 42, 87, .09);
-  background: #fff;
-  box-shadow: 0 6px 18px -12px rgba(11, 42, 87, .2);
-  transition: border-color .2s ease, box-shadow .2s ease;
+  padding: .8rem .85rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(11, 42, 87, .1);
+  background: linear-gradient(165deg, rgba(255, 255, 255, .98) 0%, rgba(245, 249, 255, .98) 100%);
+  box-shadow: 0 12px 28px -22px rgba(11, 42, 87, .35);
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
 }
 .single-product .noble-variation-row.noble-variation-card:focus-within {
   border-color: rgba(200, 168, 75, .45);
-  box-shadow: 0 8px 22px -12px rgba(11, 42, 87, .18), 0 0 0 1px rgba(200, 168, 75, .2);
+  box-shadow: 0 18px 30px -20px rgba(11, 42, 87, .3), 0 0 0 1px rgba(200, 168, 75, .24);
+  transform: translateY(-1px);
 }
 .single-product .noble-variation-row th.label {
   display: block;
   width: 100%;
-  margin: 0 0 .5rem;
+  margin: 0;
   padding: 0;
   text-align: right;
-  font-size: .8125rem;
+  font-size: .78rem;
   font-weight: 800;
-  letter-spacing: .03em;
+  letter-spacing: .02em;
   text-transform: none;
   color: rgba(11, 42, 87, .72);
 }
@@ -134,12 +138,13 @@ body {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: .4rem;
+  gap: .45rem;
+  line-height: 1.4;
 }
 .single-product .noble-variation-row th.label label::before {
   content: "";
-  width: 3px;
-  height: 1rem;
+  width: .28rem;
+  height: 1.05rem;
   border-radius: 99px;
   background: linear-gradient(180deg, #c8a84b, rgba(200, 168, 75, .35));
   flex-shrink: 0;
@@ -152,11 +157,13 @@ body {
 }
 .single-product .noble-variation-select-shell {
   position: relative;
+  border-radius: .85rem;
+  background: #fff;
 }
 .single-product .noble-variation-select-shell::after {
   content: "";
   position: absolute;
-  inset-inline-end: 1rem;
+  inset-inline-end: .95rem;
   top: 50%;
   width: .55rem;
   height: .55rem;
@@ -168,14 +175,14 @@ body {
 }
 .single-product select.noble-variation-select {
   width: 100%;
-  min-height: 3.25rem;
-  padding-block: .6rem;
-  padding-inline: 1rem 2.85rem;
+  min-height: 2.85rem;
+  padding-block: .58rem;
+  padding-inline: .88rem 2.1rem;
   border-radius: .85rem;
-  border: 1px solid rgba(11, 42, 87, .12);
-  background: color-mix(in srgb, var(--noble-background) 35%, #fff);
-  font-size: .9375rem;
-  font-weight: 700;
+  border: 1px solid rgba(11, 42, 87, .15);
+  background: rgba(255, 255, 255, .98);
+  font-size: .85rem;
+  font-weight: 800;
   color: #0b2a57;
   cursor: pointer;
   appearance: none;
@@ -188,9 +195,9 @@ body {
 }
 .single-product select.noble-variation-select:focus {
   outline: none;
-  border-color: rgba(200, 168, 75, .85);
+  border-color: rgba(200, 168, 75, .55);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(200, 168, 75, .2);
+  box-shadow: 0 0 0 3px rgba(200, 168, 75, .16);
 }
 .single-product .noble-variations-toolbar {
   display: flex;
@@ -288,6 +295,15 @@ body {
   .single-product .noble-variations-fields {
     padding: .85rem .95rem;
   }
+  .single-product .noble-variation-row.noble-variation-card {
+    grid-template-columns: 1fr;
+    row-gap: .5rem;
+    padding: .72rem .72rem .78rem;
+  }
+  .single-product .noble-variation-row th.label {
+    margin-bottom: .1rem;
+    font-size: .74rem;
+  }
   .single-product .noble-variable-atc.woocommerce-variation-add-to-cart {
     flex-direction: column;
     align-items: stretch;
@@ -376,6 +392,92 @@ body {
 .single-product .noble-product-summary-price .amount,
 .single-product .noble-product-summary-price .woocommerce-Price-amount {
   font-weight: 800;
+}
+.single-product .noble-product-scent-notes {
+  border-radius: 1rem;
+  border: 1px solid rgba(11, 42, 87, .1);
+  background: linear-gradient(165deg, rgba(255, 255, 255, .98) 0%, rgba(246, 249, 255, .98) 100%);
+  padding: .8rem;
+  box-shadow: 0 16px 32px -24px rgba(11, 42, 87, .4);
+}
+.single-product .noble-product-scent-notes__title {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  margin-bottom: .55rem;
+  color: #0b2a57;
+  font-size: .74rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+.single-product .noble-product-scent-notes__title-icon {
+  font-size: 1.12rem;
+  color: #bb9a3c;
+}
+.single-product .noble-scent-note-card {
+  position: relative;
+  border-radius: .85rem;
+  border: 1px solid rgba(11, 42, 87, .1);
+  background: #fff;
+  padding: .55rem .62rem .58rem 1.34rem;
+  min-height: 4.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: .18rem;
+}
+.single-product .noble-scent-note-card::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: .62rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: .26rem;
+  height: 62%;
+  border-radius: 999px;
+  opacity: .95;
+}
+.single-product .noble-scent-note-card--top::before {
+  background: linear-gradient(180deg, #f6c04e 0%, #de9f1c 100%);
+}
+.single-product .noble-scent-note-card--middle::before {
+  background: linear-gradient(180deg, #d95f8e 0%, #b43f6c 100%);
+}
+.single-product .noble-scent-note-card--base::before {
+  background: linear-gradient(180deg, #6563d6 0%, #4140a8 100%);
+}
+.single-product .noble-scent-note-card__label {
+  display: block;
+  color: rgba(11, 42, 87, .62);
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  padding-inline-start: .28rem;
+}
+.single-product .noble-scent-note-card__value {
+  display: block;
+  color: #0b2a57;
+  font-size: .78rem;
+  font-weight: 800;
+  line-height: 1.75;
+  padding-inline-start: .28rem;
+}
+@media (max-width: 640px) {
+  .single-product .noble-product-scent-notes {
+    padding: .65rem;
+  }
+  .single-product .noble-product-scent-notes__title {
+    margin-bottom: .48rem;
+    font-size: .7rem;
+  }
+  .single-product .noble-scent-note-card {
+    min-height: 3.45rem;
+    padding: .45rem .55rem .45rem 1.12rem;
+  }
+  .single-product .noble-scent-note-card__value {
+    font-size: .74rem;
+    line-height: 1.65;
+  }
 }
 .single-product .text-tertiary.font-serif.italic {
   color: var(--noble-accent);

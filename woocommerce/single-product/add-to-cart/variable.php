@@ -13,6 +13,21 @@ global $product;
 $variations_json = wp_json_encode( $available_variations );
 $variations_attr = function_exists( 'wc_esc_json' ) ? wc_esc_json( $variations_json ) : _wp_specialchars( $variations_json, ENT_QUOTES, 'UTF-8', true );
 
+$variation_attribute_keys = array();
+foreach ( (array) $available_variations as $variation_data ) {
+	if ( empty( $variation_data['attributes'] ) || ! is_array( $variation_data['attributes'] ) ) {
+		continue;
+	}
+	foreach ( $variation_data['attributes'] as $variation_attr_key => $variation_attr_value ) {
+		if ( '' === (string) $variation_attr_value ) {
+			continue;
+		}
+		$variation_attr_key = str_replace( 'attribute_', '', (string) $variation_attr_key );
+		$variation_attribute_keys[] = sanitize_title( $variation_attr_key );
+	}
+}
+$variation_attribute_keys = array_values( array_unique( array_filter( $variation_attribute_keys ) ) );
+
 do_action( 'woocommerce_before_add_to_cart_form' );
 ?>
 
@@ -26,6 +41,12 @@ do_action( 'woocommerce_before_add_to_cart_form' );
 			<table class="variations noble-variations-table" cellspacing="0" role="presentation">
 				<tbody>
 					<?php foreach ( $attributes as $attribute_name => $options ) : ?>
+						<?php
+						$normalized_attribute_name = sanitize_title( $attribute_name );
+						if ( ! empty( $variation_attribute_keys ) && ! in_array( $normalized_attribute_name, $variation_attribute_keys, true ) ) {
+							continue;
+						}
+						?>
 						<tr class="noble-variation-row noble-variation-card">
 							<th class="label" scope="row">
 								<label for="<?php echo esc_attr( sanitize_title( $attribute_name ) ); ?>">
@@ -51,7 +72,7 @@ do_action( 'woocommerce_before_add_to_cart_form' );
 					<?php endforeach; ?>
 				</tbody>
 			</table>
-			<?php if ( ! empty( $attributes ) ) : ?>
+			<?php if ( ! empty( $variation_attribute_keys ) ) : ?>
 				<div class="noble-variations-toolbar">
 					<a class="reset_variations noble-reset-variations" href="#" aria-label="<?php echo esc_attr__( 'پاک کردن انتخاب‌ها', 'noble-theme' ); ?>">
 						<span class="material-symbols-outlined noble-reset-variations__icon" aria-hidden="true">restart_alt</span>

@@ -15,9 +15,15 @@
 .noble-header__bar { background: var(--noble-surface); border-bottom: 1px solid var(--noble-border); }
 .noble-header__main-row { min-height: 58px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; }
 .noble-header__brand { justify-self: center; text-decoration: none; color: var(--noble-primary); display: inline-flex; align-items: center; gap: 6px; }
-.noble-header__brand-name { font: 400 22px/1 "Playfair Display", serif; }
-.noble-header__brand-mark { color: var(--noble-accent); font-size: 12px; }
-.noble-header__brand-tag { display: none; letter-spacing: 3px; font-size: 9px; color: var(--noble-accent); text-transform: uppercase; }
+.noble-header__brand-logo {
+  display: block;
+  width: auto !important;
+  height: 34px !important;
+  max-height: 34px;
+  max-width: 210px;
+  object-fit: contain;
+}
+.noble-header__brand-logo--drawer { height: 30px; max-width: 180px; }
 .noble-header__actions { display: flex; align-items: center; gap: 6px; justify-self: end; }
 .noble-header__icon-btn { width: 34px; height: 34px; border: 1px solid var(--noble-border); border-radius: 999px; background: var(--noble-surface); color: var(--noble-on-surface); display: inline-flex; align-items: center; justify-content: center; text-decoration: none; cursor: pointer; }
 .noble-header__drawer-toggle .material-symbols-outlined { font-size: 20px; color: var(--noble-primary); }
@@ -95,7 +101,7 @@
 }
 .noble-drawer.is-open { transform: translateX(0); opacity: 1; }
 .noble-drawer__head { background: var(--noble-primary); color: var(--noble-surface); padding: 14px 12px; display: flex; justify-content: space-between; align-items: center; }
-.noble-drawer__head .noble-header__brand-name { color: var(--noble-surface); font-size: 20px; }
+.noble-drawer__head .noble-header__brand-logo--drawer { background: #fff; border-radius: 10px; padding: 4px 8px; }
 .noble-drawer__search { padding: 12px; border-bottom: 1px solid var(--noble-border); }
 .noble-drawer__search input { width: 100%; height: 42px; border: 1px solid var(--noble-border); border-radius: 999px; padding: 0 12px; }
 .noble-mobile-nav, .noble-mobile-nav ul { list-style: none; margin: 0; padding: 0; }
@@ -136,7 +142,11 @@
   .noble-header.is-sticky .noble-header__main-row { min-height: 60px; transition: min-height .25s ease; }
   .noble-header__drawer-toggle { display: none; }
   .noble-header__brand { justify-self: start; }
-  .noble-header__brand-tag { display: inline; }
+  .noble-header__brand-logo {
+    height: 40px !important;
+    max-height: 40px;
+    max-width: 260px;
+  }
   .noble-header__nav { display: block; position: relative; }
   .noble-nav { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 5px; }
   .noble-nav > li > a, .noble-nav__mega-trigger, .noble-nav > li > button { border: 0; background: transparent; color: var(--noble-on-surface); text-decoration: none; font-size: 14px; min-height: 42px; border-radius: 6px; padding: 0 12px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }

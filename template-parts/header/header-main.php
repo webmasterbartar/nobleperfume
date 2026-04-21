@@ -35,6 +35,7 @@ $featured_name   = 'عطر نوبل امپریال';
 $featured_price  = '۳,۹۸۰,۰۰۰ تومان';
 $featured_badge  = 'پیشنهاد هفته';
 $featured_img    = function_exists( 'wc_placeholder_img_src' ) ? wc_placeholder_img_src( 'woocommerce_single' ) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22320%22 viewBox=%220 0 400 320%22%3E%3Crect width=%22400%22 height=%22320%22 fill=%22%23ebf1ff%22/%3E%3Ctext x=%22200%22 y=%22170%22 font-size=%2224%22 text-anchor=%22middle%22 fill=%22%23051061%22%3ENoble%20Parfum%3C/text%3E%3C/svg%3E';
+$brand_logo_url  = get_template_directory_uri() . '/assets/images/%D9%84%D9%88%DA%AF%D9%88-%D9%86%D9%88%D8%A8%D9%84.png';
 $cart_url        = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : ( function_exists( 'wc_get_checkout_url' ) ? add_query_arg( 'noble_step', 1, wc_get_checkout_url() ) : home_url( '/' ) );
 $mega_products   = array(
 	array(
@@ -76,9 +77,15 @@ $mega_products   = array(
 			</button>
 
 			<a class="noble-header__brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php echo esc_attr( 'صفحه اصلی نوبل' ); ?>">
-				<span class="noble-header__brand-mark" aria-hidden="true">●</span>
-				<span class="noble-header__brand-name"><?php echo esc_html( 'نوبل' ); ?></span>
-				<span class="noble-header__brand-tag"><?php echo esc_html( 'NOBLE · PARFUM' ); ?></span>
+				<img
+					class="noble-header__brand-logo"
+					src="<?php echo esc_url( $brand_logo_url ); ?>"
+					alt="<?php echo esc_attr( 'نوبل پرفیوم' ); ?>"
+					width="260"
+					height="40"
+					decoding="async"
+					loading="eager"
+				>
 			</a>
 
 			<nav class="noble-header__nav" aria-label="<?php echo esc_attr( 'منوی اصلی' ); ?>">
@@ -196,9 +203,15 @@ $mega_products   = array(
 	<aside class="noble-drawer" id="noble-mobile-drawer" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr( 'منوی موبایل' ); ?>" hidden>
 		<div class="noble-drawer__head">
 			<a class="noble-header__brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-				<span class="noble-header__brand-mark" aria-hidden="true">●</span>
-				<span class="noble-header__brand-name"><?php echo esc_html( 'نوبل' ); ?></span>
-				<span class="noble-header__brand-tag"><?php echo esc_html( 'NOBLE · PARFUM' ); ?></span>
+				<img
+					class="noble-header__brand-logo noble-header__brand-logo--drawer"
+					src="<?php echo esc_url( $brand_logo_url ); ?>"
+					alt="<?php echo esc_attr( 'نوبل پرفیوم' ); ?>"
+					width="180"
+					height="30"
+					decoding="async"
+					loading="eager"
+				>
 			</a>
 			<button type="button" class="noble-header__icon-btn" data-drawer-close aria-label="<?php echo esc_attr( 'بستن منو' ); ?>">
 				<span class="material-symbols-outlined" aria-hidden="true">close</span>

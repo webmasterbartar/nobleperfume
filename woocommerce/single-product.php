@@ -36,7 +36,7 @@ $noble_theme_uri = get_template_directory_uri();
 }
 </style>
 
-<main class="pt-24 pb-20 container mx-auto px-5 sm:px-6 lg:px-8">
+<main class="pt-16 sm:pt-18 pb-20 container mx-auto px-5 sm:px-6 lg:px-8">
 	<?php
 	while ( have_posts() ) :
 		the_post();
@@ -61,6 +61,63 @@ $noble_theme_uri = get_template_directory_uri();
 		$rounded_rating = $has_reviews ? (int) round( $average_rating ) : 0;
 		$short_desc     = $product->get_short_description();
 		$sku            = $product->get_sku();
+
+		$normalize_attr_key = static function ( $value ) {
+			$value = is_string( $value ) ? wp_strip_all_tags( $value ) : '';
+			$value = function_exists( 'mb_strtolower' ) ? mb_strtolower( $value, 'UTF-8' ) : strtolower( $value );
+			$value = str_replace( 'pa_', '', $value );
+			return preg_replace( '/[\s\-_]+/u', '', $value );
+		};
+
+		$note_aliases = array(
+			'top'    => array( 'topnotes', 'topnote', 'openingnotes', 'openingnote', 'notesoftop', 'نتآغازین', 'نتابتدایی', 'نتاولیه', 'نخستیننت' ),
+			'middle' => array( 'middlenotes', 'middlenote', 'heartnotes', 'heartnote', 'notesofmiddle', 'نتمیانی', 'نتمیانی', 'قلبرایحه', 'نتقلب' ),
+			'base'   => array( 'basenotes', 'basenote', 'drydownnotes', 'drydownnote', 'notesofbase', 'نتپایه', 'نتپایانی', 'رایحهپایه', 'نتآخر' ),
+		);
+
+		$product_notes = array(
+			'top'    => '',
+			'middle' => '',
+			'base'   => '',
+		);
+
+		foreach ( $product->get_attributes() as $attribute ) {
+			if ( ! $attribute instanceof WC_Product_Attribute ) {
+				continue;
+			}
+
+			$attr_keys = array();
+			if ( $attribute->is_taxonomy() ) {
+				$taxonomy = $attribute->get_name();
+				$tax_obj  = get_taxonomy( $taxonomy );
+				$label    = $tax_obj && ! empty( $tax_obj->labels->singular_name ) ? $tax_obj->labels->singular_name : wc_attribute_label( $taxonomy );
+				$attr_keys[] = $normalize_attr_key( $taxonomy );
+				$attr_keys[] = $normalize_attr_key( wc_attribute_taxonomy_slug( $taxonomy ) );
+				$attr_keys[] = $normalize_attr_key( $label );
+				$values      = wc_get_product_terms( $product->get_id(), $taxonomy, array( 'fields' => 'names' ) );
+			} else {
+				$name      = $attribute->get_name();
+				$attr_keys[] = $normalize_attr_key( $name );
+				$values      = $attribute->get_options();
+			}
+
+			$values = array_filter( array_map( 'wc_clean', (array) $values ) );
+			if ( empty( $values ) ) {
+				continue;
+			}
+
+			foreach ( $note_aliases as $note_key => $aliases ) {
+				if ( $product_notes[ $note_key ] ) {
+					continue;
+				}
+				foreach ( $attr_keys as $attr_key ) {
+					if ( in_array( $attr_key, $aliases, true ) ) {
+						$product_notes[ $note_key ] = implode( '، ', $values );
+						break;
+					}
+				}
+			}
+		}
 		?>
 
 		<div class="mb-10">
@@ -145,6 +202,34 @@ $noble_theme_uri = get_template_directory_uri();
 				<div class="noble-product-summary-price flex flex-col gap-1 py-5 border-y border-primary/10">
 					<span class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary/50"><?php esc_html_e( 'قیمت', 'noble-theme' ); ?></span>
 					<div class="text-2xl lg:text-4xl font-serif font-bold text-primary [&_.woocommerce-Price-amount]:font-serif"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
+					<?php if ( $product_notes['top'] || $product_notes['middle'] || $product_notes['base'] ) : ?>
+						<div class="noble-product-scent-notes mt-4">
+							<div class="noble-product-scent-notes__title">
+								<span class="material-symbols-outlined noble-product-scent-notes__title-icon" aria-hidden="true">psychiatry</span>
+								<span><?php esc_html_e( 'پروفایل رایحه', 'noble-theme' ); ?></span>
+							</div>
+							<div class="noble-product-scent-notes__grid grid grid-cols-1 sm:grid-cols-3 gap-2">
+							<?php if ( $product_notes['top'] ) : ?>
+								<div class="noble-scent-note-card noble-scent-note-card--top">
+									<span class="noble-scent-note-card__label"><?php esc_html_e( 'نت آغازین', 'noble-theme' ); ?></span>
+									<span class="noble-scent-note-card__value"><?php echo esc_html( $product_notes['top'] ); ?></span>
+								</div>
+							<?php endif; ?>
+							<?php if ( $product_notes['middle'] ) : ?>
+								<div class="noble-scent-note-card noble-scent-note-card--middle">
+									<span class="noble-scent-note-card__label"><?php esc_html_e( 'نت میانی', 'noble-theme' ); ?></span>
+									<span class="noble-scent-note-card__value"><?php echo esc_html( $product_notes['middle'] ); ?></span>
+								</div>
+							<?php endif; ?>
+							<?php if ( $product_notes['base'] ) : ?>
+								<div class="noble-scent-note-card noble-scent-note-card--base">
+									<span class="noble-scent-note-card__label"><?php esc_html_e( 'نت پایه', 'noble-theme' ); ?></span>
+									<span class="noble-scent-note-card__value"><?php echo esc_html( $product_notes['base'] ); ?></span>
+								</div>
+							<?php endif; ?>
+							</div>
+						</div>
+					<?php endif; ?>
 				</div>
 
 				<div class="space-y-6">
