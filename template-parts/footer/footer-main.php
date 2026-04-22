@@ -41,6 +41,7 @@ $support_links = array(
 $phone_display = '۰۲۱-۹۱۰۰۰۰۰۰';
 $phone_tel     = '+982191000000';
 $email         = 'hello@nobleparfum.ir';
+$brand_logo_url = get_template_directory_uri() . '/assets/images/%D9%84%D9%88%DA%AF%D9%88-%D9%86%D9%88%D8%A8%D9%84.png';
 ?>
 <footer class="noble-footer" dir="rtl">
 	<div class="noble-footer__accent" aria-hidden="true"></div>
@@ -50,8 +51,15 @@ $email         = 'hello@nobleparfum.ir';
 			<div class="noble-footer__grid">
 				<div class="noble-footer__brand">
 					<a class="noble-footer__brand-link" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-						<span class="noble-footer__brand-mark" aria-hidden="true">●</span>
-						<span class="noble-footer__brand-name"><?php echo esc_html( 'نوبل' ); ?></span>
+						<img
+							class="noble-footer__brand-logo"
+							src="<?php echo esc_url( $brand_logo_url ); ?>"
+							alt="<?php echo esc_attr( 'نوبل پرفیوم' ); ?>"
+							width="220"
+							height="34"
+							decoding="async"
+							loading="lazy"
+						>
 					</a>
 					<p class="noble-footer__tagline"><?php echo esc_html( 'NOBLE · PARFUM' ); ?></p>
 					<p class="noble-footer__lead"><?php echo esc_html( 'عطرهای منتخب، تجربه‌ای لوکس و اصالت تضمین‌شده.' ); ?></p>

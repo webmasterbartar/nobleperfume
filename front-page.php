@@ -5,7 +5,10 @@
  * @package noble-theme
  */
 
-$noble_placeholder_img = get_template_directory_uri() . '/assets/images/placeholder-hero.svg';
+$noble_hero_main_img  = get_template_directory_uri() . '/assets/images/FullSizeRender.webp';
+$noble_hero_side_img  = get_template_directory_uri() . '/assets/images/IMG_8360.webp';
+$noble_gift_main_img  = get_template_directory_uri() . '/assets/images/IMG_9208.webp';
+$noble_gift_accent_img = get_template_directory_uri() . '/assets/images/FullSizeRender%20%281%29.webp';
 
 get_header();
 ?>
@@ -13,7 +16,7 @@ get_header();
 <section class="hero-navy relative min-h-[70vh] md:min-h-[78vh] flex items-center pt-6 md:pt-8 overflow-hidden">
 	<div class="container mx-auto px-5 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 items-center relative z-10 py-8 md:py-10">
 		<div class="hero-content-simple lg:col-span-6 xl:col-span-5 order-2 lg:order-1 text-right lg:max-w-[430px] xl:max-w-[470px] relative z-30">
-			<div class="inline-flex items-center px-3 py-1.5 mb-4 md:mb-6 bg-white/10 border border-white/20 rounded-full text-accent-gold eyebrow">کالکشن ۲۰۲۴</div>
+			<div class="inline-flex items-center px-3 py-1.5 mb-4 md:mb-6 bg-white/10 border border-white/20 rounded-full text-accent-gold eyebrow">کالکشن ویژه نوبل</div>
 			<h1 class="title-xl hero-title-mobile-single font-serif text-white mb-4 md:mb-6">رایحه‌ای <span class="text-accent-gold">فراتر</span> از زمان</h1>
 			<p class="text-body text-white/85 mb-6 md:mb-8 max-w-xl">دکانت، آنباکس و نسخه‌های اورجینال از معتبرترین برندهای جهان با ضمانت اصالت مادام‌العمر در نوبل پرفیوم.</p>
 			<div class="flex flex-col sm:flex-row gap-3 md:gap-4">
@@ -26,15 +29,15 @@ get_header();
 			<div class="absolute -bottom-10 -right-10 w-96 h-96 bg-primary/5 rounded-full blur-[120px]"></div>
 			<div class="relative w-full h-full flex items-center justify-center">
 				<div class="w-11/12 h-[90%] bg-white shadow-2xl overflow-hidden relative group">
-					<img alt="نمای اصلی عطر" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-[1.5s] scale-[1.02] group-hover:scale-100" src="<?php echo esc_url( $noble_placeholder_img ); ?>"/>
+					<img alt="نمای اصلی عطر" class="w-full h-full object-cover md:grayscale md:hover:grayscale-0 transition-all duration-[1.5s] scale-[1.02] group-hover:scale-100" src="<?php echo esc_url( $noble_hero_main_img ); ?>"/>
 					<div class="absolute inset-0 border-[24px] border-white/10 pointer-events-none"></div>
 				</div>
 				<div class="absolute top-1/2 -right-12 -translate-y-1/2 w-2/5 h-3/5 border-[15px] border-background shadow-2xl overflow-hidden hidden lg:block z-20">
-					<img alt="نمای نزدیک عطر" class="w-full h-full object-cover" src="<?php echo esc_url( $noble_placeholder_img ); ?>"/>
+					<img alt="نمای نزدیک عطر" class="w-full h-full object-cover" src="<?php echo esc_url( $noble_hero_side_img ); ?>"/>
 				</div>
 				<div class="absolute bottom-8 -left-6 glass-panel p-6 max-w-[240px] hidden xl:block shadow-2xl animate-bounce-slow">
 					<span class="material-symbols-outlined text-accent-gold mb-4 text-3xl" data-icon="auto_awesome">auto_awesome</span>
-					<p class="text-primary font-medium text-base leading-relaxed">کالکشن عطرهای نایاب ۲۰۲۴ اکنون در دسترس است.</p>
+					<p class="text-primary font-medium text-base leading-relaxed">کالکشن منتخب نوبل؛ رایحه‌هایی خاص برای استایل امضادار شما.</p>
 				</div>
 			</div>
 		</div>
@@ -382,8 +385,11 @@ get_header();
 <section class="container mx-auto px-5 sm:px-6 lg:px-8 py-14 md:py-24">
 	<div class="gift-section gift-section-simple grid grid-cols-1 lg:grid-cols-12 overflow-hidden rounded-3xl border border-border-light bg-white shadow-xl">
 		<div class="lg:col-span-5 relative min-h-[280px] md:min-h-[380px] lg:min-h-[480px] overflow-hidden">
-			<img alt="باکس هدیه نوبل" class="h-full w-full object-cover transition-transform duration-700 hover:scale-105" src="<?php echo esc_url( $noble_placeholder_img ); ?>"/>
+			<img alt="باکس هدیه نوبل" class="h-full w-full object-cover transition-transform duration-700 hover:scale-105" src="<?php echo esc_url( $noble_gift_main_img ); ?>"/>
 			<div class="absolute inset-0 bg-gradient-to-t from-primary/35 via-primary/10 to-transparent"></div>
+			<div class="hidden md:block absolute -bottom-8 -left-8 w-44 h-44 rounded-2xl overflow-hidden border-4 border-white shadow-2xl">
+				<img alt="جزئیات هدیه نوبل" class="h-full w-full object-cover" src="<?php echo esc_url( $noble_gift_accent_img ); ?>"/>
+			</div>
 		</div>
 		<div class="lg:col-span-7 p-6 sm:p-8 lg:p-12 text-right flex flex-col justify-center">
 			<span class="text-accent-gold eyebrow mb-3 block">هنر هدیه دادن</span>

@@ -53,6 +53,14 @@ body > main {
   color: var(--noble-primary);
 }
 
+.noble-footer__brand-logo {
+  display: block;
+  width: auto;
+  height: 34px;
+  max-width: 220px;
+  object-fit: contain;
+}
+
 .noble-footer__brand-mark {
   color: var(--noble-accent);
   font-size: 0.75rem;

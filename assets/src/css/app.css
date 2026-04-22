@@ -1537,6 +1537,110 @@ body *:not(.material-symbols-outlined) {
   font-size: .72rem;
   font-weight: 700;
 }
+
+/* ── Noble Product Card: footer price + cart (Design System aligned) ── */
+.n-card-footer {
+  padding-top: 12px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--noble-border) 55%, transparent);
+}
+.n-card-footer__price {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-align: right;
+}
+.n-card-price {
+  color: var(--noble-primary);
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.n-card-price--oos {
+  color: color-mix(in srgb, var(--noble-on-surface) 55%, white);
+  font-weight: 700;
+}
+.n-card-price .price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.n-card-price__old,
+.n-card-price__new {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+}
+.n-card-price__prefix {
+  font-size: 11px;
+  font-weight: 900;
+  color: color-mix(in srgb, var(--noble-on-surface) 60%, white);
+  flex: 0 0 auto;
+}
+.n-card-price__old {
+  color: color-mix(in srgb, var(--noble-on-surface) 45%, white);
+  font-weight: 700;
+  font-size: 11px;
+  text-decoration: line-through;
+  flex: 0 0 auto;
+}
+.n-card-price__new {
+  color: var(--noble-primary);
+  font-weight: 900;
+  font-size: 13px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.n-card-price del,
+.n-card-price ins {
+  background: transparent !important;
+  text-decoration: none;
+}
+.n-card-price del { text-decoration: line-through; }
+.n-card-price .woocommerce-Price-amount {
+  background: transparent !important;
+  white-space: nowrap;
+}
+.n-card-price ins { padding: 0; }
+
+/* WooCommerce injects "View cart" after AJAX add-to-cart; hide in compact cards. */
+li.product a.added_to_cart { display: none !important; }
+
+.n-card-atc {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--noble-border) 70%, transparent) !important;
+  background: color-mix(in srgb, var(--noble-background) 45%, white) !important;
+  color: var(--noble-primary) !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  transition: background .2s ease, color .2s ease, transform .15s ease, border-color .2s ease;
+}
+.n-card-atc:hover {
+  background: var(--noble-primary) !important;
+  border-color: var(--noble-primary) !important;
+  color: var(--noble-surface) !important;
+  transform: scale(1.06);
+}
+.n-card-atc .material-symbols-outlined {
+  font-size: 18px;
+  line-height: 1;
+}
 .shop-layout {
   align-items: flex-start;
 }
