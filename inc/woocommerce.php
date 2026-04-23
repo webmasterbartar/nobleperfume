@@ -540,11 +540,6 @@ add_filter( 'woocommerce_checkout_fields', 'noble_make_checkout_email_optional',
  * @return array
  */
 function noble_fill_empty_checkout_email( $data ) {
-	$email = isset( $data['billing_email'] ) ? trim( (string) $data['billing_email'] ) : '';
-	if ( '' !== $email ) {
-		return $data;
-	}
-
 	$phone = isset( $data['billing_phone'] ) ? preg_replace( '/\D+/', '', (string) $data['billing_phone'] ) : '';
 	if ( '' === $phone ) {
 		$phone = (string) time();
@@ -620,10 +615,12 @@ function noble_capture_step1_fields_to_session() {
 		'billing_first_name',
 		'billing_last_name',
 		'billing_phone',
+		'billing_state',
 		'billing_address_1',
 		'billing_address_2',
 		'billing_postcode',
 		'billing_city',
+		'noble_plaque',
 	);
 	$payload = array();
 	foreach ( $keys as $k ) {
@@ -631,7 +628,64 @@ function noble_capture_step1_fields_to_session() {
 			$payload[ $k ] = sanitize_text_field( wp_unslash( (string) $_POST[ $k ] ) );
 		}
 	}
+
+	// Step 1 server-side validation (authoritative gate before Step 2).
+	$first_name = isset( $payload['billing_first_name'] ) ? trim( (string) $payload['billing_first_name'] ) : '';
+	$last_name  = isset( $payload['billing_last_name'] ) ? trim( (string) $payload['billing_last_name'] ) : '';
+	$phone_raw  = isset( $payload['billing_phone'] ) ? (string) $payload['billing_phone'] : '';
+	$state      = isset( $payload['billing_state'] ) ? trim( (string) $payload['billing_state'] ) : '';
+	$address_1  = isset( $payload['billing_address_1'] ) ? trim( (string) $payload['billing_address_1'] ) : '';
+	$city       = isset( $payload['billing_city'] ) ? trim( (string) $payload['billing_city'] ) : '';
+	$postcode   = isset( $payload['billing_postcode'] ) ? (string) $payload['billing_postcode'] : '';
+
+	$phone_digits = preg_replace( '/\D+/', '', $phone_raw );
+	$postcode_digits = preg_replace( '/\D+/', '', $postcode );
+
+	$has_errors = false;
+	if ( '' === $first_name ) {
+		wc_add_notice( 'لطفا نام را وارد کنید.', 'error' );
+		$has_errors = true;
+	}
+	if ( '' === $last_name ) {
+		wc_add_notice( 'لطفا نام خانوادگی را وارد کنید.', 'error' );
+		$has_errors = true;
+	}
+	if ( '' === $phone_digits ) {
+		wc_add_notice( 'لطفا شماره موبایل را وارد کنید.', 'error' );
+		$has_errors = true;
+	} elseif ( ! preg_match( '/^09\d{9}$/', $phone_digits ) ) {
+		wc_add_notice( 'فرمت شماره موبایل صحیح نیست. مثال: 09123456789', 'error' );
+		$has_errors = true;
+	}
+	if ( '' === $state ) {
+		wc_add_notice( 'لطفا استان را انتخاب کنید.', 'error' );
+		$has_errors = true;
+	}
+	if ( '' === $city ) {
+		wc_add_notice( 'لطفا شهر را انتخاب کنید.', 'error' );
+		$has_errors = true;
+	}
+	if ( '' === $address_1 ) {
+		wc_add_notice( 'لطفا آدرس ارسال را وارد کنید.', 'error' );
+		$has_errors = true;
+	}
+	if ( '' === $postcode_digits ) {
+		wc_add_notice( 'لطفا کد پستی را وارد کنید.', 'error' );
+		$has_errors = true;
+	} elseif ( 10 !== strlen( $postcode_digits ) ) {
+		wc_add_notice( 'کد پستی باید 10 رقم باشد.', 'error' );
+		$has_errors = true;
+	}
+
+	// Keep normalized values for compatibility with WooCommerce defaults.
+	$payload['billing_phone']    = $phone_digits;
+	$payload['billing_postcode'] = $postcode_digits;
 	WC()->session->set( 'noble_step1_checkout', $payload );
+
+	if ( $has_errors ) {
+		wp_safe_redirect( add_query_arg( 'noble_step', 1, wc_get_checkout_url() ) );
+		exit;
+	}
 
 	// Avoid form resubmission; Step 2 will read from session.
 	wp_safe_redirect( add_query_arg( 'noble_step', 2, wc_get_checkout_url() ) );

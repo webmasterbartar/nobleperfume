@@ -11,6 +11,102 @@ $noble_gift_main_img  = get_template_directory_uri() . '/assets/images/IMG_9208.
 $noble_gift_accent_img = get_template_directory_uri() . '/assets/images/FullSizeRender%20%281%29.webp';
 
 get_header();
+
+if ( ! function_exists( 'noble_render_home_product_card' ) ) {
+	/**
+	 * Render homepage product card.
+	 *
+	 * @param WC_Product $product Product object.
+	 * @param string     $badge_text Badge text.
+	 * @param string     $badge_class Badge modifier class.
+	 * @return void
+	 */
+	function noble_render_home_product_card( $product, $badge_text = '', $badge_class = '' ) {
+		if ( ! $product instanceof WC_Product ) {
+			return;
+		}
+
+		$rating_value = $product->get_average_rating() ? (float) $product->get_average_rating() : 5;
+		$rating_count = $product->get_rating_count() ? (int) $product->get_rating_count() : 12;
+		$brand_label  = $product->get_attribute( 'pa_brand' ) ? $product->get_attribute( 'pa_brand' ) : $product->get_attribute( 'برند' );
+		$brand_label  = $brand_label ? $brand_label : 'برند منتخب';
+		$product_url  = get_permalink( $product->get_id() );
+		$product_name = $product->get_name();
+
+		$atc_product_id = (int) $product->get_id();
+		$atc_in_cart    = false;
+		if ( function_exists( 'WC' ) && WC() && WC()->cart ) {
+			foreach ( WC()->cart->get_cart() as $cart_item ) {
+				if ( isset( $cart_item['product_id'] ) && (int) $cart_item['product_id'] === $atc_product_id ) {
+					$atc_in_cart = true;
+					break;
+				}
+			}
+		}
+
+		$atc_is_ajax = $product->supports( 'ajax_add_to_cart' ) && $product->is_purchasable() && $product->is_in_stock();
+		$atc_href    = $atc_is_ajax ? $product->add_to_cart_url() : $product_url;
+		$atc_classes = array(
+			'noble-home-card__icon-btn',
+			'product-cart-btn',
+			'noble-card-atc',
+			'relative',
+			'z-30',
+			'product_type_' . $product->get_type(),
+		);
+		if ( $atc_is_ajax ) {
+			$atc_classes[] = 'add_to_cart_button';
+			$atc_classes[] = 'ajax_add_to_cart';
+		}
+		if ( $atc_in_cart ) {
+			$atc_classes[] = 'is-added';
+		}
+		?>
+		<article class="new-arrival-card noble-home-card products-mobile-slide">
+			<?php if ( '' !== trim( (string) $badge_text ) ) : ?>
+				<div class="noble-home-card__badge <?php echo esc_attr( $badge_class ); ?>"><?php echo esc_html( $badge_text ); ?></div>
+			<?php endif; ?>
+			<div class="noble-home-card__media">
+				<a class="noble-home-card__media-link" href="<?php echo esc_url( $product_url ); ?>" aria-label="<?php echo esc_attr( $product_name ); ?>">
+					<?php echo $product->get_image( 'medium', array( 'class' => 'noble-home-card__img' ) ); ?>
+				</a>
+				<div class="noble-home-card__media-glow" aria-hidden="true"></div>
+			</div>
+			<div class="noble-home-card__body">
+				<div class="noble-home-card__brand"><?php echo esc_html( $brand_label ); ?></div>
+				<h3 class="noble-home-card__title"><a href="<?php echo esc_url( $product_url ); ?>"><?php echo esc_html( $product_name ); ?></a></h3>
+				<div class="noble-home-card__rating" aria-label="<?php echo esc_attr( sprintf( 'امتیاز %s', number_format_i18n( $rating_value, 1 ) ) ); ?>">
+					<span class="material-symbols-outlined" data-icon="star" aria-hidden="true">star</span>
+					<span><?php echo esc_html( number_format_i18n( $rating_value, 1 ) . ' (' . $rating_count . ' نظر)' ); ?></span>
+				</div>
+				<div class="noble-home-card__footer">
+					<div class="noble-home-card__price product-price-chip"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
+					<div class="noble-home-card__actions product-action-row">
+						<a class="noble-home-card__cta" href="<?php echo esc_url( $product_url ); ?>">
+							<?php esc_html_e( 'مشاهده سریع', 'noble-theme' ); ?>
+							<span class="material-symbols-outlined noble-home-card__cta-icon" data-icon="arrow_back" aria-hidden="true">arrow_back</span>
+						</a>
+						<a
+							class="<?php echo esc_attr( implode( ' ', array_filter( $atc_classes ) ) ); ?>"
+							href="<?php echo esc_url( $atc_href ); ?>"
+							<?php if ( $atc_is_ajax ) : ?>
+								data-quantity="1"
+								data-product_id="<?php echo esc_attr( (string) $atc_product_id ); ?>"
+								data-product_sku="<?php echo esc_attr( (string) $product->get_sku() ); ?>"
+								aria-label="<?php echo esc_attr( $product->add_to_cart_description() ); ?>"
+								rel="nofollow"
+							<?php endif; ?>
+						>
+							<span class="material-symbols-outlined noble-card-atc__icon noble-card-atc__icon--add" data-icon="add_shopping_cart" aria-hidden="true">add_shopping_cart</span>
+							<span class="material-symbols-outlined noble-card-atc__icon noble-card-atc__icon--check" data-icon="check" aria-hidden="true">check</span>
+						</a>
+					</div>
+				</div>
+			</div>
+		</article>
+		<?php
+	}
+}
 ?>
 <div class="home-vazir">
 <section class="hero-navy relative min-h-[70vh] md:min-h-[78vh] flex items-center pt-6 md:pt-8 overflow-hidden">
@@ -96,79 +192,91 @@ get_header();
 	</div>
 	<div class="categories-mobile-carousel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
 		<?php
-		if ( class_exists( 'WooCommerce' ) ) {
-			$manual_ids_raw = get_theme_mod( 'noble_home_category_ids', '' );
-			$manual_ids     = array_filter( array_map( 'absint', array_map( 'trim', explode( ',', $manual_ids_raw ) ) ) );
+		$manual_ids_raw = class_exists( 'WooCommerce' ) ? (string) get_theme_mod( 'noble_home_category_ids', '' ) : '';
+		$cats_cache_key = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'home', 'cats', array( 'ids' => $manual_ids_raw ) ) : '';
+		$cats_html      = function_exists( 'noble_cache_remember' ) ? noble_cache_remember(
+			$cats_cache_key,
+			(int) apply_filters( 'noble_cache_ttl_home_cats', 15 * MINUTE_IN_SECONDS ),
+			function () use ( $manual_ids_raw ) {
+				ob_start();
+				if ( class_exists( 'WooCommerce' ) ) {
+					$manual_ids = array_filter( array_map( 'absint', array_map( 'trim', explode( ',', (string) $manual_ids_raw ) ) ) );
 
-			$featured_categories = get_terms(
-				array(
-					'taxonomy'   => 'product_cat',
-					'hide_empty' => false,
-					'parent'     => empty( $manual_ids ) ? 0 : '',
-					'number'     => 4,
-					'include'    => $manual_ids,
-				)
-			);
-
-			if ( ! is_wp_error( $featured_categories ) && ! empty( $featured_categories ) ) :
-				if ( ! empty( $manual_ids ) ) {
-					usort(
-						$featured_categories,
-						function ( $a, $b ) use ( $manual_ids ) {
-							return array_search( $a->term_id, $manual_ids, true ) <=> array_search( $b->term_id, $manual_ids, true );
-						}
+					$featured_categories = get_terms(
+						array(
+							'taxonomy'   => 'product_cat',
+							'hide_empty' => false,
+							'parent'     => empty( $manual_ids ) ? 0 : '',
+							'number'     => 4,
+							'include'    => $manual_ids,
+						)
 					);
-				}
-				$rendered_categories = 0;
-				foreach ( $featured_categories as $category ) :
-					if ( 0 === (int) $category->count ) {
-						continue;
-					}
-					$thumbnail_id = get_term_meta( $category->term_id, 'thumbnail_id', true );
-					$image_url    = $thumbnail_id ? wp_get_attachment_image_url( $thumbnail_id, 'large' ) : '';
-					$rendered_categories++;
-					?>
-					<a class="category-card category-mobile-slide group relative overflow-hidden rounded-2xl border border-border-light bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" href="<?php echo esc_url( get_term_link( $category ) ); ?>">
-						<div class="relative h-40 sm:h-52 md:h-64 overflow-hidden">
-							<?php if ( $image_url ) : ?>
-								<img class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $category->name ); ?>">
-							<?php else : ?>
-								<div class="h-full w-full bg-gradient-to-br from-primary/10 to-accent/20"></div>
-							<?php endif; ?>
-							<div class="absolute inset-0 bg-gradient-to-t from-primary/65 via-primary/15 to-transparent"></div>
-							<div class="absolute right-4 bottom-4 text-white">
-								<h3 class="title-md"><?php echo esc_html( $category->name ); ?></h3>
-								<p class="text-xs opacity-90 mt-1"><?php echo esc_html( $category->count . ' محصول' ); ?></p>
+
+					if ( ! is_wp_error( $featured_categories ) && ! empty( $featured_categories ) ) :
+						if ( ! empty( $manual_ids ) ) {
+							usort(
+								$featured_categories,
+								function ( $a, $b ) use ( $manual_ids ) {
+									return array_search( $a->term_id, $manual_ids, true ) <=> array_search( $b->term_id, $manual_ids, true );
+								}
+							);
+						}
+						$rendered_categories = 0;
+						foreach ( $featured_categories as $category ) :
+							if ( 0 === (int) $category->count ) {
+								continue;
+							}
+							$thumbnail_id = get_term_meta( $category->term_id, 'thumbnail_id', true );
+							$image_url    = $thumbnail_id ? wp_get_attachment_image_url( $thumbnail_id, 'large' ) : '';
+							$rendered_categories++;
+							?>
+							<a class="category-card noble-category-card category-mobile-slide group" href="<?php echo esc_url( get_term_link( $category ) ); ?>">
+								<div class="noble-category-card__media">
+									<?php if ( $image_url ) : ?>
+										<img class="noble-category-card__img" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $category->name ); ?>" loading="lazy" width="640" height="640">
+									<?php else : ?>
+										<div class="noble-category-card__placeholder" aria-hidden="true"></div>
+									<?php endif; ?>
+									<div class="noble-category-card__overlay"></div>
+									<div class="noble-category-card__title-wrap">
+										<h3 class="noble-category-card__title"><?php echo esc_html( $category->name ); ?></h3>
+										<p class="noble-category-card__count"><?php echo esc_html( $category->count . ' محصول' ); ?></p>
+									</div>
+								</div>
+								<div class="noble-category-card__footer">
+									<span class="noble-category-card__cta-text">ورود به دسته</span>
+									<span class="material-symbols-outlined noble-category-card__cta-icon" data-icon="arrow_back" aria-hidden="true">arrow_back</span>
+								</div>
+							</a>
+							<?php
+						endforeach;
+						if ( 0 === $rendered_categories ) :
+							?>
+							<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
+								هنوز دسته‌بندی محصولی با آیتم فعال ثبت نشده است.
 							</div>
+							<?php
+						endif;
+					else :
+						?>
+						<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
+							ووکامرس فعال نیست.
 						</div>
-						<div class="flex items-center justify-between p-4">
-							<span class="text-sm font-bold text-primary">ورود به دسته</span>
-							<span class="material-symbols-outlined text-primary text-lg" data-icon="arrow_back">arrow_back</span>
-						</div>
-					</a>
-					<?php
-				endforeach;
-				if ( 0 === $rendered_categories ) :
+						<?php
+					endif;
+				} else {
 					?>
 					<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
-						هنوز دسته‌بندی محصولی با آیتم فعال ثبت نشده است.
+						ووکامرس فعال نیست.
 					</div>
 					<?php
-				endif;
-			else :
-				?>
-				<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
-					ووکامرس فعال نیست.
-				</div>
-				<?php
-			endif;
-		} else {
-			?>
-			<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
-				ووکامرس فعال نیست.
-			</div>
-			<?php
-		}
+				}
+				return (string) ob_get_clean();
+			},
+			'home'
+		) : '';
+
+		echo $cats_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		?>
 	</div>
 </section>
@@ -183,51 +291,32 @@ get_header();
 	</div>
 	<div class="products-mobile-carousel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-10">
 		<?php
-		if ( class_exists( 'WooCommerce' ) ) {
-			$products = wc_get_products( array( 'limit' => 4, 'orderby' => 'popularity', 'status' => 'publish' ) );
-			if ( ! empty( $products ) ) :
-				foreach ( $products as $product ) :
-					$rating_value = $product->get_average_rating() ? (float) $product->get_average_rating() : 5;
-					$rating_count = $product->get_rating_count() ? (int) $product->get_rating_count() : 12;
-					$brand_label  = $product->get_attribute( 'pa_brand' ) ? $product->get_attribute( 'pa_brand' ) : $product->get_attribute( 'برند' );
-					$brand_label  = $brand_label ? $brand_label : 'برند منتخب';
-					?>
-					<div class="new-arrival-card product-card products-mobile-slide p-4 md:p-6 flex flex-col group relative">
-						<a class="absolute inset-0 z-20" href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>" aria-label="<?php echo esc_attr( $product->get_name() ); ?>"></a>
-						<div class="absolute left-3 top-3 z-20 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-primary shadow-sm">پرفروش</div>
-						<div class="relative mb-4 md:mb-6 aspect-square bg-white flex items-center justify-center overflow-hidden rounded-2xl">
-							<a href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>"><?php echo $product->get_image( 'medium', array( 'class' => 'w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 p-6 md:p-8' ) ); ?></a>
-							<div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-primary/10 to-transparent pointer-events-none"></div>
+		$best_key  = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'home', 'best_sellers' ) : '';
+		$best_html = function_exists( 'noble_cache_remember' ) ? noble_cache_remember(
+			$best_key,
+			(int) apply_filters( 'noble_cache_ttl_home_best_sellers', 10 * MINUTE_IN_SECONDS ),
+			function () {
+				ob_start();
+				if ( class_exists( 'WooCommerce' ) ) {
+					$products = wc_get_products( array( 'limit' => 4, 'orderby' => 'popularity', 'status' => 'publish' ) );
+					if ( ! empty( $products ) ) :
+						foreach ( $products as $product ) :
+							noble_render_home_product_card( $product, 'پرفروش', '' );
+						endforeach;
+					else :
+						?>
+						<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
+							برای نمایش این بخش، ابتدا محصول منتشر کنید.
 						</div>
-						<div class="text-[10px] text-accent-gold font-bold uppercase tracking-[0.16em] mb-1"><?php echo esc_html( $brand_label ); ?></div>
-						<h3 class="text-sm md:text-base font-extrabold text-primary leading-6 mb-2 truncate"><a class="block truncate" href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>"><?php echo esc_html( $product->get_name() ); ?></a></h3>
-						<div class="flex items-center gap-1.5 mb-3 md:mb-4">
-							<span class="material-symbols-outlined text-accent-gold text-base" data-icon="star">star</span>
-							<span class="text-xs font-medium text-primary/60"><?php echo esc_html( number_format_i18n( $rating_value, 1 ) . ' (' . $rating_count . ' نظر)' ); ?></span>
-						</div>
-						<div class="new-arrival-footer mt-auto pt-4 border-t border-border-light/80">
-							<div class="product-price-row mb-3">
-								<div class="product-price-chip w-full text-center text-primary font-bold text-sm md:text-base"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
-							</div>
-							<div class="product-action-row flex items-center gap-2">
-								<a class="new-arrival-cta flex-1 inline-flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs md:text-sm font-bold" href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>">
-									مشاهده سریع
-									<span class="material-symbols-outlined text-[18px]" data-icon="arrow_back">arrow_back</span>
-								</a>
-								<a class="product-cart-btn w-9 h-9 md:w-10 md:h-10 rounded-xl border border-primary/15 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shrink-0" href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>"><span class="material-symbols-outlined text-[20px]" data-icon="add_shopping_cart">add_shopping_cart</span></a>
-							</div>
-						</div>
-					</div>
-					<?php
-				endforeach;
-			else :
-				?>
-				<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
-					برای نمایش این بخش، ابتدا محصول منتشر کنید.
-				</div>
-				<?php
-			endif;
-		}
+						<?php
+					endif;
+				}
+				return (string) ob_get_clean();
+			},
+			'home'
+		) : '';
+
+		echo $best_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		?>
 	</div>
 </section>
@@ -243,61 +332,40 @@ get_header();
 		</div>
 		<div class="products-mobile-carousel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-10">
 			<?php
-			if ( class_exists( 'WooCommerce' ) ) {
-				$sale_products = wc_get_products(
-					array(
-						'limit'   => 4,
-						'status'  => 'publish',
-						'orderby' => 'date',
-						'order'   => 'DESC',
-						'on_sale' => true,
-					)
-				);
-				if ( ! empty( $sale_products ) ) :
-					foreach ( $sale_products as $product ) :
-						$rating_value = $product->get_average_rating() ? (float) $product->get_average_rating() : 5;
-						$rating_count = $product->get_rating_count() ? (int) $product->get_rating_count() : 12;
-						$brand_label  = $product->get_attribute( 'pa_brand' ) ? $product->get_attribute( 'pa_brand' ) : $product->get_attribute( 'برند' );
-						$brand_label  = $brand_label ? $brand_label : 'برند منتخب';
-						?>
-						<div class="new-arrival-card product-card products-mobile-slide p-4 md:p-6 flex flex-col group relative">
-						<a class="absolute inset-0 z-20" href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>" aria-label="<?php echo esc_attr( $product->get_name() ); ?>"></a>
-							<div class="absolute left-3 top-3 z-20 rounded-full bg-red-600/95 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">تخفیف ویژه</div>
-							<div class="relative mb-4 md:mb-6 aspect-square bg-white flex items-center justify-center overflow-hidden rounded-2xl">
-								<?php echo $product->get_image( 'medium', array( 'class' => 'w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 p-6 md:p-8' ) ); ?>
-								<div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-primary/10 to-transparent pointer-events-none"></div>
+			$sale_key  = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'home', 'sale_products' ) : '';
+			$sale_html = function_exists( 'noble_cache_remember' ) ? noble_cache_remember(
+				$sale_key,
+				(int) apply_filters( 'noble_cache_ttl_home_sale_products', 10 * MINUTE_IN_SECONDS ),
+				function () {
+					ob_start();
+					if ( class_exists( 'WooCommerce' ) ) {
+						$sale_products = wc_get_products(
+							array(
+								'limit'   => 4,
+								'status'  => 'publish',
+								'orderby' => 'date',
+								'order'   => 'DESC',
+								'on_sale' => true,
+							)
+						);
+						if ( ! empty( $sale_products ) ) :
+							foreach ( $sale_products as $product ) :
+								noble_render_home_product_card( $product, 'تخفیف ویژه', 'noble-home-card__badge--sale' );
+							endforeach;
+						else :
+							?>
+							<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
+								محصول دارای تخفیف فعال پیدا نشد.
 							</div>
-							<div class="text-[10px] text-accent-gold font-bold uppercase tracking-[0.16em] mb-1"><?php echo esc_html( $brand_label ); ?></div>
-							<h3 class="text-sm md:text-base font-extrabold text-primary leading-6 mb-2 truncate"><?php echo esc_html( $product->get_name() ); ?></h3>
-							<div class="flex items-center gap-1.5 mb-3 md:mb-4">
-								<span class="material-symbols-outlined text-accent-gold text-base" data-icon="star">star</span>
-								<span class="text-xs font-medium text-primary/60"><?php echo esc_html( number_format_i18n( $rating_value, 1 ) . ' (' . $rating_count . ' نظر)' ); ?></span>
-							</div>
-							<div class="new-arrival-footer mt-auto pt-4 border-t border-border-light/80">
-								<div class="product-price-row mb-3">
-									<div class="product-price-chip w-full text-center text-primary font-bold text-sm md:text-base"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
-								</div>
-								<div class="product-action-row flex items-center gap-2">
-									<a class="new-arrival-cta flex-1 inline-flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs md:text-sm font-bold" href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>">
-										مشاهده سریع
-										<span class="material-symbols-outlined text-[18px]" data-icon="arrow_back">arrow_back</span>
-									</a>
-									<a class="product-cart-btn w-9 h-9 md:w-10 md:h-10 rounded-xl border border-primary/15 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shrink-0" href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>">
-										<span class="material-symbols-outlined text-[20px]" data-icon="add_shopping_cart">add_shopping_cart</span>
-									</a>
-								</div>
-							</div>
-						</div>
-						<?php
-					endforeach;
-				else :
-					?>
-					<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
-						محصول دارای تخفیف فعال پیدا نشد.
-					</div>
-					<?php
-				endif;
-			}
+							<?php
+						endif;
+					}
+					return (string) ob_get_clean();
+				},
+				'home'
+			) : '';
+
+			echo $sale_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			?>
 		</div>
 	</div>
@@ -322,61 +390,40 @@ get_header();
 		</div>
 		<div class="products-mobile-carousel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-10">
 			<?php
-			if ( class_exists( 'WooCommerce' ) ) {
-				$new_products = wc_get_products(
-					array(
-						'limit'   => 4,
-						'orderby' => 'date',
-						'order'   => 'DESC',
-						'status'  => 'publish',
-						'type'    => 'simple',
-					)
-				);
-				if ( ! empty( $new_products ) ) :
-					foreach ( $new_products as $product ) :
-						$rating_value = $product->get_average_rating() ? (float) $product->get_average_rating() : 5;
-						$rating_count = $product->get_rating_count() ? (int) $product->get_rating_count() : 12;
-						$brand_label  = $product->get_attribute( 'pa_brand' ) ? $product->get_attribute( 'pa_brand' ) : $product->get_attribute( 'برند' );
-						$brand_label  = $brand_label ? $brand_label : 'برند منتخب';
-						?>
-						<div class="new-arrival-card product-card products-mobile-slide p-4 md:p-6 flex flex-col group relative">
-							<a class="absolute inset-0 z-20" href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>" aria-label="<?php echo esc_attr( $product->get_name() ); ?>"></a>
-							<div class="absolute left-3 top-3 z-20 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-primary shadow-sm">جدید</div>
-							<div class="relative mb-4 md:mb-6 aspect-square bg-white flex items-center justify-center overflow-hidden rounded-2xl">
-								<?php echo $product->get_image( 'medium', array( 'class' => 'w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 p-6 md:p-8' ) ); ?>
-								<div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-primary/10 to-transparent pointer-events-none"></div>
+			$new_key  = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'home', 'new_products' ) : '';
+			$new_html = function_exists( 'noble_cache_remember' ) ? noble_cache_remember(
+				$new_key,
+				(int) apply_filters( 'noble_cache_ttl_home_new_products', 10 * MINUTE_IN_SECONDS ),
+				function () {
+					ob_start();
+					if ( class_exists( 'WooCommerce' ) ) {
+						$new_products = wc_get_products(
+							array(
+								'limit'   => 4,
+								'orderby' => 'date',
+								'order'   => 'DESC',
+								'status'  => 'publish',
+								'type'    => 'simple',
+							)
+						);
+						if ( ! empty( $new_products ) ) :
+							foreach ( $new_products as $product ) :
+								noble_render_home_product_card( $product, 'جدید', '' );
+							endforeach;
+						else :
+							?>
+							<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
+								محصولی برای نمایش در تازه‌ترین‌ها پیدا نشد.
 							</div>
-							<div class="text-[10px] text-accent-gold font-bold uppercase tracking-[0.16em] mb-1"><?php echo esc_html( $brand_label ); ?></div>
-							<h3 class="text-sm md:text-base font-extrabold text-primary leading-6 mb-2 truncate"><?php echo esc_html( $product->get_name() ); ?></h3>
-							<div class="flex items-center gap-1.5 mb-3 md:mb-4">
-								<span class="material-symbols-outlined text-accent-gold text-base" data-icon="star">star</span>
-								<span class="text-xs font-medium text-primary/60"><?php echo esc_html( number_format_i18n( $rating_value, 1 ) . ' (' . $rating_count . ' نظر)' ); ?></span>
-							</div>
-							<div class="new-arrival-footer mt-auto pt-4 border-t border-border-light/80">
-								<div class="product-price-row mb-3">
-									<div class="product-price-chip w-full text-center text-primary font-bold text-sm md:text-base"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
-								</div>
-								<div class="product-action-row flex items-center gap-2">
-									<a href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>" class="new-arrival-cta flex-1 inline-flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs md:text-sm font-bold">
-										مشاهده سریع
-										<span class="material-symbols-outlined text-[18px]" data-icon="arrow_back">arrow_back</span>
-									</a>
-									<a href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>" class="product-cart-btn w-9 h-9 md:w-10 md:h-10 rounded-xl border border-primary/15 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shrink-0">
-										<span class="material-symbols-outlined text-[20px]" data-icon="add_shopping_cart">add_shopping_cart</span>
-									</a>
-								</div>
-							</div>
-						</div>
-						<?php
-					endforeach;
-				else :
-					?>
-					<div class="col-span-full rounded-2xl border border-border-light bg-white p-6 text-center text-primary/70">
-						محصولی برای نمایش در تازه‌ترین‌ها پیدا نشد.
-					</div>
-					<?php
-				endif;
-			}
+							<?php
+						endif;
+					}
+					return (string) ob_get_clean();
+				},
+				'home'
+			) : '';
+
+			echo $new_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			?>
 		</div>
 	</div>
@@ -384,7 +431,7 @@ get_header();
 
 <section class="container mx-auto px-5 sm:px-6 lg:px-8 py-14 md:py-24">
 	<div class="gift-section gift-section-simple grid grid-cols-1 lg:grid-cols-12 overflow-hidden rounded-3xl border border-border-light bg-white shadow-xl">
-		<div class="lg:col-span-5 relative min-h-[280px] md:min-h-[380px] lg:min-h-[480px] overflow-hidden">
+		<div class="lg:col-span-5 relative min-h-[170px] sm:min-h-[280px] md:min-h-[380px] lg:min-h-[480px] overflow-hidden">
 			<img alt="باکس هدیه نوبل" class="h-full w-full object-cover transition-transform duration-700 hover:scale-105" src="<?php echo esc_url( $noble_gift_main_img ); ?>"/>
 			<div class="absolute inset-0 bg-gradient-to-t from-primary/35 via-primary/10 to-transparent"></div>
 			<div class="hidden md:block absolute -bottom-8 -left-8 w-44 h-44 rounded-2xl overflow-hidden border-4 border-white shadow-2xl">
@@ -412,26 +459,38 @@ get_header();
 </section>
 
 <section class="container mx-auto px-5 sm:px-6 lg:px-8 py-14 md:py-20 bg-background/50">
-	<div class="text-center mb-10 md:mb-24">
-		<span class="text-accent-gold eyebrow mb-4 block">مجله نوبل</span>
-		<h2 class="title-lg font-serif text-primary">مجله دنیای رایحه</h2>
+	<div class="mb-10 md:mb-24 !text-center text-center">
+		<span class="text-accent-gold eyebrow mb-4 block !text-center text-center">مجله نوبل</span>
+		<h2 class="title-lg font-serif text-primary !text-center text-center">مجله دنیای رایحه</h2>
 	</div>
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-12">
 		<?php
-		$posts = new WP_Query( array( 'post_type' => 'post', 'posts_per_page' => 3, 'ignore_sticky_posts' => true ) );
-		while ( $posts->have_posts() ) :
-			$posts->the_post();
-			?>
-			<div class="bg-white overflow-hidden group hover:shadow-2xl transition-all duration-700 border border-border-light">
-				<div class="p-6 md:p-12">
-					<h3 class="title-md text-primary mb-4 md:mb-6 group-hover:text-accent-gold transition-colors"><?php the_title(); ?></h3>
-					<p class="text-primary/50 text-body mb-6 md:mb-10"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 24 ) ); ?></p>
-					<a class="text-accent-gold font-bold text-sm flex items-center gap-3 hover:gap-5 transition-all" href="<?php the_permalink(); ?>">ادامه مطلب <span class="material-symbols-outlined text-lg" data-icon="arrow_back">arrow_back</span></a>
-				</div>
-			</div>
-			<?php
-		endwhile;
-		wp_reset_postdata();
+		$blog_key  = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'home', 'blog_latest' ) : '';
+		$blog_html = function_exists( 'noble_cache_remember' ) ? noble_cache_remember(
+			$blog_key,
+			(int) apply_filters( 'noble_cache_ttl_home_blog', 10 * MINUTE_IN_SECONDS ),
+			function () {
+				ob_start();
+				$posts = new WP_Query( array( 'post_type' => 'post', 'posts_per_page' => 3, 'ignore_sticky_posts' => true ) );
+				while ( $posts->have_posts() ) :
+					$posts->the_post();
+					?>
+					<div class="bg-white overflow-hidden group hover:shadow-2xl transition-all duration-700 border border-border-light">
+						<div class="p-6 md:p-12">
+							<h3 class="title-md text-primary mb-4 md:mb-6 group-hover:text-accent-gold transition-colors"><?php the_title(); ?></h3>
+							<p class="text-primary/50 text-body mb-6 md:mb-10"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 24 ) ); ?></p>
+							<a class="text-accent-gold font-bold text-sm flex items-center gap-3 hover:gap-5 transition-all" href="<?php the_permalink(); ?>">ادامه مطلب <span class="material-symbols-outlined text-lg" data-icon="arrow_back">arrow_back</span></a>
+						</div>
+					</div>
+					<?php
+				endwhile;
+				wp_reset_postdata();
+				return (string) ob_get_clean();
+			},
+			'home'
+		) : '';
+
+		echo $blog_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		?>
 	</div>
 </section>

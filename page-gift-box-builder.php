@@ -9,50 +9,80 @@ defined( 'ABSPATH' ) || exit;
 
 get_header();
 
-$products_raw = function_exists( 'wc_get_products' ) ? wc_get_products(
-	array(
-		'status'  => 'publish',
-		'limit'   => 36,
-		'orderby' => 'date',
-		'order'   => 'DESC',
-		'return'  => 'objects',
-	)
+$products_cache_key = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'giftbuilder', 'products_payload', array( 'limit' => 36 ) ) : '';
+$products           = function_exists( 'noble_cache_remember' ) ? noble_cache_remember(
+	$products_cache_key,
+	(int) apply_filters( 'noble_cache_ttl_giftbuilder_products', 10 * MINUTE_IN_SECONDS ),
+	function () {
+		$products_raw = function_exists( 'wc_get_products' ) ? wc_get_products(
+			array(
+				'status'  => 'publish',
+				'limit'   => 36,
+				'orderby' => 'date',
+				'order'   => 'DESC',
+				'return'  => 'objects',
+			)
+		) : array();
+
+		$product_ids = array();
+		foreach ( $products_raw as $p ) {
+			if ( $p instanceof WC_Product ) {
+				$product_ids[] = (int) $p->get_id();
+			}
+		}
+		$product_ids = array_values( array_unique( array_filter( $product_ids ) ) );
+		if ( ! empty( $product_ids ) && function_exists( 'update_object_term_cache' ) ) {
+			update_object_term_cache( $product_ids, 'product' );
+		}
+
+		$products = array();
+		foreach ( $products_raw as $product ) {
+			if ( ! $product instanceof WC_Product ) {
+				continue;
+			}
+			if ( ! $product->is_purchasable() || ! $product->is_in_stock() ) {
+				continue;
+			}
+
+			$price = (float) $product->get_price();
+			if ( $price <= 0 && $product->is_type( 'variable' ) ) {
+				$price = (float) $product->get_variation_price( 'min', true );
+			}
+			if ( $price <= 0 ) {
+				continue;
+			}
+
+			$gender_terms = wp_get_post_terms( $product->get_id(), 'pa_gender', array( 'fields' => 'names' ) );
+			$gender_label = ( ! is_wp_error( $gender_terms ) && ! empty( $gender_terms ) ) ? (string) $gender_terms[0] : 'یونیسکس';
+
+			$family_terms = wp_get_post_terms( $product->get_id(), 'pa_scent-family', array( 'fields' => 'names' ) );
+			$family_label = ( ! is_wp_error( $family_terms ) && ! empty( $family_terms ) ) ? (string) $family_terms[0] : 'عمومی';
+
+			$season_terms = wp_get_post_terms( $product->get_id(), 'pa_season', array( 'fields' => 'names' ) );
+			$season_label = ( ! is_wp_error( $season_terms ) && ! empty( $season_terms ) ) ? (string) $season_terms[0] : 'چهارفصل';
+
+			$occasion_terms = wp_get_post_terms( $product->get_id(), 'pa_occasion', array( 'fields' => 'names' ) );
+			$occasion_label = ( ! is_wp_error( $occasion_terms ) && ! empty( $occasion_terms ) ) ? (string) $occasion_terms[0] : 'عمومی';
+
+			$products[] = array(
+				'id'       => $product->get_id(),
+				'name'     => $product->get_name(),
+				'price'    => (int) round( $price ),
+				'image'    => wp_get_attachment_image_url( $product->get_image_id(), 'woocommerce_thumbnail' ) ?: wc_placeholder_img_src( 'woocommerce_thumbnail' ),
+				'gender'   => $gender_label,
+				'family'   => $family_label,
+				'season'   => $season_label,
+				'occasion' => $occasion_label,
+			);
+		}
+
+		return $products;
+	},
+	'giftbuilder'
 ) : array();
 
-$products = array();
-foreach ( $products_raw as $product ) {
-	if ( ! $product instanceof WC_Product ) {
-		continue;
-	}
-	if ( ! $product->is_purchasable() || ! $product->is_in_stock() ) {
-		continue;
-	}
-
-	$price = (float) $product->get_price();
-	if ( $price <= 0 && $product->is_type( 'variable' ) ) {
-		$price = (float) $product->get_variation_price( 'min', true );
-	}
-	if ( $price <= 0 ) {
-		continue;
-	}
-
-	$gender_terms = wp_get_post_terms( $product->get_id(), 'pa_gender', array( 'fields' => 'names' ) );
-	$gender_label = ( ! is_wp_error( $gender_terms ) && ! empty( $gender_terms ) ) ? (string) $gender_terms[0] : 'یونیسکس';
-
-	$products[] = array(
-		'id'     => $product->get_id(),
-		'name'   => $product->get_name(),
-		'price'  => (int) round( $price ),
-		'image'  => wp_get_attachment_image_url( $product->get_image_id(), 'woocommerce_thumbnail' ) ?: wc_placeholder_img_src( 'woocommerce_thumbnail' ),
-		'gender' => $gender_label,
-		'family' => ( ! is_wp_error( wp_get_post_terms( $product->get_id(), 'pa_scent-family', array( 'fields' => 'names' ) ) ) && ! empty( wp_get_post_terms( $product->get_id(), 'pa_scent-family', array( 'fields' => 'names' ) ) ) ) ? (string) wp_get_post_terms( $product->get_id(), 'pa_scent-family', array( 'fields' => 'names' ) )[0] : 'عمومی',
-		'season' => ( ! is_wp_error( wp_get_post_terms( $product->get_id(), 'pa_season', array( 'fields' => 'names' ) ) ) && ! empty( wp_get_post_terms( $product->get_id(), 'pa_season', array( 'fields' => 'names' ) ) ) ) ? (string) wp_get_post_terms( $product->get_id(), 'pa_season', array( 'fields' => 'names' ) )[0] : 'چهارفصل',
-		'occasion' => ( ! is_wp_error( wp_get_post_terms( $product->get_id(), 'pa_occasion', array( 'fields' => 'names' ) ) ) && ! empty( wp_get_post_terms( $product->get_id(), 'pa_occasion', array( 'fields' => 'names' ) ) ) ) ? (string) wp_get_post_terms( $product->get_id(), 'pa_occasion', array( 'fields' => 'names' ) )[0] : 'عمومی',
-	);
-}
-
 $payload = array(
-	'products' => $products,
+	'products' => is_array( $products ) ? $products : array(),
 	'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
 	'nonce'    => wp_create_nonce( 'noble_gift_box_builder' ),
 );

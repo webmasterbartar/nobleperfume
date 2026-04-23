@@ -109,79 +109,235 @@ if ( $product->is_on_sale() ) {
 		</p>
 		
 		<!-- Title -->
-		<h3 class="text-xs md:text-sm font-bold leading-tight mb-2 line-clamp-1 group-hover:text-primary transition-colors m-0 overflow-hidden text-ellipsis whitespace-nowrap" style="line-height:1.6; <?php echo ! $product->is_in_stock() ? 'color:#9ca3af;' : 'color:#1f2937;'; ?>">
+		<h3 class="text-xs md:text-sm font-bold leading-tight mb-2 line-clamp-1 group-hover:text-primary transition-colors m-0 break-words" style="line-height:1.6; <?php echo ! $product->is_in_stock() ? 'color:#9ca3af;' : 'color:#1f2937;'; ?>">
 			<a href="<?php echo esc_url( $product_url ); ?>" class="text-inherit no-underline">
 				<?php echo esc_html( $product->get_name() ); ?>
 			</a>
 		</h3>
 
 		<!-- Price & Call to Action -->
-		<div class="mt-auto n-card-footer">
+		<?php if ( ! defined( 'NOBLE_LOOP_STYLE_ADDED' ) ) : define( 'NOBLE_LOOP_STYLE_ADDED', true ); ?>
+		<style>
+		/* ── Noble Card: Price & CTA ── */
+
+		/* price span: block, transparent bg */
+		.n-card-price .price {
+			display: block;
+			background: transparent !important;
+		}
+
+		/* All woocommerce price amounts: clear background */
+		.n-card-price .woocommerce-Price-amount {
+			background: transparent !important;
+		}
+
+		/* ── Strikethrough: قیمت اصلی ── */
+		.n-card-price del {
+			display: block;
+			font-size: 11px;
+			font-weight: 400;
+			color: #b0b0b0 !important;
+			text-decoration: line-through;
+			background: transparent !important;
+			line-height: 1.5;
+		}
+		.n-card-price del bdi { color: #b0b0b0 !important; font-size: 11px !important; font-weight: 400 !important; }
+
+		/* ── Sale price ── */
+		.n-card-price ins {
+			display: block;
+			text-decoration: none !important;
+			background: transparent !important;
+			line-height: 1.5;
+		}
+		.n-card-price ins bdi { color: #051061 !important; font-size: 14px !important; font-weight: 700 !important; }
+
+		/* ── Regular price (no sale) ── */
+		.n-card-price .price > .woocommerce-Price-amount bdi {
+			color: #051061 !important;
+			font-size: 14px !important;
+			font-weight: 700 !important;
+		}
+
+
+		/* ── Cart button baseline ── */
+		a.n-cart-btn.button {
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 6px !important;
+			text-decoration: none !important;
+			border: none !important;
+			cursor: pointer !important;
+			box-shadow: none !important;
+			flex-wrap: nowrap !important;
+			transition: background 0.22s ease, color 0.22s ease, transform 0.15s ease !important;
+			outline: none !important;
+			position: relative !important;
+			overflow: hidden !important;
+		}
+
+		/* WooCommerce injects "View cart" link after AJAX add-to-cart.
+		   In this compact card UI we keep the layout stable and hide that extra link. */
+		li.product a.added_to_cart {
+			display: none !important;
+		}
+
+		/* Keep icon button visible while ajax request runs */
+		li.product a.n-cart-btn.loading {
+			opacity: 1 !important;
+		}
+		li.product a.n-cart-btn.button.is-loading {
+			pointer-events: none !important;
+			color: transparent !important;
+		}
+		li.product a.n-cart-btn.button.is-loading .material-symbols-outlined {
+			opacity: 0 !important;
+		}
+		li.product a.n-cart-btn.button.is-loading::after {
+			content: "";
+			position: absolute;
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			border: 2px solid rgba(5, 16, 97, .2);
+			border-top-color: #051061;
+			animation: nCartSpin .65s linear infinite;
+		}
+		li.product a.n-cart-btn.button.n-added-success,
+		li.product a.n-cart-btn.button.n-added-success:hover {
+			background: linear-gradient(135deg, #15803d 0%, #22c55e 100%) !important;
+			color: #fff !important;
+			transform: none !important;
+			box-shadow: 0 10px 20px -12px rgba(21, 128, 61, .55) !important;
+		}
+		li.product a.n-cart-btn.button.n-added-success .material-symbols-outlined {
+			color: #fff !important;
+		}
+		@keyframes nCartSpin {
+			to { transform: rotate(360deg); }
+		}
+
+		/* ── Mobile: icon-only button ── */
+		@media (max-width: 767px) {
+			a.n-cart-btn.button {
+				width: 36px !important;
+				height: 36px !important;
+				border-radius: 50% !important;
+				padding: 0 !important;
+				background: #eef0f8 !important;
+				color: #051061 !important;
+			}
+			a.n-cart-btn.button:hover {
+				background: #051061 !important;
+				color: #fff !important;
+				transform: scale(1.08) !important;
+			}
+			a.n-cart-btn.button .material-symbols-outlined { font-size: 18px !important; line-height: 1 !important; margin: 0 !important; padding: 0 !important; }
+			.n-cart-text { display: none !important; }
+		}
+
+		/* ── Desktop: compact icon-only button ── */
+		@media (min-width: 768px) {
+			a.n-cart-btn.button {
+				width: 36px !important;
+				height: 36px !important;
+				padding: 0 !important;
+				border-radius: 50% !important;
+				background: #eef0f8 !important;
+				color: #051061 !important;
+				line-height: 1 !important;
+			}
+			a.n-cart-btn.button:hover {
+				background: #051061 !important;
+				color: #fff !important;
+				transform: scale(1.08) !important;
+				box-shadow: none !important;
+			}
+			a.n-cart-btn.button .material-symbols-outlined { font-size: 16px !important; line-height: 1 !important; margin: 0 !important; padding: 0 !important; }
+			.n-cart-text { display: none !important; }
+		}
+		</style>
+		<?php endif; ?>
+		<?php if ( ! defined( 'NOBLE_LOOP_ATC_SCRIPT_ADDED' ) ) : define( 'NOBLE_LOOP_ATC_SCRIPT_ADDED', true ); ?>
+		<script>
+		(function() {
+			if (typeof jQuery === 'undefined') {
+				return;
+			}
+			var originKey = 'data-n-cart-origin';
+			var successIcon = '<span class="material-symbols-outlined">check</span>';
+
+			jQuery(document.body).on('adding_to_cart', function(event, $button) {
+				if (!$button || !$button.length || !$button.hasClass('n-cart-btn')) {
+					return;
+				}
+				if (!$button.attr(originKey)) {
+					$button.attr(originKey, $button.html());
+				}
+				$button.removeClass('n-added-success');
+				$button.addClass('is-loading');
+			});
+
+			jQuery(document.body).on('added_to_cart', function(event, fragments, cartHash, $button) {
+				if (!$button || !$button.length || !$button.hasClass('n-cart-btn')) {
+					return;
+				}
+				$button.removeClass('is-loading').addClass('n-added-success');
+				$button.html(successIcon);
+			});
+		})();
+		</script>
+		<?php endif; ?>
+
+		<div class="mt-auto" style="padding-top:12px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid #f0f0f0; gap:8px;">
 
 			<!-- Price -->
-			<div class="n-card-footer__price">
+			<div style="flex: 1 1 auto; overflow: hidden; text-align: right;">
 				<?php if ( ! $product->is_in_stock() ) : ?>
-					<span class="n-card-price n-card-price--oos"><?php echo esc_html__( 'ناموجود', 'noble-theme' ); ?></span>
-				<?php else : ?>
+					<span style="font-size:12px; font-weight:600; color:#b0b0b0;">ناموجود</span>
+				<?php elseif ( $price_html = $product->get_price_html() ) : ?>
 					<div class="n-card-price">
-						<?php
-						if ( $product->is_type( 'variable' ) ) {
-							$min_regular = (float) $product->get_variation_regular_price( 'min', true );
-							$min_sale    = (float) $product->get_variation_sale_price( 'min', true );
-							$min_price   = (float) $product->get_variation_price( 'min', true );
-							$max_price   = (float) $product->get_variation_price( 'max', true );
-
-							$is_range   = ( $min_price !== $max_price );
-							$is_on_sale = $product->is_on_sale() && $min_sale > 0 && $min_regular > 0 && $min_sale < $min_regular;
-							?>
-							<span class="price">
-								<?php if ( $is_range ) : ?>
-									<span class="n-card-price__prefix"><?php echo esc_html__( 'از', 'noble-theme' ); ?></span>
-								<?php endif; ?>
-
-								<?php if ( $is_on_sale ) : ?>
-									<del class="n-card-price__old"><?php echo wp_kses_post( wc_price( $min_regular ) ); ?></del>
-									<ins class="n-card-price__new"><?php echo wp_kses_post( wc_price( $min_sale ) ); ?></ins>
-								<?php else : ?>
-									<span class="n-card-price__new"><?php echo wp_kses_post( wc_price( $min_price ) ); ?></span>
-								<?php endif; ?>
-							</span>
-							<?php
-						} elseif ( $price_html = $product->get_price_html() ) {
-							echo wp_kses_post( $price_html );
-						}
-						?>
+						<?php echo wp_kses_post( $price_html ); ?>
 					</div>
 				<?php endif; ?>
 			</div>
 
 			<!-- Add to Cart -->
 			<?php if ( $product->is_purchasable() && $product->is_in_stock() ) : ?>
-				<?php
-				$btn_class = implode(
-					' ',
-					array_filter(
-						array(
-							'n-card-atc',
-							'button',
-							'product_type_' . $product->get_type(),
-							'add_to_cart_button',
-							$product->supports( 'ajax_add_to_cart' ) ? 'ajax_add_to_cart' : '',
-						)
-					)
-				);
-				?>
-				<a
-					href="<?php echo esc_url( $product->add_to_cart_url() ); ?>"
-					data-quantity="1"
-					class="<?php echo esc_attr( $btn_class ); ?>"
-					data-product_id="<?php echo esc_attr( (string) $product->get_id() ); ?>"
-					data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>"
-					aria-label="<?php echo esc_attr( $product->add_to_cart_description() ); ?>"
-					rel="nofollow"
-				>
-					<span class="material-symbols-outlined" aria-hidden="true">shopping_cart</span>
-				</a>
+				<div style="flex-shrink:0;">
+					<?php
+					$cart_text = esc_html( $product->add_to_cart_text() );
+					$cart_url  = esc_url( $product->add_to_cart_url() );
+					$is_in_cart = false;
+					if ( function_exists( 'WC' ) && WC() && WC()->cart ) {
+						foreach ( WC()->cart->get_cart() as $cart_item ) {
+							if ( isset( $cart_item['product_id'] ) && (int) $cart_item['product_id'] === (int) $product->get_id() ) {
+								$is_in_cart = true;
+								break;
+							}
+						}
+					}
+					$btn_class = implode( ' ', array_filter( array(
+						'n-cart-btn',
+						'button product_type_' . $product->get_type(),
+						$product->is_purchasable() && $product->is_in_stock() ? 'add_to_cart_button' : '',
+						$product->supports( 'ajax_add_to_cart' ) && $product->is_purchasable() && $product->is_in_stock() ? 'ajax_add_to_cart' : '',
+						$is_in_cart ? 'n-added-success' : '',
+					) ) );
+
+					printf(
+						'<a href="%s" data-quantity="1" class="%s" data-product_id="%d" data-product_sku="%s" aria-label="%s" rel="nofollow">',
+						$cart_url,
+						esc_attr( $btn_class ),
+						$product->get_id(),
+						esc_attr( $product->get_sku() ),
+						esc_attr( $product->add_to_cart_description() )
+					);
+					?>
+					<span class="material-symbols-outlined"><?php echo $is_in_cart ? 'check' : 'shopping_cart'; ?></span>
+					</a>
+				</div>
 			<?php endif; ?>
 
 		</div>

@@ -12,6 +12,33 @@ document.querySelectorAll(".material-symbols-outlined").forEach((el) => {
   }
 });
 
+// Card add-to-cart success state for home carousels.
+(() => {
+  const markAdded = (btn) => {
+    if (!btn || !(btn instanceof HTMLElement)) return;
+    btn.classList.add("is-added");
+  };
+
+  const isHomeCardAtc = (el) =>
+    el &&
+    el.classList &&
+    el.classList.contains("noble-card-atc") &&
+    el.classList.contains("add_to_cart_button");
+
+  // WooCommerce triggers this jQuery event on successful AJAX add to cart.
+  if (typeof window.jQuery !== "undefined") {
+    window.jQuery(document.body).on(
+      "added_to_cart",
+      function (event, fragments, cartHash, button) {
+        const el = button && button[0] ? button[0] : null;
+        if (isHomeCardAtc(el)) {
+          markAdded(el);
+        }
+      }
+    );
+  }
+})();
+
 // Smooth accordion animation for shop sidebar filters.
 document.querySelectorAll(".shop-filter-accordion").forEach((accordion) => {
   const summary = accordion.querySelector("summary");

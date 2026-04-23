@@ -9,6 +9,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$resolve_page_url = static function( $path, $fallback ) {
+	$page = get_page_by_path( trim( (string) $path, '/' ) );
+	if ( $page instanceof WP_Post ) {
+		$permalink = get_permalink( $page );
+		if ( $permalink ) {
+			return $permalink;
+		}
+	}
+	return $fallback;
+};
+
+$about_url   = $resolve_page_url( 'about-us', home_url( '/about-us/' ) );
+$guide_url   = $resolve_page_url( 'buying-guide', home_url( '/buying-guide/' ) );
+$contact_url = $resolve_page_url( 'contact', home_url( '/contact/' ) );
+$blog_url    = get_post_type_archive_link( 'post' ) ? get_post_type_archive_link( 'post' ) : home_url( '/blog/' );
+
 $cart_count = 0;
 if ( function_exists( 'WC' ) && WC() && WC()->cart ) {
 	$cart_count = (int) WC()->cart->get_cart_contents_count();
@@ -18,15 +34,15 @@ $promo_text      = 'ارسال رایگان برای خرید بالای ۵۰۰ 
 $utility_links   = array(
 	array(
 		'label' => 'درباره ما',
-		'url'   => home_url( '/about-us/' ),
+		'url'   => $about_url,
 	),
 	array(
 		'label' => 'راهنمای خرید',
-		'url'   => home_url( '/buying-guide/' ),
+		'url'   => $guide_url,
 	),
 	array(
 		'label' => 'تماس',
-		'url'   => home_url( '/contact/' ),
+		'url'   => $contact_url,
 	),
 );
 $brand_logo_url  = get_template_directory_uri() . '/assets/images/%D9%84%D9%88%DA%AF%D9%88-%D9%86%D9%88%D8%A8%D9%84.png';
@@ -80,8 +96,8 @@ $header_menu_location = has_nav_menu( 'noble_primary' ) ? 'noble_primary' : ( ha
 						<li class="noble-nav__item"><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( 'خانه' ); ?></a></li>
 						<li class="noble-nav__item"><a href="<?php echo esc_url( home_url( '/shop/' ) ); ?>"><?php echo esc_html( 'محصولات' ); ?></a></li>
 						<li class="noble-nav__item"><a href="<?php echo esc_url( home_url( '/collections/' ) ); ?>"><?php echo esc_html( 'مجموعه‌ها' ); ?></a></li>
-						<li class="noble-nav__item"><a href="<?php echo esc_url( home_url( '/blog/' ) ); ?>"><?php echo esc_html( 'بلاگ' ); ?></a></li>
-						<li class="noble-nav__item"><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php echo esc_html( 'تماس' ); ?></a></li>
+						<li class="noble-nav__item"><a href="<?php echo esc_url( $blog_url ); ?>"><?php echo esc_html( 'بلاگ' ); ?></a></li>
+						<li class="noble-nav__item"><a href="<?php echo esc_url( $contact_url ); ?>"><?php echo esc_html( 'تماس' ); ?></a></li>
 					</ul>
 				<?php endif; ?>
 			</nav>
@@ -155,8 +171,8 @@ $header_menu_location = has_nav_menu( 'noble_primary' ) ? 'noble_primary' : ( ha
 				<ul class="noble-mobile-nav">
 					<li><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( 'خانه' ); ?></a></li>
 					<li><a href="<?php echo esc_url( home_url( '/shop/' ) ); ?>"><?php echo esc_html( 'محصولات' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/blog/' ) ); ?>"><?php echo esc_html( 'بلاگ' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php echo esc_html( 'تماس' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $blog_url ); ?>"><?php echo esc_html( 'بلاگ' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $contact_url ); ?>"><?php echo esc_html( 'تماس' ); ?></a></li>
 				</ul>
 				<?php
 			}

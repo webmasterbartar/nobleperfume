@@ -54,7 +54,31 @@ do_action( 'woocommerce_before_add_to_cart_form' );
 								</label>
 							</th>
 							<td class="value">
-								<div class="noble-variation-select-shell">
+								<?php
+								$attribute_key   = sanitize_title( $attribute_name );
+								$request_key     = 'attribute_' . $attribute_key;
+								$current_value   = isset( $_REQUEST[ $request_key ] ) ? wc_clean( wp_unslash( (string) $_REQUEST[ $request_key ] ) ) : $product->get_variation_default_attribute( $attribute_key );
+								$is_taxonomy     = taxonomy_exists( $attribute_name );
+								$option_buttons  = array();
+
+								foreach ( (array) $options as $option ) {
+									$option_value = (string) $option;
+									$option_label = $option_value;
+
+									if ( $is_taxonomy ) {
+										$term = get_term_by( 'slug', $option_value, $attribute_name );
+										if ( $term && ! is_wp_error( $term ) && isset( $term->name ) ) {
+											$option_label = (string) $term->name;
+										}
+									}
+
+									$option_buttons[] = array(
+										'value' => $option_value,
+										'label' => $option_label,
+									);
+								}
+								?>
+								<div class="noble-variation-select-shell noble-variation-select-shell--sr">
 									<?php
 									wc_dropdown_variation_attribute_options(
 										array(
@@ -66,6 +90,22 @@ do_action( 'woocommerce_before_add_to_cart_form' );
 										)
 									);
 									?>
+								</div>
+								<div class="noble-variation-options" role="radiogroup" aria-label="<?php echo esc_attr( wc_attribute_label( $attribute_name ) ); ?>" data-attribute-name="<?php echo esc_attr( $attribute_key ); ?>">
+									<?php foreach ( $option_buttons as $option_button ) : ?>
+										<?php
+										$is_selected = ( '' !== (string) $current_value && (string) $current_value === (string) $option_button['value'] );
+										?>
+										<button
+											type="button"
+											class="noble-variation-option<?php echo $is_selected ? ' is-selected' : ''; ?>"
+											data-value="<?php echo esc_attr( (string) $option_button['value'] ); ?>"
+											role="radio"
+											aria-checked="<?php echo $is_selected ? 'true' : 'false'; ?>"
+										>
+											<span class="noble-variation-option__text"><?php echo esc_html( (string) $option_button['label'] ); ?></span>
+										</button>
+									<?php endforeach; ?>
 								</div>
 							</td>
 						</tr>

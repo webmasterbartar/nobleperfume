@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $noble_includes = array(
+	'/inc/cache.php',
 	'/inc/setup.php',
 	'/inc/enqueue.php',
 	'/inc/template-tags.php',
@@ -18,6 +19,7 @@ $noble_includes = array(
 	'/inc/woocommerce.php',
 	'/inc/quiz.php',
 	'/inc/gift-box-builder.php',
+	'/inc/static-pages.php',
 	'/inc/demo-seeder.php',
 	'/inc/seo.php',
 );

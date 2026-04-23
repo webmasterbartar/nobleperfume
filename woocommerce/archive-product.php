@@ -16,7 +16,21 @@ get_header( 'shop' );
 				<div class="no-scrollbar flex items-center gap-3 overflow-x-auto">
 					<a class="shop-tab-active" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">همه محصولات</a>
 					<?php
-					$top_categories = get_terms(
+					$top_categories_key = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'shop', 'top_categories', array( 'tax' => 'product_cat', 'n' => 6 ) ) : '';
+					$top_categories     = function_exists( 'noble_cache_remember' ) ? noble_cache_remember(
+						$top_categories_key,
+						(int) apply_filters( 'noble_cache_ttl_shop_terms', 20 * MINUTE_IN_SECONDS ),
+						function () {
+							return get_terms(
+								array(
+									'taxonomy'   => 'product_cat',
+									'hide_empty' => true,
+									'number'     => 6,
+								)
+							);
+						},
+						'shop'
+					) : get_terms(
 						array(
 							'taxonomy'   => 'product_cat',
 							'hide_empty' => true,
@@ -144,7 +158,21 @@ get_header( 'shop' );
 									</summary>
 									<div class="shop-filter-panel grid grid-cols-2 gap-2 pt-3">
 										<?php
-										$brand_terms = get_terms(
+										$brand_terms_key = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'shop', 'brand_terms', array( 'tax' => 'pa_brand', 'n' => 4 ) ) : '';
+										$brand_terms     = function_exists( 'noble_cache_remember' ) ? noble_cache_remember(
+											$brand_terms_key,
+											(int) apply_filters( 'noble_cache_ttl_shop_terms', 20 * MINUTE_IN_SECONDS ),
+											function () {
+												return get_terms(
+													array(
+														'taxonomy'   => 'pa_brand',
+														'hide_empty' => true,
+														'number'     => 4,
+													)
+												);
+											},
+											'shop'
+										) : get_terms(
 											array(
 												'taxonomy'   => 'pa_brand',
 												'hide_empty' => true,
@@ -198,7 +226,23 @@ get_header( 'shop' );
 											if ( ! taxonomy_exists( $tax ) ) {
 												continue;
 											}
-											$terms = get_terms(
+											$terms_key = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'shop', 'attr_terms', array( 'tax' => $tax, 'n' => 10 ) ) : '';
+											$terms     = function_exists( 'noble_cache_remember' ) ? noble_cache_remember(
+												$terms_key,
+												(int) apply_filters( 'noble_cache_ttl_shop_terms', 20 * MINUTE_IN_SECONDS ),
+												function () use ( $tax ) {
+													return get_terms(
+														array(
+															'taxonomy'   => $tax,
+															'hide_empty' => true,
+															'number'     => 10,
+															'orderby'    => 'name',
+															'order'      => 'ASC',
+														)
+													);
+												},
+												'shop'
+											) : get_terms(
 												array(
 													'taxonomy'   => $tax,
 													'hide_empty' => true,
@@ -257,7 +301,15 @@ get_header( 'shop' );
 									</div>
 									<?php
 									global $wpdb;
-									$max_price_db = (int) $wpdb->get_var( "SELECT MAX(max_price) FROM {$wpdb->wc_product_meta_lookup}" );
+									$max_price_key = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'shop', 'max_price_db' ) : '';
+									$max_price_db  = function_exists( 'noble_cache_remember' ) ? (int) noble_cache_remember(
+										$max_price_key,
+										(int) apply_filters( 'noble_cache_ttl_shop_max_price', 30 * MINUTE_IN_SECONDS ),
+										function () use ( $wpdb ) {
+											return (int) $wpdb->get_var( "SELECT MAX(max_price) FROM {$wpdb->wc_product_meta_lookup}" );
+										},
+										'shop'
+									) : (int) $wpdb->get_var( "SELECT MAX(max_price) FROM {$wpdb->wc_product_meta_lookup}" );
 									$price_min_bound = 0;
 									$price_max_bound = $max_price_db > 0 ? $max_price_db : 50000000;
 									$selected_min_price = isset( $_GET['min_price'] ) ? max( 0, (int) wp_unslash( (string) $_GET['min_price'] ) ) : $price_min_bound;
@@ -468,7 +520,15 @@ get_header( 'shop' );
 								<h4 class="n-filter-title"><span class="material-symbols-outlined" style="font-size:18px;">branding_watermark</span> برندهای برتر</h4>
 								<div class="n-brand-wrap">
 									<?php
-									$mobile_brand_terms = get_terms( array( 'taxonomy' => 'pa_brand', 'hide_empty' => true, 'number' => 8 ) );
+									$mobile_brand_key   = function_exists( 'noble_cache_key' ) ? noble_cache_key( 'shop', 'mobile_brand_terms', array( 'tax' => 'pa_brand', 'n' => 8 ) ) : '';
+									$mobile_brand_terms = function_exists( 'noble_cache_remember' ) ? noble_cache_remember(
+										$mobile_brand_key,
+										(int) apply_filters( 'noble_cache_ttl_shop_terms', 20 * MINUTE_IN_SECONDS ),
+										function () {
+											return get_terms( array( 'taxonomy' => 'pa_brand', 'hide_empty' => true, 'number' => 8 ) );
+										},
+										'shop'
+									) : get_terms( array( 'taxonomy' => 'pa_brand', 'hide_empty' => true, 'number' => 8 ) );
 									if ( ! is_wp_error( $mobile_brand_terms ) && ! empty( $mobile_brand_terms ) ) :
 										foreach ( $mobile_brand_terms as $mobile_brand_term ) :
 											?>

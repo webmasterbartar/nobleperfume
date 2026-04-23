@@ -13,6 +13,11 @@ global $product;
 $min_value   = $product->get_min_purchase_quantity();
 $max_value   = $product->get_max_purchase_quantity();
 $input_value = isset( $_POST['quantity'] ) ? wc_stock_amount( wp_unslash( $_POST['quantity'] ) ) : $product->get_min_purchase_quantity();
+$in_cart     = false;
+
+if ( function_exists( 'WC' ) && WC() && WC()->cart ) {
+	$in_cart = WC()->cart->get_cart_contents_count() > 0;
+}
 
 $button_class = 'single_add_to_cart_button button alt noble-simple-submit noble-variable-submit flex-1 w-full bg-primary text-white h-14 rounded-2xl font-bold text-md hover:bg-primary/90 transition-all flex items-center justify-center gap-3';
 if ( function_exists( 'wc_wp_theme_get_element_class_name' ) ) {
@@ -47,7 +52,11 @@ if ( function_exists( 'wc_wp_theme_get_element_class_name' ) ) {
 
 	<?php do_action( 'woocommerce_after_add_to_cart_quantity' ); ?>
 
-	<button type="submit" class="<?php echo esc_attr( $button_class ); ?>">
+	<button
+		type="submit"
+		class="<?php echo esc_attr( $button_class . ( $in_cart ? ' noble-atc-in-cart' : '' ) ); ?>"
+		data-noble-in-cart="<?php echo $in_cart ? '1' : '0'; ?>"
+	>
 		<span class="material-symbols-outlined text-xl" aria-hidden="true">shopping_bag</span>
 		<?php echo esc_html( $product->single_add_to_cart_text() ); ?>
 	</button>

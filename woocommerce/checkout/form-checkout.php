@@ -31,6 +31,41 @@ if ( $is_step_two ) {
 } elseif ( $is_step_three ) {
 	$header_back_url = $step_two_url;
 }
+
+// Handle coupon actions directly on step 1.
+if (
+	$is_step_one &&
+	isset( $_SERVER['REQUEST_METHOD'] ) &&
+	'POST' === strtoupper( (string) $_SERVER['REQUEST_METHOD'] ) &&
+	isset( $_POST['noble_coupon_action'] ) &&
+	function_exists( 'WC' ) &&
+	WC()->cart
+) {
+	$nonce_ok = isset( $_POST['noble_step1_coupon_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( (string) $_POST['noble_step1_coupon_nonce'] ) ), 'noble_step1_coupon_action' );
+	if ( $nonce_ok ) {
+		$action = sanitize_key( wp_unslash( (string) $_POST['noble_coupon_action'] ) );
+		if ( 'apply' === $action ) {
+			$coupon_code = isset( $_POST['coupon_code'] ) ? wc_format_coupon_code( sanitize_text_field( wp_unslash( (string) $_POST['coupon_code'] ) ) ) : '';
+			if ( '' !== $coupon_code ) {
+				WC()->cart->apply_coupon( $coupon_code );
+				WC()->cart->calculate_totals();
+			}
+		} elseif ( 'remove' === $action ) {
+			$coupon_code = isset( $_POST['remove_coupon_code'] ) ? wc_format_coupon_code( sanitize_text_field( wp_unslash( (string) $_POST['remove_coupon_code'] ) ) ) : '';
+			if ( '' !== $coupon_code ) {
+				WC()->cart->remove_coupon( $coupon_code );
+				WC()->cart->calculate_totals();
+			}
+		}
+	}
+	wp_safe_redirect( $step_one_url );
+	exit;
+}
+
+$discount_total_raw  = function_exists( 'WC' ) && WC()->cart ? (float) WC()->cart->get_discount_total() + (float) WC()->cart->get_discount_tax() : 0.0;
+$discount_total_html = $discount_total_raw > 0 ? wc_price( $discount_total_raw ) : '';
+$applied_coupons     = function_exists( 'WC' ) && WC()->cart ? (array) WC()->cart->get_coupons() : array();
+$iran_states         = function_exists( 'WC' ) && WC()->countries ? (array) WC()->countries->get_states( 'IR' ) : array();
 ?>
 <section class="noble-checkout-wrap <?php echo $is_step_three ? 'noble-checkout-step-3' : ( $is_step_two ? 'noble-checkout-step-2' : 'noble-checkout-step-1' ); ?> bg-background min-h-screen pb-32">
 	<header class="fixed top-0 w-full z-50 bg-surface flex justify-between items-center h-16 border-b border-primary/10">
@@ -57,33 +92,38 @@ if ( $is_step_two ) {
 		<main class="w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 pt-20">
 			<div class="noble-step1-inner max-w-md mx-auto md:max-w-[1300px]">
 			<div class="noble-step1-main">
-			<nav class="flex items-center justify-between w-full px-2 mb-8">
-				<div class="flex flex-col items-center gap-2">
-					<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shadow-md"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">person</span></div>
-					<span class="text-xs font-bold text-primary">اطلاعات</span>
+			<nav class="noble-checkout-progress mb-8 px-1" aria-label="Checkout steps">
+				<div class="noble-checkout-progress-item is-current">
+					<div class="noble-checkout-progress-dot"><span class="material-symbols-outlined">person</span></div>
+					<span class="noble-checkout-progress-label">اطلاعات</span>
 				</div>
-				<div class="flex-1 h-[2px] bg-outline-variant/30 mx-2 -mt-6"></div>
-				<div class="flex flex-col items-center gap-2 opacity-40">
-					<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined">local_shipping</span></div>
-					<span class="text-xs font-medium">ارسال</span>
+				<div class="noble-checkout-progress-line"></div>
+				<div class="noble-checkout-progress-item">
+					<div class="noble-checkout-progress-dot"><span class="material-symbols-outlined">local_shipping</span></div>
+					<span class="noble-checkout-progress-label">ارسال</span>
 				</div>
-				<div class="flex-1 h-[2px] bg-outline-variant/30 mx-2 -mt-6"></div>
-				<div class="flex flex-col items-center gap-2 opacity-40">
-					<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined">payments</span></div>
-					<span class="text-xs font-medium">پرداخت</span>
+				<div class="noble-checkout-progress-line"></div>
+				<div class="noble-checkout-progress-item">
+					<div class="noble-checkout-progress-dot"><span class="material-symbols-outlined">payments</span></div>
+					<span class="noble-checkout-progress-label">پرداخت</span>
 				</div>
 			</nav>
 
 			<?php if ( wc_coupons_enabled() ) : ?>
-				<form class="md:hidden w-full flex flex-row items-center gap-2 mb-6" method="post" action="<?php echo esc_url( $step_one_url ); ?>">
-					<input class="min-w-0 flex-1 bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 text-sm" placeholder="کد تخفیف" type="text" name="coupon_code" />
-					<button class="shrink-0 px-5 py-3 font-bold text-primary hover:bg-primary/5 rounded-xl transition-colors text-sm" type="submit" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>">اعمال</button>
-					<?php wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce' ); ?>
+				<form class="md:hidden noble-step1-coupon-mobile w-full flex flex-row items-center gap-2 mb-6" method="post" action="<?php echo esc_url( $step_one_url ); ?>">
+					<div class="noble-step1-coupon-mobile-input-wrap min-w-0 flex-1">
+						<span class="material-symbols-outlined noble-step1-coupon-mobile-icon">sell</span>
+						<input class="noble-step1-coupon-mobile-input min-w-0 w-full bg-surface-container-high border-none rounded-xl px-4 py-3 pr-12 focus:ring-2 focus:ring-primary/20 text-sm" placeholder="کد تخفیف" type="text" name="coupon_code" />
+					</div>
+					<input type="hidden" name="noble_coupon_action" value="apply" />
+					<?php wp_nonce_field( 'noble_step1_coupon_action', 'noble_step1_coupon_nonce' ); ?>
+					<button class="noble-step1-coupon-mobile-btn shrink-0 px-5 py-3 font-bold rounded-xl transition-colors text-sm" type="submit">اعمال</button>
 				</form>
 			<?php endif; ?>
 
 			<form id="noble-step1-checkout-form" method="post" class="noble-step1-form space-y-8" action="<?php echo esc_url( $step_two_url ); ?>" enctype="multipart/form-data" aria-label="<?php echo esc_attr__( 'Checkout', 'woocommerce' ); ?>">
 				<input type="hidden" name="noble_step1_submit" value="1" />
+				<div id="noble-step1-inline-error" class="noble-step1-inline-error hidden" role="alert" aria-live="assertive"></div>
 				<section class="space-y-6">
 					<header class="space-y-1">
 						<h2 class="text-xl font-extrabold text-on-surface">اطلاعات کاربری</h2>
@@ -93,17 +133,17 @@ if ( $is_step_two ) {
 						<div class="grid grid-cols-2 gap-4">
 							<div class="group">
 								<label class="block text-sm font-bold mb-2 text-on-surface-variant mr-1">نام</label>
-								<input class="noble-step1-input w-full bg-surface-container-high border-none rounded-xl py-4 px-4" placeholder="مثلاً رضا" type="text" name="billing_first_name" value="<?php echo esc_attr( $checkout->get_value( 'billing_first_name' ) ); ?>" />
+								<input class="noble-step1-input w-full bg-surface-container-high border-none rounded-xl py-4 px-4" placeholder="مثلاً رضا" type="text" name="billing_first_name" required autocomplete="given-name" value="<?php echo esc_attr( $checkout->get_value( 'billing_first_name' ) ); ?>" />
 							</div>
 							<div class="group">
 								<label class="block text-sm font-bold mb-2 text-on-surface-variant mr-1">نام خانوادگی</label>
-								<input class="noble-step1-input w-full bg-surface-container-high border-none rounded-xl py-4 px-4" placeholder="مثلاً محمدی" type="text" name="billing_last_name" value="<?php echo esc_attr( $checkout->get_value( 'billing_last_name' ) ); ?>" />
+								<input class="noble-step1-input w-full bg-surface-container-high border-none rounded-xl py-4 px-4" placeholder="مثلاً محمدی" type="text" name="billing_last_name" required autocomplete="family-name" value="<?php echo esc_attr( $checkout->get_value( 'billing_last_name' ) ); ?>" />
 							</div>
 						</div>
 						<div class="group">
 							<label class="block text-sm font-bold mb-2 text-on-surface-variant mr-1">شماره موبایل</label>
 							<div class="relative">
-								<input class="noble-step1-input noble-step1-ltr w-full bg-surface-container-high border-none rounded-xl py-4 pr-4 pl-12 text-right" placeholder="09123456789" type="tel" name="billing_phone" inputmode="numeric" pattern="[0-9]*" maxlength="11" autocomplete="tel-national" value="<?php echo esc_attr( $checkout->get_value( 'billing_phone' ) ); ?>" />
+								<input class="noble-step1-input noble-step1-ltr w-full bg-surface-container-high border-none rounded-xl py-4 pr-4 pl-12 text-right" placeholder="09123456789" type="tel" name="billing_phone" required inputmode="numeric" pattern="09[0-9]{9}" maxlength="11" autocomplete="tel-national" value="<?php echo esc_attr( $checkout->get_value( 'billing_phone' ) ); ?>" />
 								<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">smartphone</span>
 							</div>
 						</div>
@@ -118,17 +158,32 @@ if ( $is_step_two ) {
 						</div>
 					</header>
 					<div class="space-y-4">
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+							<div>
+								<label class="block text-xs font-bold mb-1 text-on-surface-variant mr-1">استان</label>
+								<select class="noble-step1-input w-full bg-surface-container-high border-none rounded-lg py-3 px-3" name="billing_state" required autocomplete="address-level1" data-noble-state-select="1">
+									<option value="">انتخاب استان</option>
+									<?php foreach ( $iran_states as $state_code => $state_label ) : ?>
+										<option value="<?php echo esc_attr( (string) $state_code ); ?>" <?php selected( $checkout->get_value( 'billing_state' ), $state_code ); ?>><?php echo esc_html( (string) $state_label ); ?></option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+							<div>
+								<label class="block text-xs font-bold mb-1 text-on-surface-variant mr-1">شهر</label>
+								<input class="noble-step1-input w-full bg-surface-container-high border-none rounded-lg py-3 px-3" placeholder="مثلاً تهران" type="text" name="billing_city" required autocomplete="address-level2" value="<?php echo esc_attr( $checkout->get_value( 'billing_city' ) ); ?>" />
+							</div>
+						</div>
 						<div class="relative">
 							<label class="block text-sm font-bold mb-2 text-on-surface-variant mr-1">جستجوی آدرس</label>
 							<div class="relative">
-								<input class="noble-step1-input noble-step1-address-search w-full bg-surface-container-high border-none rounded-xl py-4 pr-4 pl-4" placeholder="نام خیابان یا محله..." type="text" name="billing_address_1" value="<?php echo esc_attr( $checkout->get_value( 'billing_address_1' ) ); ?>" />
+								<input class="noble-step1-input noble-step1-address-search w-full bg-surface-container-high border-none rounded-xl py-4 pr-4 pl-4" placeholder="نام خیابان یا محله..." type="text" name="billing_address_1" required autocomplete="address-line1" value="<?php echo esc_attr( $checkout->get_value( 'billing_address_1' ) ); ?>" />
 								<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline">location_on</span>
 							</div>
 						</div>
 						<div class="grid grid-cols-12 gap-3">
 							<div class="col-span-4">
 								<label class="block text-xs font-bold mb-1 text-on-surface-variant mr-1">پلاک</label>
-								<input class="noble-step1-input w-full bg-surface-container-high border-none rounded-lg py-3 px-3 text-center" type="text" name="billing_city" value="<?php echo esc_attr( $checkout->get_value( 'billing_city' ) ); ?>" />
+								<input class="noble-step1-input w-full bg-surface-container-high border-none rounded-lg py-3 px-3 text-center" type="text" name="noble_plaque" autocomplete="off" value="<?php echo esc_attr( $checkout->get_value( 'noble_plaque' ) ); ?>" />
 							</div>
 							<div class="col-span-4">
 								<label class="block text-xs font-bold mb-1 text-on-surface-variant mr-1">واحد</label>
@@ -136,7 +191,7 @@ if ( $is_step_two ) {
 							</div>
 							<div class="col-span-4">
 								<label class="block text-xs font-bold mb-1 text-on-surface-variant mr-1">کد پستی</label>
-								<input class="noble-step1-input noble-step1-ltr w-full bg-surface-container-high border-none rounded-lg py-3 px-3 text-center" type="text" name="billing_postcode" value="<?php echo esc_attr( $checkout->get_value( 'billing_postcode' ) ); ?>" />
+								<input class="noble-step1-input noble-step1-ltr w-full bg-surface-container-high border-none rounded-lg py-3 px-3 text-center" type="text" name="billing_postcode" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" autocomplete="postal-code" value="<?php echo esc_attr( $checkout->get_value( 'billing_postcode' ) ); ?>" />
 							</div>
 						</div>
 					</div>
@@ -149,11 +204,28 @@ if ( $is_step_two ) {
 					</div>
 					<?php
 					$step1_items_rendered = 0;
-					foreach ( WC()->cart->get_cart() as $item ) :
+					foreach ( WC()->cart->get_cart() as $cart_item_key => $item ) :
 						if ( empty( $item['data'] ) || ! is_object( $item['data'] ) ) {
 							continue;
 						}
 						$preview_product = $item['data'];
+						$remove_url      = wc_get_cart_remove_url( $cart_item_key );
+						$qty_plus_url    = add_query_arg(
+							array(
+								'noble_step'      => 1,
+								'noble_qty_action'=> 'plus',
+								'cart_item'       => $cart_item_key,
+							),
+							wc_get_checkout_url()
+						);
+						$qty_minus_url   = add_query_arg(
+							array(
+								'noble_step'      => 1,
+								'noble_qty_action'=> 'minus',
+								'cart_item'       => $cart_item_key,
+							),
+							wc_get_checkout_url()
+						);
 						$step1_items_rendered++;
 						?>
 						<div class="noble-step1-product-row flex items-center gap-3.5 rounded-xl bg-white/80 py-3.5 px-4 border border-primary/10">
@@ -163,10 +235,21 @@ if ( $is_step_two ) {
 							<div class="flex-1 min-w-0">
 								<h4 class="text-[13px] font-bold text-on-surface line-clamp-1 mb-1"><?php echo esc_html( $preview_product->get_name() ); ?></h4>
 								<div class="flex justify-between items-center">
-									<p class="text-[11px] text-on-surface-variant"><?php echo esc_html( number_format_i18n( (int) $item['quantity'] ) ); ?> عدد</p>
+									<div class="noble-step1-qty-control inline-flex items-center rounded-lg border border-primary/15 bg-surface-container-lowest">
+										<a class="noble-step1-qty-btn" href="<?php echo esc_url( $qty_minus_url ); ?>" aria-label="کاهش تعداد">
+											<span class="material-symbols-outlined text-[16px]">remove</span>
+										</a>
+										<span class="noble-step1-qty-value"><?php echo esc_html( number_format_i18n( (int) $item['quantity'] ) ); ?></span>
+										<a class="noble-step1-qty-btn" href="<?php echo esc_url( $qty_plus_url ); ?>" aria-label="افزایش تعداد">
+											<span class="material-symbols-outlined text-[16px]">add</span>
+										</a>
+									</div>
 									<span class="text-[13px] font-semibold text-primary"><?php echo wp_kses_post( WC()->cart->get_product_subtotal( $preview_product, (int) $item['quantity'] ) ); ?></span>
 								</div>
 							</div>
+							<a class="noble-step1-remove-btn" href="<?php echo esc_url( $remove_url ); ?>" aria-label="حذف محصول">
+								<span class="material-symbols-outlined text-[18px]">delete</span>
+							</a>
 						</div>
 					<?php endforeach; ?>
 					<?php if ( 0 === $step1_items_rendered ) : ?>
@@ -176,7 +259,6 @@ if ( $is_step_two ) {
 
 				<input type="hidden" name="billing_country" value="<?php echo esc_attr( $checkout->get_value( 'billing_country' ) ? $checkout->get_value( 'billing_country' ) : 'IR' ); ?>" />
 				<input type="hidden" name="shipping_country" value="<?php echo esc_attr( $checkout->get_value( 'shipping_country' ) ? $checkout->get_value( 'shipping_country' ) : 'IR' ); ?>" />
-				<input type="hidden" name="billing_state" value="<?php echo esc_attr( $checkout->get_value( 'billing_state' ) ); ?>" />
 				<input type="hidden" name="shipping_state" value="<?php echo esc_attr( $checkout->get_value( 'shipping_state' ) ); ?>" />
 
 			</form>
@@ -190,15 +272,41 @@ if ( $is_step_two ) {
 					<?php if ( wc_coupons_enabled() ) : ?>
 						<form class="w-full flex flex-row items-center gap-2" method="post" action="<?php echo esc_url( $step_one_url ); ?>">
 							<input class="min-w-0 flex-1 bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 text-sm" placeholder="کد تخفیف" type="text" name="coupon_code" />
-							<button class="shrink-0 px-5 py-3 font-bold text-primary hover:bg-primary/5 rounded-xl transition-colors text-sm" type="submit" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>">اعمال</button>
-							<?php wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce' ); ?>
+							<input type="hidden" name="noble_coupon_action" value="apply" />
+							<?php wp_nonce_field( 'noble_step1_coupon_action', 'noble_step1_coupon_nonce' ); ?>
+							<button class="shrink-0 px-5 py-3 font-bold text-primary hover:bg-primary/5 rounded-xl transition-colors text-sm" type="submit">اعمال</button>
 						</form>
 					<?php endif; ?>
 					<div class="space-y-4">
+						<?php if ( ! empty( $applied_coupons ) ) : ?>
+							<div class="noble-step1-coupons space-y-2">
+								<?php foreach ( $applied_coupons as $coupon_code => $coupon_obj ) : ?>
+									<div class="noble-step1-coupon-row flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/80 px-3 py-2">
+										<div class="flex items-center gap-2 min-w-0">
+											<span class="material-symbols-outlined text-[16px] text-emerald-600">sell</span>
+											<span class="truncate text-[12px] font-bold text-emerald-700"><?php echo esc_html( wc_format_coupon_code( $coupon_code ) ); ?></span>
+											<span class="text-[12px] font-semibold text-emerald-800"><?php wc_cart_totals_coupon_html( $coupon_obj ); ?></span>
+										</div>
+										<form method="post" action="<?php echo esc_url( $step_one_url ); ?>">
+											<input type="hidden" name="noble_coupon_action" value="remove" />
+											<input type="hidden" name="remove_coupon_code" value="<?php echo esc_attr( (string) $coupon_code ); ?>" />
+											<?php wp_nonce_field( 'noble_step1_coupon_action', 'noble_step1_coupon_nonce' ); ?>
+											<button type="submit" class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 px-2 py-1 rounded-lg hover:bg-emerald-100 transition-colors">حذف</button>
+										</form>
+									</div>
+								<?php endforeach; ?>
+							</div>
+						<?php endif; ?>
 						<div class="flex justify-between items-center text-base gap-6">
 							<span class="text-on-surface-variant font-medium">تعداد کالا</span>
 							<span class="font-extrabold text-on-surface whitespace-nowrap text-left [direction:ltr] [font-variant-numeric:tabular-nums]"><?php echo esc_html( number_format_i18n( $cart_count ) ); ?></span>
 						</div>
+						<?php if ( $discount_total_raw > 0 ) : ?>
+							<div class="flex justify-between items-center text-base gap-6">
+								<span class="text-emerald-700 font-bold">تخفیف</span>
+								<span class="font-extrabold text-emerald-700 whitespace-nowrap text-left [direction:ltr] [font-variant-numeric:tabular-nums]">-<?php echo wp_kses_post( $discount_total_html ); ?></span>
+							</div>
+						<?php endif; ?>
 						<div class="flex justify-between items-center pt-4 border-t border-primary/10 gap-6">
 							<span class="text-on-surface-variant font-medium">جمع کل سفارش</span>
 							<span class="text-xl font-extrabold text-on-surface whitespace-nowrap text-left [direction:ltr] [font-variant-numeric:tabular-nums]"><?php echo wp_kses_post( $order_total ); ?></span>
@@ -216,6 +324,12 @@ if ( $is_step_two ) {
 					<span class="text-on-surface-variant font-medium">جمع کل سفارش:</span>
 					<span class="text-lg font-bold text-on-surface"><?php echo wp_kses_post( $order_total ); ?></span>
 				</div>
+				<?php if ( $discount_total_raw > 0 ) : ?>
+					<div class="flex justify-between items-center px-2 rounded-xl bg-emerald-50 border border-emerald-200 py-2">
+						<span class="text-emerald-700 text-sm font-bold">تخفیف اعمال‌شده</span>
+						<span class="text-emerald-700 text-sm font-extrabold">-<?php echo wp_kses_post( $discount_total_html ); ?></span>
+					</div>
+				<?php endif; ?>
 				<button type="submit" form="noble-step1-checkout-form" class="noble-step1-cta w-full text-white py-4 rounded-2xl font-bold text-lg inline-flex items-center justify-center border-0">تکمیل خرید</button>
 			</div>
 		</footer>
@@ -259,28 +373,22 @@ if ( $is_step_two ) {
 		?>
 		<main class="w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 pt-20">
 			<div class="noble-step2-inner mx-auto px-0 pt-6 md:pt-8">
-				<div class="flex items-center justify-between mb-10 px-4">
-					<div class="flex flex-col items-center gap-2">
-						<div class="w-10 h-10 rounded-full bg-primary-container text-white flex items-center justify-center shadow-md">
-							<span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1;">check</span>
-						</div>
-						<span class="text-xs font-medium text-on-surface-variant">آدرس</span>
+				<nav class="noble-checkout-progress mb-10 px-1" aria-label="Checkout steps">
+					<div class="noble-checkout-progress-item is-done">
+						<div class="noble-checkout-progress-dot"><span class="material-symbols-outlined">check</span></div>
+						<span class="noble-checkout-progress-label">اطلاعات</span>
 					</div>
-					<div class="flex-1 h-0.5 bg-primary-container/30 mx-2 mb-6"></div>
-					<div class="flex flex-col items-center gap-2">
-						<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center ring-4 ring-primary/20">
-							<span class="text-sm font-bold">2</span>
-						</div>
-						<span class="text-xs font-bold text-primary">ارسال</span>
+					<div class="noble-checkout-progress-line is-done"></div>
+					<div class="noble-checkout-progress-item is-current">
+						<div class="noble-checkout-progress-dot"><span class="material-symbols-outlined">local_shipping</span></div>
+						<span class="noble-checkout-progress-label">ارسال</span>
 					</div>
-					<div class="flex-1 h-0.5 bg-surface-container-high mx-2 mb-6"></div>
-					<div class="flex flex-col items-center gap-2">
-						<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center">
-							<span class="text-sm font-bold">3</span>
-						</div>
-						<span class="text-xs font-medium text-on-surface-variant">پرداخت</span>
+					<div class="noble-checkout-progress-line"></div>
+					<div class="noble-checkout-progress-item">
+						<div class="noble-checkout-progress-dot"><span class="material-symbols-outlined">payments</span></div>
+						<span class="noble-checkout-progress-label">پرداخت</span>
 					</div>
-				</div>
+				</nav>
 
 				<header class="mb-8">
 					<h2 class="text-2xl font-black text-on-surface mb-2">انتخاب شیوه ارسال</h2>
@@ -337,7 +445,7 @@ if ( $is_step_two ) {
 							<?php endif; ?>
 						</div>
 
-						<aside class="noble-step2-aside mt-0 lg:mt-0 lg:sticky lg:top-24">
+						<aside class="noble-step2-aside mt-6 lg:mt-0 lg:sticky lg:top-24">
 							<section class="p-6 rounded-3xl bg-white border border-primary/10 shadow-[0_12px_30px_rgba(21,28,38,0.06)]" data-step2-base-total="<?php echo esc_attr( (string) $step2_base_total ); ?>">
 								<h4 class="text-sm font-extrabold text-primary mb-5 flex items-center gap-2">
 									<span class="material-symbols-outlined text-lg">receipt_long</span>
@@ -366,22 +474,30 @@ if ( $is_step_two ) {
 									<span>تایید و ادامه خرید</span>
 									<span class="material-symbols-outlined">chevron_left</span>
 								</button>
+								<a href="<?php echo esc_url( $step_one_url ); ?>" class="noble-step2-back-btn hidden lg:inline-flex mt-3 w-full px-8 py-3 rounded-2xl font-bold text-sm items-center justify-center gap-2">
+									<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+									<span>بازگشت به مرحله اطلاعات</span>
+								</a>
 							</section>
 						</aside>
 					</div>
 
 					<div class="noble-step2-mobile-bar fixed bottom-0 inset-x-0 w-full z-50 bg-surface py-4 pb-safe border-t border-primary/10 shadow-[0_-8px_24px_rgba(26,28,28,0.08)] rounded-t-3xl lg:hidden">
 						<div class="noble-step2-mobile-bar-inner px-5 sm:px-6 lg:px-8">
-							<div class="flex justify-around items-center w-full gap-4">
-							<div class="flex-1 flex flex-col">
-								<span class="text-[10px] text-on-surface-variant">جمع نهایی</span>
-								<span id="noble-step2-order-total-mobile" class="text-lg font-black text-on-surface"><?php wc_cart_totals_order_total_html(); ?></span>
+							<div class="noble-step2-mobile-summary">
+								<span class="noble-step2-mobile-summary-label">جمع نهایی</span>
+								<span id="noble-step2-order-total-mobile" class="noble-step2-mobile-summary-value"><?php wc_cart_totals_order_total_html(); ?></span>
 							</div>
-							<button type="submit" class="noble-step1-cta px-8 py-4 rounded-2xl font-bold text-base active:scale-95 transition-transform flex items-center gap-2 border-0">
-								<span>تایید و ادامه خرید</span>
-								<span class="material-symbols-outlined">chevron_left</span>
-							</button>
-						</div>
+							<div class="noble-step2-mobile-actions">
+								<a href="<?php echo esc_url( $step_one_url ); ?>" class="noble-step2-back-btn noble-step2-back-btn-mobile px-4 py-3 rounded-2xl font-bold text-sm inline-flex items-center justify-center gap-1.5">
+									<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+									<span>مرحله قبل</span>
+								</a>
+								<button type="submit" class="noble-step1-cta noble-step2-mobile-cta px-8 py-4 rounded-2xl font-bold text-base active:scale-95 transition-transform flex items-center justify-center gap-2 border-0">
+									<span>تایید و ادامه خرید</span>
+									<span class="material-symbols-outlined">chevron_left</span>
+								</button>
+							</div>
 						</div>
 					</div>
 				</form>
@@ -391,27 +507,22 @@ if ( $is_step_two ) {
 		<main class="w-full max-w-[1300px] mx-auto px-5 sm:px-6 lg:px-8 pt-20">
 			<div class="max-w-[1300px] mx-auto">
 				<section class="mb-8">
-					<div class="flex items-center justify-between px-2 sm:px-4 relative">
-						<div class="absolute top-4 left-0 w-full h-[2px] bg-primary/10 -z-10"></div>
-						<div class="flex flex-col items-center gap-2">
-							<div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
-								<span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">check</span>
-							</div>
-							<span class="text-[10px] text-on-surface-variant font-bold">اطلاعات ارسال</span>
+					<nav class="noble-checkout-progress px-1" aria-label="Checkout steps">
+						<div class="noble-checkout-progress-item is-done">
+							<div class="noble-checkout-progress-dot"><span class="material-symbols-outlined">check</span></div>
+							<span class="noble-checkout-progress-label">اطلاعات</span>
 						</div>
-						<div class="flex flex-col items-center gap-2">
-							<div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
-								<span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">check</span>
-							</div>
-							<span class="text-[10px] text-on-surface-variant font-bold">روش ارسال</span>
+						<div class="noble-checkout-progress-line is-done"></div>
+						<div class="noble-checkout-progress-item is-done">
+							<div class="noble-checkout-progress-dot"><span class="material-symbols-outlined">check</span></div>
+							<span class="noble-checkout-progress-label">ارسال</span>
 						</div>
-						<div class="flex flex-col items-center gap-2">
-							<div class="w-10 h-10 rounded-full bg-primary text-white border-4 border-background flex items-center justify-center">
-								<span class="text-sm font-bold">3</span>
-							</div>
-							<span class="text-[10px] text-primary font-bold">پرداخت</span>
+						<div class="noble-checkout-progress-line is-done"></div>
+						<div class="noble-checkout-progress-item is-current">
+							<div class="noble-checkout-progress-dot"><span class="material-symbols-outlined">payments</span></div>
+							<span class="noble-checkout-progress-label">پرداخت</span>
 						</div>
-					</div>
+					</nav>
 				</section>
 
 				<div class="mb-5 px-1">
@@ -461,11 +572,27 @@ if ( $is_step_two ) {
 									<span class="text-2xl font-black text-primary"><?php wc_cart_totals_order_total_html(); ?></span>
 								</div>
 							</div>
-							<button type="button" id="noble-place-order-trigger" class="noble-step1-cta w-full py-4 rounded-2xl font-extrabold text-base inline-flex items-center justify-center border-0">
+							<button type="button" id="noble-place-order-trigger" data-noble-place-order-trigger="1" class="noble-step1-cta w-full py-4 rounded-2xl font-extrabold text-base inline-flex items-center justify-center border-0">
 								تکمیل خرید و پرداخت
 							</button>
+							<a href="<?php echo esc_url( $step_two_url ); ?>" class="noble-step2-back-btn w-full py-3 rounded-2xl font-bold text-sm inline-flex items-center justify-center gap-2">
+								<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+								<span>بازگشت به مرحله ارسال</span>
+							</a>
 						</div>
 					</aside>
+				</div>
+				<div class="noble-step3-mobile-bar fixed bottom-0 inset-x-0 w-full z-50 bg-surface py-4 pb-safe border-t border-primary/10 shadow-[0_-8px_24px_rgba(26,28,28,0.08)] rounded-t-3xl lg:hidden">
+					<div class="noble-step3-mobile-bar-inner px-5 sm:px-6">
+						<a href="<?php echo esc_url( $step_two_url ); ?>" class="noble-step2-back-btn noble-step3-mobile-back inline-flex items-center justify-center gap-1.5">
+							<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+							<span>مرحله قبل</span>
+						</a>
+						<button type="button" data-noble-place-order-trigger="1" class="noble-step1-cta noble-step3-mobile-cta inline-flex items-center justify-center gap-2 border-0">
+							<span>تکمیل خرید و پرداخت</span>
+							<span class="material-symbols-outlined">chevron_left</span>
+						</button>
+					</div>
 				</div>
 			</div>
 		</main>
@@ -530,6 +657,30 @@ if ( $is_step_two ) {
 		line-height: 1.9;
 		box-shadow: 0 8px 24px rgba(26, 28, 28, 0.05);
 	}
+	.noble-checkout-wrap .woocommerce-error {
+		border-color: rgba(185, 28, 28, 0.2);
+		background: #fff5f5;
+		color: #7f1d1d;
+	}
+	.noble-checkout-wrap .woocommerce-error li,
+	.noble-checkout-wrap .woocommerce-error > li {
+		color: inherit;
+		font-weight: 600;
+	}
+	.noble-checkout-wrap .noble-step1-inline-error {
+		display: block;
+		border: 1px solid rgba(185, 28, 28, 0.24);
+		background: #fff5f5;
+		color: #7f1d1d;
+		border-radius: 14px;
+		padding: 12px 14px;
+		font-size: 13px;
+		font-weight: 700;
+		line-height: 1.9;
+	}
+	.noble-checkout-wrap .noble-step1-inline-error.hidden {
+		display: none;
+	}
 	.noble-checkout-wrap .woocommerce-message::before,
 	.noble-checkout-wrap .woocommerce-error::before,
 	.noble-checkout-wrap .woocommerce-info::before {
@@ -554,9 +705,25 @@ if ( $is_step_two ) {
 		background: #051061;
 		color: #ffffff !important;
 		box-shadow: none;
+		cursor: pointer;
 	}
 	.noble-checkout-wrap .noble-step1-cta .material-symbols-outlined {
 		color: #ffffff !important;
+	}
+	.noble-checkout-wrap .noble-step2-back-btn {
+		background: #ffffff;
+		color: #051061;
+		border: 1px solid rgba(5, 16, 97, 0.2);
+		text-decoration: none;
+	}
+	.noble-checkout-wrap .noble-step2-back-btn:hover {
+		background: rgba(5, 16, 97, 0.05);
+	}
+	.noble-checkout-wrap button,
+	.noble-checkout-wrap [type="button"],
+	.noble-checkout-wrap [type="submit"],
+	.noble-checkout-wrap .button {
+		cursor: pointer;
 	}
 	.noble-checkout-wrap.noble-checkout-step-3 #order_review_heading {
 		display: none !important;
@@ -629,6 +796,34 @@ if ( $is_step_two ) {
 		display: block !important;
 		margin-top: 12px;
 	}
+	.noble-checkout-wrap.noble-checkout-step-3 {
+		padding-bottom: 150px;
+	}
+	@media (min-width: 1024px) {
+		.noble-checkout-wrap.noble-checkout-step-3 {
+			padding-bottom: 2rem;
+		}
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-mobile-bar-inner {
+		width: min(1300px, 100%);
+		margin-left: auto;
+		margin-right: auto;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 1.65fr;
+		gap: 8px;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-mobile-back,
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-mobile-cta {
+		height: 52px;
+		border-radius: 14px;
+		font-size: 13px;
+		font-weight: 800;
+		padding: 0 12px;
+		white-space: nowrap;
+	}
+	.noble-checkout-wrap.noble-checkout-step-3 .noble-step3-mobile-cta {
+		box-shadow: 0 8px 18px rgba(5,16,97,0.2);
+	}
 	.noble-checkout-wrap .noble-step1-aside-card {
 		backdrop-filter: saturate(120%);
 	}
@@ -697,6 +892,142 @@ if ( $is_step_two ) {
 		font-weight: 600;
 		padding-inline-start: 8px;
 	}
+	.noble-checkout-wrap .noble-step1-qty-control {
+		height: 32px;
+	}
+	.noble-checkout-wrap .noble-step1-qty-btn {
+		width: 30px;
+		height: 30px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		color: #051061;
+		border-radius: 8px;
+	}
+	.noble-checkout-wrap .noble-step1-qty-btn:hover {
+		background: rgba(5,16,97,.08);
+	}
+	.noble-checkout-wrap .noble-step1-qty-value {
+		min-width: 28px;
+		text-align: center;
+		font-size: 12px;
+		font-weight: 800;
+		color: #051061;
+	}
+	.noble-checkout-wrap .noble-step1-remove-btn {
+		width: 34px;
+		height: 34px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 10px;
+		color: #b91c1c;
+		background: rgba(185,28,28,.08);
+		flex-shrink: 0;
+		transition: background-color .2s ease, color .2s ease;
+	}
+	.noble-checkout-wrap .noble-step1-remove-btn:hover {
+		color: #fff;
+		background: #b91c1c;
+	}
+	.noble-checkout-wrap .noble-step1-coupon-mobile {
+		background: linear-gradient(135deg, rgba(5,16,97,0.08), rgba(5,16,97,0.03));
+		border: 1px solid rgba(5, 16, 97, 0.16);
+		border-radius: 16px;
+		padding: 10px;
+	}
+	.noble-checkout-wrap .noble-step1-coupon-mobile-input-wrap {
+		position: relative;
+	}
+	.noble-checkout-wrap .noble-step1-coupon-mobile-icon {
+		position: absolute;
+		right: 14px;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 19px;
+		color: rgba(5, 16, 97, 0.7);
+		pointer-events: none;
+	}
+	.noble-checkout-wrap .noble-step1-coupon-mobile-input {
+		letter-spacing: 0.2px;
+	}
+	.noble-checkout-wrap .noble-step1-coupon-mobile-input::placeholder {
+		color: rgba(21, 28, 38, 0.62);
+	}
+	.noble-checkout-wrap .noble-step1-coupon-mobile-btn {
+		background: #051061;
+		color: #fff;
+	}
+	.noble-checkout-wrap .noble-step1-coupon-mobile-btn:hover {
+		background: #0b197f;
+	}
+	.noble-checkout-wrap .noble-checkout-progress {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 8px;
+	}
+	.noble-checkout-wrap .noble-checkout-progress-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		min-width: 64px;
+		opacity: 0.5;
+	}
+	.noble-checkout-wrap .noble-checkout-progress-dot {
+		width: 40px;
+		height: 40px;
+		border-radius: 9999px;
+		background: var(--color-surface-container-highest);
+		color: var(--color-on-surface-variant);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 800;
+		border: 1px solid rgba(5, 16, 97, 0.15);
+	}
+	.noble-checkout-wrap .noble-checkout-progress-dot .material-symbols-outlined {
+		font-size: 20px;
+		line-height: 1;
+	}
+	.noble-checkout-wrap .noble-checkout-progress-label {
+		font-size: 12px;
+		font-weight: 700;
+		color: var(--color-on-surface-variant);
+		white-space: nowrap;
+	}
+	.noble-checkout-wrap .noble-checkout-progress-line {
+		flex: 1;
+		height: 2px;
+		margin-top: 19px;
+		background: rgba(5, 16, 97, 0.14);
+		border-radius: 9999px;
+	}
+	.noble-checkout-wrap .noble-checkout-progress-item.is-current,
+	.noble-checkout-wrap .noble-checkout-progress-item.is-done {
+		opacity: 1;
+	}
+	.noble-checkout-wrap .noble-checkout-progress-item.is-current .noble-checkout-progress-dot {
+		background: #051061;
+		color: #ffffff;
+		box-shadow: 0 0 0 4px rgba(5, 16, 97, 0.14);
+		border-color: #051061;
+	}
+	.noble-checkout-wrap .noble-checkout-progress-item.is-current .noble-checkout-progress-label {
+		color: #051061;
+	}
+	.noble-checkout-wrap .noble-checkout-progress-item.is-done .noble-checkout-progress-dot {
+		background: rgba(5, 16, 97, 0.12);
+		color: #051061;
+		border-color: rgba(5, 16, 97, 0.25);
+	}
+	.noble-checkout-wrap .noble-checkout-progress-item.is-done .noble-checkout-progress-label {
+		color: var(--color-on-surface);
+	}
+	.noble-checkout-wrap .noble-checkout-progress-line.is-done {
+		background: rgba(5, 16, 97, 0.4);
+	}
 	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-inner {
 		max-width: 1300px;
 	}
@@ -725,6 +1056,53 @@ if ( $is_step_two ) {
 		width: min(1300px, 100%);
 		margin-left: auto;
 		margin-right: auto;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-mobile-summary {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: rgba(5,16,97,0.04);
+		border: 1px solid rgba(5,16,97,0.1);
+		border-radius: 14px;
+		padding: 10px 12px;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-mobile-summary-label {
+		font-size: 11px;
+		font-weight: 700;
+		color: #6b7280;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-mobile-summary-value {
+		font-size: 17px;
+		font-weight: 900;
+		color: #111827;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-mobile-actions {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 1.65fr;
+		gap: 8px;
+		align-items: stretch;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-mobile-cta,
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-back-btn-mobile {
+		width: 100%;
+		height: 52px;
+		padding: 0 12px;
+		border-radius: 14px;
+		font-size: 13px;
+		font-weight: 800;
+		white-space: nowrap;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-mobile-cta {
+		box-shadow: 0 8px 18px rgba(5,16,97,0.2);
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-back-btn-mobile {
+		background: #fff;
+	}
+	.noble-checkout-wrap.noble-checkout-step-2 .noble-step2-mobile-actions .material-symbols-outlined {
+		font-size: 18px;
 	}
 	.noble-checkout-wrap.noble-checkout-step-1 header.fixed {
 		box-shadow: none;
@@ -772,7 +1150,7 @@ if ( $is_step_two ) {
 </style>
 <script>
 document.addEventListener('click', function(e) {
-	var btn = e.target.closest('#noble-place-order-trigger');
+	var btn = e.target.closest('[data-noble-place-order-trigger="1"], #noble-place-order-trigger');
 	if (!btn) return;
 	var placeOrder = document.querySelector('#place_order');
 	if (placeOrder) placeOrder.click();
@@ -781,6 +1159,57 @@ document.addEventListener('input', function(e) {
 	var input = e.target;
 	if (!input || input.name !== 'billing_phone') return;
 	input.value = (input.value || '').replace(/\D+/g, '').slice(0, 11);
+});
+document.addEventListener('DOMContentLoaded', function() {
+	var step1Form = document.getElementById('noble-step1-checkout-form');
+	var inlineError = document.getElementById('noble-step1-inline-error');
+	if (step1Form && inlineError) {
+		step1Form.addEventListener('submit', function(e) {
+			var firstName = step1Form.querySelector('[name="billing_first_name"]');
+			var lastName = step1Form.querySelector('[name="billing_last_name"]');
+			var phone = step1Form.querySelector('[name="billing_phone"]');
+			var state = step1Form.querySelector('[name="billing_state"]');
+			var city = step1Form.querySelector('[name="billing_city"]');
+			var address1 = step1Form.querySelector('[name="billing_address_1"]');
+			var postcode = step1Form.querySelector('[name="billing_postcode"]');
+
+			var firstNameVal = firstName ? (firstName.value || '').trim() : '';
+			var lastNameVal = lastName ? (lastName.value || '').trim() : '';
+			var phoneVal = phone ? (phone.value || '').replace(/\D+/g, '') : '';
+			var stateVal = state ? (state.value || '').trim() : '';
+			var cityVal = city ? (city.value || '').trim() : '';
+			var address1Val = address1 ? (address1.value || '').trim() : '';
+			var postcodeVal = postcode ? (postcode.value || '').replace(/\D+/g, '') : '';
+
+			var msg = '';
+			if (!firstNameVal) msg = 'لطفا نام را وارد کنید.';
+			else if (!lastNameVal) msg = 'لطفا نام خانوادگی را وارد کنید.';
+			else if (!phoneVal) msg = 'لطفا شماره موبایل را وارد کنید.';
+			else if (!/^09\d{9}$/.test(phoneVal)) msg = 'فرمت شماره موبایل صحیح نیست. مثال: 09123456789';
+			else if (!stateVal) msg = 'لطفا استان را انتخاب کنید.';
+			else if (!cityVal) msg = 'لطفا شهر را وارد کنید.';
+			else if (!address1Val) msg = 'لطفا آدرس ارسال را وارد کنید.';
+			else if (!postcodeVal) msg = 'لطفا کد پستی را وارد کنید.';
+			else if (postcodeVal.length !== 10) msg = 'کد پستی باید 10 رقم باشد.';
+
+			if (msg) {
+				e.preventDefault();
+				inlineError.textContent = msg;
+				inlineError.classList.remove('hidden');
+				inlineError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			} else {
+				inlineError.textContent = '';
+				inlineError.classList.add('hidden');
+			}
+		});
+
+		step1Form.addEventListener('input', function() {
+			if (!inlineError.classList.contains('hidden')) {
+				inlineError.textContent = '';
+				inlineError.classList.add('hidden');
+			}
+		});
+	}
 });
 document.addEventListener('DOMContentLoaded', function() {
 	var shippingInputs = document.querySelectorAll('.noble-step2-form input[name^="noble_chosen_shipping"]');

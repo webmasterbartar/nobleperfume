@@ -48,6 +48,8 @@ $noble_theme_uri = get_template_directory_uri();
 			continue;
 		}
 
+		$has_cart_items = function_exists( 'WC' ) && WC() && WC()->cart && WC()->cart->get_cart_contents_count() > 0;
+
 		$brand_label = $product->get_attribute( 'pa_brand' ) ? $product->get_attribute( 'pa_brand' ) : $product->get_attribute( 'برند' );
 		$brand_label = $brand_label ? $brand_label : get_bloginfo( 'name' );
 
@@ -263,7 +265,7 @@ $noble_theme_uri = get_template_directory_uri();
 									</button>
 								</div>
 
-								<button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" class="noble-simple-submit flex-1 w-full bg-primary text-white h-14 rounded-2xl font-bold text-md hover:bg-primary/90 transition-all flex items-center justify-center gap-3">
+								<button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" class="single_add_to_cart_button noble-simple-submit flex-1 w-full bg-primary text-white h-14 rounded-2xl font-bold text-md hover:bg-primary/90 transition-all flex items-center justify-center gap-3<?php echo $has_cart_items ? ' noble-atc-in-cart' : ''; ?>" data-noble-in-cart="<?php echo $has_cart_items ? '1' : '0'; ?>">
 									<span class="material-symbols-outlined text-xl">shopping_bag</span>
 									افزودن به سبد خرید
 								</button>
@@ -271,11 +273,16 @@ $noble_theme_uri = get_template_directory_uri();
 						</form>
 					<?php else : ?>
 						<div class="pt-1 noble-variable-wrap space-y-5">
-							<div class="noble-variable-intro flex gap-3 items-start rounded-2xl border border-primary/10 bg-gradient-to-bl from-white via-white to-background/90 px-4 py-3.5 shadow-sm">
-								<span class="material-symbols-outlined text-2xl text-accent-gold shrink-0 mt-0.5" aria-hidden="true">tune</span>
-								<div class="min-w-0">
-									<p class="text-sm font-extrabold text-primary mb-1"><?php esc_html_e( 'انتخاب واریانت', 'noble-theme' ); ?></p>
-									<p class="text-xs text-on-surface-variant leading-relaxed m-0"><?php esc_html_e( 'گزینه‌ها را انتخاب کنید؛ قیمت و موجودی پس از تکمیل، نمایش داده می‌شود.', 'noble-theme' ); ?></p>
+							<div class="noble-variable-intro" role="note" aria-label="<?php echo esc_attr__( 'راهنمای انتخاب واریانت', 'noble-theme' ); ?>">
+								<div class="noble-variable-intro__icon-wrap" aria-hidden="true">
+									<span class="material-symbols-outlined noble-variable-intro__icon">tune</span>
+								</div>
+								<div class="noble-variable-intro__content">
+									<div class="noble-variable-intro__top">
+										<span class="noble-variable-intro__badge"><?php esc_html_e( 'مرحله ۱', 'noble-theme' ); ?></span>
+										<p class="noble-variable-intro__title"><?php esc_html_e( 'انتخاب واریانت', 'noble-theme' ); ?></p>
+									</div>
+									<p class="noble-variable-intro__desc"><?php esc_html_e( 'گزینه ها را انتخاب کنید؛ قیمت و موجودی بعد از تکمیل نمایش داده می شود.', 'noble-theme' ); ?></p>
 								</div>
 							</div>
 							<?php woocommerce_template_single_add_to_cart(); ?>
@@ -318,7 +325,7 @@ $noble_theme_uri = get_template_directory_uri();
 			</div>
 
 			<div class="noble-tab-panel" data-tab-panel="specs">
-				<div class="bg-white rounded-2xl border border-primary/10 p-6 md:p-8">
+				<div class="bg-white rounded-2xl border border-primary/10 p-6 md:p-8 noble-specs-panel">
 					<?php
 					ob_start();
 					wc_display_product_attributes( $product );
@@ -471,6 +478,78 @@ document.querySelectorAll('.noble-simple-qty input.qty').forEach(function(input)
 	input.readOnly = true;
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+	var forms = document.querySelectorAll('form.noble-variations-form.variations_form');
+	if (!forms.length) return;
+
+	function syncOptionStates(form) {
+		var groups = form.querySelectorAll('.noble-variation-options');
+		var hasAnySelection = false;
+		groups.forEach(function(group) {
+			var attributeName = group.getAttribute('data-attribute-name');
+			if (!attributeName) return;
+			var select = form.querySelector('select[name="attribute_' + attributeName + '"]');
+			if (!select) return;
+
+			var currentValue = select.value || '';
+			if (currentValue !== '') {
+				hasAnySelection = true;
+			}
+			group.querySelectorAll('.noble-variation-option').forEach(function(btn) {
+				var value = btn.getAttribute('data-value') || '';
+				var optionEl = null;
+				for (var i = 0; i < select.options.length; i++) {
+					if ((select.options[i].value || '') === value) {
+						optionEl = select.options[i];
+						break;
+					}
+				}
+				var isDisabled = !optionEl || optionEl.disabled;
+				var isSelected = currentValue !== '' && currentValue === value;
+
+				btn.classList.toggle('is-selected', isSelected);
+				btn.classList.toggle('is-disabled', isDisabled);
+				btn.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+				btn.disabled = isDisabled;
+			});
+		});
+		form.classList.toggle('noble-has-variation-selection', hasAnySelection);
+	}
+
+	forms.forEach(function(form) {
+		form.querySelectorAll('.noble-variation-options').forEach(function(group) {
+			var attributeName = group.getAttribute('data-attribute-name');
+			if (!attributeName) return;
+			var select = form.querySelector('select[name="attribute_' + attributeName + '"]');
+			if (!select) return;
+
+			group.addEventListener('click', function(e) {
+				var btn = e.target.closest('.noble-variation-option');
+				if (!btn || btn.disabled) return;
+				e.preventDefault();
+				var nextValue = btn.getAttribute('data-value') || '';
+				select.value = nextValue;
+				select.dispatchEvent(new Event('change', { bubbles: true }));
+				syncOptionStates(form);
+			});
+		});
+
+		form.addEventListener('change', function(e) {
+			if (e.target && e.target.matches('select.noble-variation-select')) {
+				syncOptionStates(form);
+			}
+		});
+
+		if (typeof jQuery !== 'undefined') {
+			jQuery(form).on('woocommerce_variation_has_changed hide_variation found_variation reset_data', function() {
+				syncOptionStates(form);
+			});
+		}
+
+		syncOptionStates(form);
+	});
+});
+
 document.addEventListener('click', function(event) {
 	var btn = event.target.closest('.noble-qty-btn');
 	if (!btn) return;
@@ -562,6 +641,8 @@ document.querySelectorAll('.noble-tab-btn').forEach(function(btn) {
 
 (function() {
 	var successText = <?php echo wp_json_encode( __( 'به سبد خرید اضافه شد', 'noble-theme' ) ); ?>;
+	var inCartText  = <?php echo wp_json_encode( __( 'محصول داخل سبد خرید است', 'noble-theme' ) ); ?>;
+	var loadingText = <?php echo wp_json_encode( __( 'در حال افزودن...', 'noble-theme' ) ); ?>;
 	var origKey = 'data-noble-atc-html';
 
 	function nobleAtcButton() {
@@ -589,8 +670,38 @@ document.querySelectorAll('.noble-tab-btn').forEach(function(btn) {
 			btn.setAttribute(origKey, btn.innerHTML);
 		}
 		btn.classList.add('noble-atc-success');
+		btn.classList.remove('noble-atc-in-cart');
+		btn.classList.add('noble-atc-pop');
 		btn.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">check_circle</span> ' + successText;
 		btn.setAttribute('aria-label', successText);
+		window.setTimeout(function() {
+			btn.classList.remove('noble-atc-pop');
+		}, 520);
+	}
+
+	function nobleSetAtcLoading(btn) {
+		if (!btn) {
+			return;
+		}
+		if (!btn.getAttribute(origKey)) {
+			btn.setAttribute(origKey, btn.innerHTML);
+		}
+		btn.classList.add('noble-atc-loading');
+		btn.setAttribute('aria-busy', 'true');
+		btn.innerHTML = '<span class="noble-atc-spinner" aria-hidden="true"></span> ' + loadingText;
+	}
+
+	function nobleSetAtcInCart(btn) {
+		if (!btn) {
+			return;
+		}
+		if (!btn.getAttribute(origKey)) {
+			btn.setAttribute(origKey, btn.innerHTML);
+		}
+		btn.classList.remove('noble-atc-success');
+		btn.classList.add('noble-atc-in-cart');
+		btn.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">inventory_2</span> ' + inCartText;
+		btn.setAttribute('aria-label', inCartText);
 	}
 
 	function nobleNoticeLooksLikeAdded() {
@@ -617,6 +728,8 @@ document.querySelectorAll('.noble-tab-btn').forEach(function(btn) {
 		jQuery(document.body).on('added_to_cart', function(event, fragments, cartHash, button) {
 			var el = button && button[0] ? button[0] : nobleAtcButton();
 			if (el && el.closest && el.closest('.single-product')) {
+				el.classList.remove('noble-atc-loading');
+				el.removeAttribute('aria-busy');
 				nobleSetAtcSuccess(el);
 			}
 		});
@@ -629,10 +742,24 @@ document.querySelectorAll('.noble-tab-btn').forEach(function(btn) {
 	}
 
 	document.addEventListener('DOMContentLoaded', function() {
+		var simpleForm = document.querySelector('.single-product form.cart');
+		if (simpleForm) {
+			simpleForm.addEventListener('submit', function() {
+				var btnLoading = nobleAtcButton();
+				if (btnLoading && !btnLoading.classList.contains('noble-atc-success') && !btnLoading.classList.contains('noble-atc-in-cart')) {
+					nobleSetAtcLoading(btnLoading);
+				}
+			});
+		}
+
+		var btn = nobleAtcButton();
+		if (btn && btn.getAttribute('data-noble-in-cart') === '1') {
+			nobleSetAtcInCart(btn);
+		}
+
 		if (!nobleNoticeLooksLikeAdded()) {
 			return;
 		}
-		var btn = nobleAtcButton();
 		if (btn) {
 			nobleSetAtcSuccess(btn);
 		}

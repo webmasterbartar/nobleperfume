@@ -9,16 +9,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$resolve_page_url = static function( $path, $fallback ) {
+	$page = get_page_by_path( trim( (string) $path, '/' ) );
+	if ( $page instanceof WP_Post ) {
+		$permalink = get_permalink( $page );
+		if ( $permalink ) {
+			return $permalink;
+		}
+	}
+	return $fallback;
+};
+
 $year         = (int) gmdate( 'Y' );
 $blog_name    = get_bloginfo( 'name' );
 $shop_url     = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
 $account_url  = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : home_url( '/my-account/' );
-$contact_url  = home_url( '/contact/' );
-$about_url    = home_url( '/about-us/' );
-$guide_url    = home_url( '/buying-guide/' );
-$blog_url     = home_url( '/blog/' );
-$privacy_url  = home_url( '/privacy-policy/' );
-$terms_url    = home_url( '/terms/' );
+$contact_url  = $resolve_page_url( 'contact', home_url( '/contact/' ) );
+$about_url    = $resolve_page_url( 'about-us', home_url( '/about-us/' ) );
+$guide_url    = $resolve_page_url( 'buying-guide', home_url( '/buying-guide/' ) );
+$blog_url     = get_post_type_archive_link( 'post' ) ? get_post_type_archive_link( 'post' ) : home_url( '/blog/' );
+$privacy_url  = $resolve_page_url( 'privacy-policy', home_url( '/privacy-policy/' ) );
+$terms_url    = $resolve_page_url( 'terms', home_url( '/terms/' ) );
 $social_ig    = get_theme_mod( 'noble_social_instagram', '' );
 $social_tg    = get_theme_mod( 'noble_social_telegram', '' );
 $ig_href      = $social_ig ? $social_ig : $contact_url;
